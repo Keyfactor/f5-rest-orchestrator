@@ -1,6 +1,7 @@
-﻿using CSS.Common.Logging;
-using Keyfactor.Platform.Extensions.Agents.Delegates;
-using Keyfactor.Platform.Extensions.Agents.Enums;
+﻿using Keyfactor.Logging;
+using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Common.Enums;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +17,18 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.SSLProfile
             return "F5-SL-REST";
         }
 
-        public override AnyJobCompleteInfo processJob(AnyJobConfigInfo config, SubmitInventoryUpdate submitInventory, SubmitEnrollmentRequest submitEnrollmentRequest, SubmitDiscoveryResults sdr)
+        public override JobResult ProcessJob(ManagementJobConfiguration config)
         {
-            LogHandler.MethodEntry(Logger, config, "processJob");
-            if (config.Job.OperationType != AnyJobOperationType.Add
-                && config.Job.OperationType != AnyJobOperationType.Remove)
+            if (logger == null)
             {
-                throw new Exception($"'{config.Store.ClientMachine}-{config.Store.StorePath}-{GetStoreType()}'  expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(AnyJobOperationType), config.Job.OperationType)}'");
+                logger = Keyfactor.Logging.LogHandler.GetClassLogger(this.GetType());
+            }
+
+            LogHandler.MethodEntry(logger, config, "processJob");
+            if (config.Job.OperationType != CertStoreOperationType.Add
+                && config.Job.OperationType != CertStoreOperationType.Remove)
+            {
+                throw new Exception($"'{config.CertificateStoreDetails.ClientMachine}-{config.CertificateStoreDetails.StorePath}-{GetStoreType()}'  expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.Job.OperationType)}'");
             }
 
             // Save the job config for use instead of passing it around
@@ -41,20 +47,20 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.SSLProfile
 
                 switch (config.Job.OperationType)
                 {
-                    case AnyJobOperationType.Add:
-                        LogHandler.Debug(Logger, config, $"Add entry '{config.Job.Alias}' to '{config.Store.StorePath}'");
+                    case CertStoreOperationType.Add:
+                        LogHandler.Debug(logger, config, $"Add entry '{config.Job.Alias}' to '{config.CertificateStoreDetails.StorePath}'");
                         PerformAddJob(f5);
                         break;
-                    case AnyJobOperationType.Remove:
-                        LogHandler.Trace(Logger, config, $"Remove entry '{config.Job.Alias}' from '{config.Store.StorePath}'");
+                    case CertStoreOperationType.Remove:
+                        LogHandler.Trace(logger, config, $"Remove entry '{config.Job.Alias}' from '{config.CertificateStoreDetails.StorePath}'");
                         PerformRemovalJob(f5);
                         break;
                     default:
                         // Shouldn't get here, but just in case
-                        throw new Exception($"{GetStoreType()} expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(AnyJobOperationType), config.Job.OperationType)}'");
+                        throw new Exception($"{GetStoreType()} expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.Job.OperationType)}'");
                 }
 
-                LogHandler.Debug(Logger, config, "Job complete");
+                LogHandler.Debug(logger, config, "Job complete");
                 return new AnyJobCompleteInfo { Status = 2, Message = "Successful" };
             }
             catch (Exception ex)
@@ -63,13 +69,13 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.SSLProfile
             }
             finally
             {
-                LogHandler.MethodExit(Logger, config, "processJob");
+                LogHandler.MethodExit(logger, config, "processJob");
             }
         }
 
         private void PerformAddJob(F5Client f5)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "PerformAddJob");
+            LogHandler.MethodEntry(logger, JobConfig, "PerformAddJob");
             string name = JobConfig.Job.Alias;
             string partition = f5.GetPartitionFromStorePath();
 
@@ -77,33 +83,33 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.SSLProfile
             {
                 if (!JobConfig.Job.Overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
 
-                LogHandler.Debug(Logger, JobConfig, $"Replace entry '{name}' in '{JobConfig.Store.StorePath}'");
+                LogHandler.Debug(logger, JobConfig, $"Replace entry '{name}' in '{JobConfig.CertificateStoreDetails.StorePath}'");
                 f5.ReplaceEntry(partition, name);
             }
             else
             {
-                LogHandler.Debug(Logger, JobConfig, $"The entry '{name}' does not exist in '{JobConfig.Store.StorePath}' and will be added");
+                LogHandler.Debug(logger, JobConfig, $"The entry '{name}' does not exist in '{JobConfig.CertificateStoreDetails.StorePath}' and will be added");
                 f5.AddEntry(partition, name);
             }
-            LogHandler.MethodExit(Logger, JobConfig, "PerformAddJob");
+            LogHandler.MethodExit(logger, JobConfig, "PerformAddJob");
         }
 
         private void PerformRemovalJob(F5Client f5)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "PerformRemovalJob");
+            LogHandler.MethodEntry(logger, JobConfig, "PerformRemovalJob");
             string name = JobConfig.Job.Alias;
             string partition = f5.GetPartitionFromStorePath();
 
             if (f5.CertificateExists(partition, name))
             {
-                LogHandler.Debug(Logger, JobConfig, $"The entry '{name}' exists in '{JobConfig.Store.StorePath}' and will be removed");
+                LogHandler.Debug(logger, JobConfig, $"The entry '{name}' exists in '{JobConfig.CertificateStoreDetails.StorePath}' and will be removed");
                 f5.RemoveEntry(partition, name);
             }
             else
             {
-                LogHandler.Debug(Logger, JobConfig, $"The entry '{name}' does not exist in '{JobConfig.Store.StorePath}'");
+                LogHandler.Debug(logger, JobConfig, $"The entry '{name}' does not exist in '{JobConfig.CertificateStoreDetails.StorePath}'");
             }
-            LogHandler.MethodExit(Logger, JobConfig, "PerformRemovalJob");
+            LogHandler.MethodExit(logger, JobConfig, "PerformRemovalJob");
         }
     }
 }

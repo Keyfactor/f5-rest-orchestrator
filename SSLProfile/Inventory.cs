@@ -34,10 +34,10 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.SSLProfile
                 base.ParseJobProperties();
                 F5Client f5 = new F5Client(config) { F5Version = base.F5Version };
 
-                LogHandler.Debug(Logger, JobConfig, $"Getting inventory from '{config.Store.StorePath}'");
+                LogHandler.Debug(Logger, JobConfig, $"Getting inventory from '{config.CertificateStoreDetails.StorePath}'");
                 inventory = f5.GetSSLProfiles(20);
 
-                LogHandler.Debug(Logger, JobConfig, $"Submitting {inventory?.Count} inventory entries for '{config.Store.StorePath}'");
+                LogHandler.Debug(Logger, JobConfig, $"Submitting {inventory?.Count} inventory entries for '{config.CertificateStoreDetails.StorePath}'");
                 submitInventory.Invoke(inventory);
 
                 LogHandler.Debug(Logger, JobConfig, "Job complete");

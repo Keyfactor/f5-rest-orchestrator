@@ -34,7 +34,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
             try
             {
                 LogHandler.Debug(Logger, JobConfig, "Processing job parameters");
-                dynamic properties = JsonConvert.DeserializeObject(config.Store.Properties.ToString());
+                dynamic properties = JsonConvert.DeserializeObject(config.CertificateStoreDetails.Properties.ToString());
 
                 F5Client f5 = new F5Client(config);
 

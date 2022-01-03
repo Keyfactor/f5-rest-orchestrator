@@ -1,12 +1,13 @@
-﻿using CSS.Common.Logging;
-using Keyfactor.Platform.Extensions.Agents.Enums;
+﻿using Keyfactor.Logging;
+using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Common.Enums;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 {
@@ -14,7 +15,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
     {
         #region Properties
 
-        public AnyJobConfigInfo JobConfig { get; set; }
+        public JobConfiguration JobConfig { get; set; }
         public string PrimaryNode { get; set; }
         public string F5Version { get; set; }
         private RESTHandler REST
@@ -23,7 +24,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             {
                 return new RESTHandler
                 {
-                    Host = this.JobConfig.Store.ClientMachine,
+                    Host = this.JobConfig.CertificateStoreDetails.ClientMachine,
                     User = this.JobConfig.Server.Username,
                     Password = this.JobConfig.Server.Password,
                     UseSSL = this.JobConfig.Server.UseSSL
@@ -37,7 +38,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
         #region Constructors
 
-        public F5Client(AnyJobConfigInfo jobConfig)
+        public F5Client(JobConfiguration jobConfig)
         {
             JobConfig = jobConfig;
         }
@@ -277,7 +278,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         private void SetItemStatus(AgentCertStoreInventoryItem agentInventoryItem)
         {
             LogHandler.MethodEntry(Logger, JobConfig, "SetItemStatus");
-            AnyJobInventoryItem keyfactorInventoryItem = JobConfig.Store.Inventory
+            AnyJobInventoryItem keyfactorInventoryItem = JobConfig.CertificateStoreDetails.Inventory
                 .SingleOrDefault(i => i.Alias.Equals(agentInventoryItem.Alias, StringComparison.OrdinalIgnoreCase));
             if (keyfactorInventoryItem == null)
             {
@@ -478,8 +479,8 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         public string GetPartitionFromStorePath()
         {
             LogHandler.MethodEntry(Logger, JobConfig, "GetPartitionsFromStorePath");
-            string[] pathParts = JobConfig.Store.StorePath.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            if (pathParts.Length < 1) { throw new Exception($"The store path '{JobConfig.Store.StorePath}' does not appear to contain a partition"); }
+            string[] pathParts = JobConfig.CertificateStoreDetails.StorePath.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            if (pathParts.Length < 1) { throw new Exception($"The store path '{JobConfig.CertificateStoreDetails.StorePath}' does not appear to contain a partition"); }
             LogHandler.MethodExit(Logger, JobConfig, "GetPartitionFromStorePath");
             return pathParts[0];
         }
@@ -585,7 +586,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         public List<AgentCertStoreInventoryItem> GetSSLProfiles(int pageSize)
         {
             LogHandler.MethodEntry(Logger, JobConfig, "GetSSLProfiles");
-            string partition = JobConfig.Store.StorePath;
+            string partition = JobConfig.CertificateStoreDetails.StorePath;
             string query = $"/mgmt/tm/sys/file/ssl-cert?$filter=partition+eq+{partition}&$select=name,isBundle&$top={pageSize}&$skip=0";
             F5PagedSSLProfiles pagedProfiles = REST.Get<F5PagedSSLProfiles>(query);
             List<F5SSLProfile> profiles = new List<F5SSLProfile>();
@@ -685,7 +686,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             return bundles;
         }
 
-        public List<AgentCertStoreInventoryItem> GetCABundleInventory()
+        public List<CurrentInventoryItem> GetCABundleInventory()
         {
             LogHandler.MethodEntry(Logger, JobConfig, "GetCABundleInventory");
             List<AgentCertStoreInventoryItem> inventory = new List<AgentCertStoreInventoryItem>();
@@ -733,7 +734,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         private string[] GetCABundleIncludes()
         {
             LogHandler.MethodEntry(Logger, JobConfig, "GetCABundleIncludes");
-            string bundlePath = JobConfig.Store.StorePath;
+            string bundlePath = JobConfig.CertificateStoreDetails.StorePath;
             string[] bundlePathParts = bundlePath.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             if (bundlePathParts.Length != 2) { throw new Exception($"CA bundle path: '{bundlePath}' is invalid.  Expecting '/<partition>/<bundle>'."); }
             string partition = bundlePathParts[0];
@@ -763,14 +764,14 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             // Add the entry to inventory
             if (!CertificateExists(partition, name))
             {
-                Logger.Debug($"Add entry '{name}' in '{JobConfig.Store.StorePath}'");
+                Logger.Debug($"Add entry '{name}' in '{JobConfig.CertificateStoreDetails.StorePath}'");
                 AddEntry(partition, name);
             }
             else
             {
                 if (!JobConfig.Job.Overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
 
-                Logger.Debug($"Replace entry '{name}' in '{JobConfig.Store.StorePath}'");
+                Logger.Debug($"Replace entry '{name}' in '{JobConfig.CertificateStoreDetails.StorePath}'");
                 ReplaceEntry(partition, name);
             }
 

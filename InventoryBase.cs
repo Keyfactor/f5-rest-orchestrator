@@ -24,11 +24,11 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
         protected void ParseJobProperties()
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "ParseJobProperties");
-            dynamic properties = JsonConvert.DeserializeObject(JobConfig.Store.Properties.ToString());
+            LogHandler.MethodEntry(logger, JobConfig, "ParseJobProperties");
+            dynamic properties = JsonConvert.DeserializeObject(JobConfig.CertificateStoreDetails.Properties.ToString());
             if (string.IsNullOrEmpty(properties.F5Version?.ToString())) { throw new Exception("Missing job property string: F5Version"); }
             F5Version = properties.F5Version.ToString();
-            LogHandler.Trace(Logger, JobConfig, $"F5 version '{F5Version}'");
+            LogHandler.Trace(logger, JobConfig, $"F5 version '{F5Version}'");
         }
     }
 }

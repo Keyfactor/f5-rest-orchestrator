@@ -1,6 +1,7 @@
-﻿using CSS.Common.Logging;
-using Keyfactor.Platform.Extensions.Agents.Delegates;
-using Keyfactor.Platform.Extensions.Agents.Enums;
+﻿using Keyfactor.Logging;
+using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Common.Enums;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,19 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
             return "F5-CA-REST";
         }
 
-        public override AnyJobCompleteInfo processJob(AnyJobConfigInfo config, SubmitInventoryUpdate submitInventory, SubmitEnrollmentRequest submitEnrollmentRequest, SubmitDiscoveryResults sdr)
+        public override JobResult ProcessJob(ManagementJobConfiguration config)
         {
-            LogHandler.MethodEntry(Logger, config, "processJob");
-
-            if (config.Job.OperationType != AnyJobOperationType.Add
-                && config.Job.OperationType != AnyJobOperationType.Remove)
+            if (logger == null)
             {
-                throw new Exception($"{GetStoreType()} expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(AnyJobOperationType), config.Job.OperationType)}'");
+                logger = Keyfactor.Logging.LogHandler.GetClassLogger(this.GetType());
+            }
+
+            LogHandler.MethodEntry(logger, config, "processJob");
+
+            if (config.OperationType != CertStoreOperationType.Add
+                && config.OperationType != CertStoreOperationType.Remove)
+            {
+                throw new Exception($"{GetStoreType()} expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.Job.OperationType)}'");
             }
 
             // Save the job config for use instead of passing it around
@@ -42,78 +48,78 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
 
                 switch (config.Job.OperationType)
                 {
-                    case AnyJobOperationType.Add:
-                        LogHandler.Debug(Logger, JobConfig, $"Add CA Bundle entry '{config.Job.Alias}' to '{config.Store.StorePath}'");
+                    case CertStoreOperationType.Add:
+                        LogHandler.Debug(logger, JobConfig, $"Add CA Bundle entry '{config.Job.Alias}' to '{config.CertificateStoreDetails.StorePath}'");
                         PerformAddJob(f5);
                         break;
-                    case AnyJobOperationType.Remove:
-                        LogHandler.Debug(Logger, JobConfig, $"Remove CA Bundle entry '{config.Job.Alias}' from '{config.Store.StorePath}'");
+                    case CertStoreOperationType.Remove:
+                        LogHandler.Debug(logger, JobConfig, $"Remove CA Bundle entry '{config.Job.Alias}' from '{config.CertificateStoreDetails.StorePath}'");
                         PerformRemovalJob(f5);
                         break;
                     default:
                         // Shouldn't get here, but just in case
-                        throw new Exception($"{GetStoreType()} expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(AnyJobOperationType), config.Job.OperationType)}'");
+                        throw new Exception($"{GetStoreType()} expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
                 }
 
-                LogHandler.Debug(Logger, JobConfig, "Job complete");
-                return new AnyJobCompleteInfo { Status = 2, Message = "Successful" };
+                LogHandler.Debug(logger, JobConfig, "Job complete");
+                return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId};
             }
             catch (Exception ex)
             {
-                return new AnyJobCompleteInfo { Status = 4, Message = ExceptionHandler.FlattenExceptionMessages(ex, "Unable to complete the management operation.") };
+                return new JobResult { Result = OrchestratorJobStatusJobResult.Failure, JobHistoryId = config.JobHistoryId, FailureMessage = ExceptionHandler.FlattenExceptionMessages(ex, "Unable to complete the management operation.") };
             }
             finally
             {
-                LogHandler.MethodExit(Logger, config, "processJob");
+                LogHandler.MethodExit(logger, config, "processJob");
             }
         }
 
         private void PerformAddJob(F5Client f5)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "PerformAddJob");
+            LogHandler.MethodEntry(logger, JobConfig, "PerformAddJob");
 
-            string name = JobConfig.Job.Alias;
+            string name = JobConfig.JobCertificate.Alias;
             string partition = f5.GetPartitionFromStorePath();
 
-            List<AgentCertStoreInventoryItem> inventory = f5.GetCABundleInventory();
+            List<CurrentInventoryItem> inventory = f5.GetCABundleInventory();
 
             if (inventory.Exists(i => i.Alias.Equals(name, StringComparison.OrdinalIgnoreCase)))
             {
-                if (f5.CertificateExists(partition, name)) { LogHandler.Debug(Logger, JobConfig, $"The entry '{name}' exists in the SSL certificate store"); }
-                if (!JobConfig.Job.Overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
+                if (f5.CertificateExists(partition, name)) { LogHandler.Debug(logger, JobConfig, $"The entry '{name}' exists in the SSL certificate store"); }
+                if (!JobConfig.Overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
 
-                LogHandler.Debug(Logger, JobConfig, $"Replace entry '{name}' in '{JobConfig.Store.StorePath}'");
+                LogHandler.Debug(logger, JobConfig, $"Replace entry '{name}' in '{JobConfig.CertificateStoreDetails.StorePath}'");
                 f5.ReplaceEntry(partition, name);
             }
             else
             {
-                LogHandler.Debug(Logger, JobConfig, $"The entry '{name}' does not exist in the bundle '{JobConfig.Store.StorePath}' and will be added");
-                f5.AddBundleEntry(JobConfig.Store.StorePath, partition, name);
+                LogHandler.Debug(logger, JobConfig, $"The entry '{name}' does not exist in the bundle '{JobConfig.CertificateStoreDetails.StorePath}' and will be added");
+                f5.AddBundleEntry(JobConfig.CertificateStoreDetails.StorePath, partition, name);
             }
 
-            LogHandler.MethodExit(Logger, JobConfig, "PerformAddJob");
+            LogHandler.MethodExit(logger, JobConfig, "PerformAddJob");
         }
 
         private void PerformRemovalJob(F5Client f5)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "PerformRemovalJob");
+            LogHandler.MethodEntry(logger, JobConfig, "PerformRemovalJob");
 
             string name = JobConfig.Job.Alias;
             string partition = f5.GetPartitionFromStorePath();
 
             if (f5.EntryExistsInBundle())
             {
-                if (f5.CertificateExists(partition, name)) { Logger.Debug($"The entry '{name}' exists in the SSL certificate store"); }
+                if (f5.CertificateExists(partition, name)) { logger.LogDebug($"The entry '{name}' exists in the SSL certificate store"); }
 
-                LogHandler.Debug(Logger, JobConfig, $"The entry '{name}' exists in the bundle '{JobConfig.Store.StorePath}' and will be removed");
-                f5.RemoveBundleEntry(JobConfig.Store.StorePath, partition, name);
+                LogHandler.Debug(logger, JobConfig, $"The entry '{name}' exists in the bundle '{JobConfig.CertificateStoreDetails.StorePath}' and will be removed");
+                f5.RemoveBundleEntry(JobConfig.CertificateStoreDetails.StorePath, partition, name);
             }
             else
             {
-                LogHandler.Debug(Logger, JobConfig, $"The entry '{name}' does not exist in the bundle '{JobConfig.Store.StorePath}'");
+                LogHandler.Debug(logger, JobConfig, $"The entry '{name}' does not exist in the bundle '{JobConfig.CertificateStoreDetails.StorePath}'");
             }
 
-            LogHandler.MethodExit(Logger, JobConfig, "PerformRemovalJob");
+            LogHandler.MethodExit(logger, JobConfig, "PerformRemovalJob");
         }
     }
 }

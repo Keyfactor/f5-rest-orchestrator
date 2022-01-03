@@ -1,10 +1,7 @@
-﻿using Common.Logging;
-using CSS.Common.Logging;
+﻿using Keyfactor.Logging;
+using Keyfactor.Orchestrators.Extensions;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 {
@@ -45,33 +42,33 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
     internal class LogHandler
     {
-        public static void MethodEntry(ILog logger, AnyJobConfigInfo jobConfig, string name)
+        public static void MethodEntry(ILogger logger, ManagementJobConfiguration jobConfig, string name)
         {
-            logger.Trace($"[Host:{jobConfig.Store.ClientMachine}][Store:{jobConfig.Store.StorePath}] Entered '{name}' method.");
+            logger.LogTrace($"[Host:{jobConfig.CertificateStoreDetails.ClientMachine}][Store:{jobConfig.CertificateStoreDetails.StorePath}] Entered '{name}' method.");
         }
-        public static void MethodExit(ILog logger, AnyJobConfigInfo jobConfig, string name)
+        public static void MethodExit(ILogger logger, ManagementJobConfiguration jobConfig, string name)
         {
-            logger.Trace($"[Host:{jobConfig.Store.ClientMachine}][Store:{jobConfig.Store.StorePath}] Leaving '{name}' method.");
+            logger.LogTrace($"[Host:{jobConfig.CertificateStoreDetails.ClientMachine}][Store:{jobConfig.CertificateStoreDetails.StorePath}] Leaving '{name}' method.");
         }
-        public static void Info(ILog logger, AnyJobConfigInfo jobConfig, string message)
+        public static void Info(ILogger logger, ManagementJobConfiguration jobConfig, string message)
         {
-            logger.Info($"[Host:{jobConfig.Store.ClientMachine}][Store:{jobConfig.Store.StorePath}] {message}");
+            logger.LogInformation($"[Host:{jobConfig.CertificateStoreDetails.ClientMachine}][Store:{jobConfig.CertificateStoreDetails.StorePath}] {message}");
         }
-        public static void Error(ILog logger, AnyJobConfigInfo jobConfig, string message)
+        public static void Error(ILogger logger, ManagementJobConfiguration jobConfig, string message)
         {
-            logger.Error($"[Host:{jobConfig.Store.ClientMachine}][Store:{jobConfig.Store.StorePath}] {message}");
+            logger.LogError($"[Host:{jobConfig.CertificateStoreDetails.ClientMachine}][Store:{jobConfig.CertificateStoreDetails.StorePath}] {message}");
         }
-        public static void Warn(ILog logger, AnyJobConfigInfo jobConfig, string message)
+        public static void Warn(ILogger logger, ManagementJobConfiguration jobConfig, string message)
         {
-            logger.Warn($"[Host:{jobConfig.Store.ClientMachine}][Store:{jobConfig.Store.StorePath}] {message}");
+            logger.LogWarning($"[Host:{jobConfig.CertificateStoreDetails.ClientMachine}][Store:{jobConfig.CertificateStoreDetails.StorePath}] {message}");
         }
-        public static void Debug(ILog logger, AnyJobConfigInfo jobConfig, string message)
+        public static void Debug(ILogger logger, ManagementJobConfiguration jobConfig, string message)
         {
-            logger.Debug($"[Host:{jobConfig.Store.ClientMachine}][Store:{jobConfig.Store.StorePath}] {message}");
+            logger.LogDebug($"[Host:{jobConfig.CertificateStoreDetails.ClientMachine}][Store:{jobConfig.CertificateStoreDetails.StorePath}] {message}");
         }
-        public static void Trace(ILog logger, AnyJobConfigInfo jobConfig, string message)
+        public static void Trace(ILogger logger, ManagementJobConfiguration jobConfig, string message)
         {
-            logger.Trace($"[Host:{jobConfig.Store.ClientMachine}][Store:{jobConfig.Store.StorePath}] {message}");
+            logger.LogTrace($"[Host:{jobConfig.CertificateStoreDetails.ClientMachine}][Store:{jobConfig.CertificateStoreDetails.StorePath}] {message}");
         }
     }
 }

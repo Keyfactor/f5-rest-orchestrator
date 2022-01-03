@@ -35,10 +35,10 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
                 base.ParseJobProperties();
                 F5Client f5 = new F5Client(config) { F5Version = base.F5Version };
 
-                LogHandler.Debug(Logger, JobConfig, $"Getting inventory for CA Bundle '{config.Store.StorePath}'");
+                LogHandler.Debug(Logger, JobConfig, $"Getting inventory for CA Bundle '{config.CertificateStoreDetails.StorePath}'");
                 inventory = f5.GetCABundleInventory();
 
-                LogHandler.Debug(Logger, JobConfig, $"Submitting {inventory?.Count} inventory entries for CA Bundle '{config.Store.StorePath}'");
+                LogHandler.Debug(Logger, JobConfig, $"Submitting {inventory?.Count} inventory entries for CA Bundle '{config.CertificateStoreDetails.StorePath}'");
                 submitInventory.Invoke(inventory);
 
                 LogHandler.Debug(Logger, JobConfig, "Job complete");

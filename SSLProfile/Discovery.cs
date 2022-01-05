@@ -1,10 +1,8 @@
-﻿using CSS.Common.Logging;
-using Keyfactor.Platform.Extensions.Agents.Delegates;
+﻿using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Common.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.SSLProfile
 {
@@ -15,29 +13,29 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.SSLProfile
             return "F5-SL-REST";
         }
 
-        public override AnyJobCompleteInfo processJob(AnyJobConfigInfo config, SubmitInventoryUpdate submitInventory, SubmitEnrollmentRequest submitEnrollmentRequest, SubmitDiscoveryResults sdr)
+        public override JobResult ProcessJob(DiscoveryJobConfiguration config, SubmitDiscoveryUpdate sdr)
         {
-            LogHandler.MethodEntry(Logger, config, "processJob");
+            LogHandler.MethodEntry(logger, new CertificateStore(), "ProcessJob");
             F5Client f5 = new F5Client(config);
 
             try
             {
-                LogHandler.Debug(Logger, config, "Getting partitions");
+                LogHandler.Debug(logger, new CertificateStore(), "Getting partitions");
                 List<string> locations = f5.GetPartitions().Select(p => p.name).ToList();
 
-                LogHandler.Debug(Logger, config, $"Submitting {locations?.Count} partitions");
+                LogHandler.Debug(logger, new CertificateStore(), $"Submitting {locations?.Count} partitions");
                 sdr.Invoke(locations);
 
-                LogHandler.Debug(Logger, config, "Job complete");
-                return new AnyJobCompleteInfo { Status = 2, Message = "Successful" };
+                LogHandler.Debug(logger, new CertificateStore(), "Job complete");
+                return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
             }
             catch (Exception ex)
             {
-                return new AnyJobCompleteInfo { Status = 4, Message = ExceptionHandler.FlattenExceptionMessages(ex, "Unable to complete the discovery operation. ") };
+                return new JobResult { Result = OrchestratorJobStatusJobResult.Failure, JobHistoryId = config.JobHistoryId, FailureMessage = ExceptionHandler.FlattenExceptionMessages(ex, "Unable to complete the discovery operation.") };
             }
             finally
             {
-                LogHandler.MethodExit(Logger, config, "processJob");
+                LogHandler.MethodExit(logger, new CertificateStore(), "ProcessJob");
             }
         }
     }

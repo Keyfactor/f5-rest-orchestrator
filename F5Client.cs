@@ -11,11 +11,17 @@ using System.Text.RegularExpressions;
 
 namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 {
-    internal class F5Client : LoggingClientBase
+    internal class F5Client
     {
         #region Properties
 
-        public JobConfiguration JobConfig { get; set; }
+        protected ILogger logger;
+
+        public CertificateStore CertificateStore { get; set; }
+        public string ServerUserName { get; set; }
+        public string ServerPassword { get; set; }
+        public bool UseSSL { get; set; }
+        public string PFXPassword { get; set; }
         public string PrimaryNode { get; set; }
         public string F5Version { get; set; }
         private RESTHandler REST
@@ -24,10 +30,10 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             {
                 return new RESTHandler
                 {
-                    Host = this.JobConfig.CertificateStoreDetails.ClientMachine,
-                    User = this.JobConfig.Server.Username,
-                    Password = this.JobConfig.Server.Password,
-                    UseSSL = this.JobConfig.Server.UseSSL
+                    Host = this.CertificateStore.ClientMachine,
+                    User = this.ServerUserName,
+                    Password = this.ServerPassword,
+                    UseSSL = this.UseSSL
                 };
             }
         }
@@ -38,9 +44,19 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
         #region Constructors
 
-        public F5Client(JobConfiguration jobConfig)
+        public F5Client(CertificateStore certificateStore, string serverUserName, string serverPassword, bool useSSL, string pfxPassword)
         {
-            JobConfig = jobConfig;
+            CertificateStore = certificateStore;
+            ServerUserName = serverUserName;
+            ServerPassword = serverPassword;
+            UseSSL = useSSL;
+            PFXPassword = pfxPassword;
+            
+            if (logger == null)
+            {
+                logger = Keyfactor.Logging.LogHandler.GetClassLogger(this.GetType());
+            }
+
         }
 
         // Constructors
@@ -50,43 +66,43 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
         #region Certificate/PFX Shared
 
-        public void AddEntry(string partition, string name)
+        public void AddEntry(string partition, string name, string b64Certificate)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "AddEntry");
-            LogHandler.Trace(Logger, JobConfig, $"Processing certificate for partition '{partition}' and name '{name}'");
-            byte[] entryContents = Convert.FromBase64String(JobConfig.Job.EntryContents);
-            string password = JobConfig.Job.PfxPassword;
+            LogHandler.MethodEntry(logger, CertificateStore, "AddEntry");
+            LogHandler.Trace(logger, CertificateStore, $"Processing certificate for partition '{partition}' and name '{name}'");
+            byte[] entryContents = Convert.FromBase64String(b64Certificate);
+            string password = PFXPassword;
             CSS.PKI.X509.CertificateConverter converter = CSS.PKI.X509.CertificateConverterFactory.FromDER(entryContents, password);
             X509Certificate2 certificate = converter.ToX509Certificate2(password);
             if (certificate.HasPrivateKey)
             {
-                LogHandler.Trace(Logger, JobConfig, $"Certificate for partition '{partition}' and name '{name}' has a private key - performing addition");
+                LogHandler.Trace(logger, CertificateStore, $"Certificate for partition '{partition}' and name '{name}' has a private key - performing addition");
                 AddPfx(entryContents, partition, name, password);
-                LogHandler.Trace(Logger, JobConfig, $"PFX addition for partition '{partition}' and name '{name}' completed");
+                LogHandler.Trace(logger, CertificateStore, $"PFX addition for partition '{partition}' and name '{name}' completed");
             }
             else
             {
-                LogHandler.Trace(Logger, JobConfig, $"Certificate for partition '{partition}' and name '{name}' does not have a private key - performing addition");
+                LogHandler.Trace(logger, CertificateStore, $"Certificate for partition '{partition}' and name '{name}' does not have a private key - performing addition");
                 AddCertificate(entryContents, partition, name);
-                LogHandler.Trace(Logger, JobConfig, $"Certificate addition for partition '{partition}' and name '{name}' completed");
+                LogHandler.Trace(logger, CertificateStore, $"Certificate addition for partition '{partition}' and name '{name}' completed");
             }
-            LogHandler.MethodExit(Logger, JobConfig, "AddEntry");
+            LogHandler.MethodExit(logger, CertificateStore, "AddEntry");
         }
 
-        public void ReplaceEntry(string partition, string name)
+        public void ReplaceEntry(string partition, string name, string b64Certificate)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "ReplaceEntry");
-            LogHandler.Trace(Logger, JobConfig, $"Processing certificate for partition '{partition}' and name '{name}'");
-            byte[] entryContents = Convert.FromBase64String(JobConfig.Job.EntryContents);
-            string password = JobConfig.Job.PfxPassword;
+            LogHandler.MethodEntry(logger, CertificateStore, "ReplaceEntry");
+            LogHandler.Trace(logger, CertificateStore, $"Processing certificate for partition '{partition}' and name '{name}'");
+            byte[] entryContents = Convert.FromBase64String(b64Certificate);
+            string password = PFXPassword;
             CSS.PKI.X509.CertificateConverter converter = CSS.PKI.X509.CertificateConverterFactory.FromDER(entryContents, password);
             X509Certificate2 certificate = converter.ToX509Certificate2(password);
 
             if (certificate.HasPrivateKey)
             {
-                LogHandler.Trace(Logger, JobConfig, $"Certificate for partition '{partition}' and name '{name}' has a private key - performing replacement");
+                LogHandler.Trace(logger, CertificateStore, $"Certificate for partition '{partition}' and name '{name}' has a private key - performing replacement");
                 ReplacePfx(entryContents, partition, name, password);
-                LogHandler.Trace(Logger, JobConfig, $"PFX replacement for partition '{partition}' and name '{name}' completed");
+                LogHandler.Trace(logger, CertificateStore, $"PFX replacement for partition '{partition}' and name '{name}' completed");
             }
             else
             {
@@ -94,35 +110,35 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 ReplaceCertificate(entryContents, partition, name);
                 Logger.Trace($"Certificate replacement for partition '{partition}' and name '{name}' completed");
             }
-            LogHandler.MethodExit(Logger, JobConfig, "ReplaceEntry");
+            LogHandler.MethodExit(logger, CertificateStore, "ReplaceEntry");
         }
 
         public void RemoveEntry(string partition, string name)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "RemoveEntry");
-            LogHandler.Trace(Logger, JobConfig, $"Processing certificate for partition '{partition}' and name '{name}'");
+            LogHandler.MethodEntry(logger, CertificateStore, "RemoveEntry");
+            LogHandler.Trace(logger, CertificateStore, $"Processing certificate for partition '{partition}' and name '{name}'");
             string timestamp = DateTime.Now.ToString("MM-dd-yy:H:mm:ss");
             if (KeyExists(partition, name))
             {
-                LogHandler.Trace(Logger, JobConfig, $"Archiving key at '{partition}' and name '{name}'");
+                LogHandler.Trace(logger, CertificateStore, $"Archiving key at '{partition}' and name '{name}'");
                 ArchiveFile($"/config/filestore/files_d/{partition}_d/certificate_key_d/:{partition}:{name}_*", $"{partition}-{name}-{timestamp}.key");
-                LogHandler.Trace(Logger, JobConfig, $"Removing certificate and key at '{partition}' and name '{name}'");
+                LogHandler.Trace(logger, CertificateStore, $"Removing certificate and key at '{partition}' and name '{name}'");
 
                 string keyName = GetKeyName(name, true);
                 REST.Delete($"/mgmt/tm/sys/file/ssl-key/~{partition}~{keyName}");
             }
-            LogHandler.Trace(Logger, JobConfig, $"Archiving certificate at '{partition}' and name '{name}'");
+            LogHandler.Trace(logger, CertificateStore, $"Archiving certificate at '{partition}' and name '{name}'");
             ArchiveFile($"/config/filestore/files_d/{partition}_d/certificate_d/:{partition}:{name}_*", $"{partition}-{name}-{timestamp}.crt");
-            LogHandler.Trace(Logger, JobConfig, $"Removing certificate at '{partition}' and name '{name}'");
+            LogHandler.Trace(logger, CertificateStore, $"Removing certificate at '{partition}' and name '{name}'");
 
             string crtName = GetCrtName(name, true);
             REST.Delete($"/mgmt/tm/sys/file/ssl-cert/~{partition}~{crtName}");
-            LogHandler.MethodExit(Logger, JobConfig, "RemoveEntry");
+            LogHandler.MethodExit(logger, CertificateStore, "RemoveEntry");
         }
 
         public bool KeyExists(string partition, string name)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "KeyExists");
+            LogHandler.MethodEntry(logger, CertificateStore, "KeyExists");
             bool exists = false;
 
             try
@@ -141,13 +157,13 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 }
             }
 
-            LogHandler.MethodExit(Logger, JobConfig, "KeyExists");
+            LogHandler.MethodExit(logger, CertificateStore, "KeyExists");
             return exists;
         }
 
         public bool CertificateExists(string partition, string name)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "CertificateExists");
+            LogHandler.MethodEntry(logger, CertificateStore, "CertificateExists");
             bool exists = false;
 
             try
@@ -166,17 +182,17 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 }
             }
 
-            LogHandler.MethodExit(Logger, JobConfig, "CertificateExists");
+            LogHandler.MethodExit(logger, CertificateStore, "CertificateExists");
             return exists;
         }
 
         private void AddCertificate(byte[] entryContents, string partition, string name)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "AddCertificate");
-            LogHandler.Trace(Logger, JobConfig, $"Uploading file to {partition}-{name}");
+            LogHandler.MethodEntry(logger, CertificateStore, "AddCertificate");
+            LogHandler.Trace(logger, CertificateStore, $"Uploading file to {partition}-{name}");
             REST.UploadFile($"{partition}-{name}", entryContents);
 
-            LogHandler.Trace(Logger, JobConfig, $"Installing certificate to '{name}'");
+            LogHandler.Trace(logger, CertificateStore, $"Installing certificate to '{name}'");
             REST.PostInstallCryptoCommand(new F5InstallCommand
             {
                 command = "install",
@@ -184,16 +200,16 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 localfile = $"/var/config/rest/downloads/{partition}-{name}",
                 partition = partition
             }, "cert");
-            LogHandler.MethodExit(Logger, JobConfig, "AddCertificate");
+            LogHandler.MethodExit(logger, CertificateStore, "AddCertificate");
         }
 
         private void AddPfx(byte[] entryContents, string partition, string name, string password)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "AddPfx");
-            LogHandler.Trace(Logger, JobConfig, $"Uploading PFX to {partition}-{name}.p12");
+            LogHandler.MethodEntry(logger, CertificateStore, "AddPfx");
+            LogHandler.Trace(logger, CertificateStore, $"Uploading PFX to {partition}-{name}.p12");
             REST.UploadFile($"{partition}-{name}.p12", entryContents);
 
-            LogHandler.Trace(Logger, JobConfig, $"Installing PFX to '{name}'");
+            LogHandler.Trace(logger, CertificateStore, $"Installing PFX to '{name}'");
             REST.PostInstallCryptoCommand(new F5InstallCommand
             {
                 command = "install",
@@ -202,41 +218,41 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 passphrase = password,
                 partition = partition
             }, "pkcs12");
-            LogHandler.MethodExit(Logger, JobConfig, "AddPfx");
+            LogHandler.MethodExit(logger, CertificateStore, "AddPfx");
         }
 
         private void ReplaceCertificate(byte[] entryContents, string partition, string name)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "ReplaceCertificate");
+            LogHandler.MethodEntry(logger, CertificateStore, "ReplaceCertificate");
             string timestamp = DateTime.Now.ToString("MM-dd-yy:H:mm:ss");
 
-            LogHandler.Trace(Logger, JobConfig, $"Archiving the certificate for partition '{partition}' and name '{name}'");
+            LogHandler.Trace(logger, CertificateStore, $"Archiving the certificate for partition '{partition}' and name '{name}'");
             ArchiveFile($"/config/filestore/files_d/{partition}_d/certificate_d/:{partition}:{name}_*", $"{partition}-{name}-{timestamp}.crt");
 
-            LogHandler.Trace(Logger, JobConfig, $"Adding certificate to partition '{partition}' and name '{name}'");
+            LogHandler.Trace(logger, CertificateStore, $"Adding certificate to partition '{partition}' and name '{name}'");
             AddCertificate(entryContents, partition, name);
-            LogHandler.MethodExit(Logger, JobConfig, "ReplaceCertificate");
+            LogHandler.MethodExit(logger, CertificateStore, "ReplaceCertificate");
         }
 
         private void ReplacePfx(byte[] entryContents, string partition, string name, string password)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "ReplacePfx");
+            LogHandler.MethodEntry(logger, CertificateStore, "ReplacePfx");
             string timestamp = DateTime.Now.ToString("MM-dd-yy:H:mm:ss");
 
-            LogHandler.Trace(Logger, JobConfig, $"Archiving the key and certificate for partition '{partition}' and name '{name}'");
+            LogHandler.Trace(logger, CertificateStore, $"Archiving the key and certificate for partition '{partition}' and name '{name}'");
             ArchiveFile($"/config/filestore/files_d/{partition}_d/certificate_key_d/:{partition}:{name}_*", $"{partition}-{name}-{timestamp}.key");
             ArchiveFile($"/config/filestore/files_d/{partition}_d/certificate_d/:{partition}:{name}_*", $"{partition}-{name}-{timestamp}.crt");
 
-            LogHandler.Trace(Logger, JobConfig, $"Adding PFX to partition '{partition}' and name '{name}'");
+            LogHandler.Trace(logger, CertificateStore, $"Adding PFX to partition '{partition}' and name '{name}'");
             AddPfx(entryContents, partition, name, password);
-            LogHandler.MethodExit(Logger, JobConfig, "ReplacePfx");
+            LogHandler.MethodExit(logger, CertificateStore, "ReplacePfx");
         }
 
         private X509Certificate2Collection GetCertificateEntry(string path)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "GetCertificateEntry");
+            LogHandler.MethodEntry(logger, CertificateStore, "GetCertificateEntry");
             string certificateEntry = string.Empty;
-            LogHandler.Trace(Logger, JobConfig, $"Getting certificate entry from: '{path}'");
+            LogHandler.Trace(logger, CertificateStore, $"Getting certificate entry from: '{path}'");
 
             string crt = REST.PostBASHCommand(new F5BashCommand
             {
@@ -249,18 +265,18 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             {
                 //DER --> M
                 case "M":
-                    LogHandler.Trace(Logger, JobConfig, "Certificate is DER encoded");
+                    LogHandler.Trace(logger, CertificateStore, "Certificate is DER encoded");
                     certificateEntry = crt;
                     break;
                 //PEM(no headers)-- > T
                 case "T":
-                    LogHandler.Trace(Logger, JobConfig, "Certificate is PEM without headers");
+                    LogHandler.Trace(logger, CertificateStore, "Certificate is PEM without headers");
                     crtBytes = System.Convert.FromBase64String(crt);
                     certificateEntry = System.Text.ASCIIEncoding.ASCII.GetString(crtBytes);
                     break;
                 //PEM(w / headers)-- > L
                 case "L":
-                    LogHandler.Trace(Logger, JobConfig, "Certificate is PEM with headers");
+                    LogHandler.Trace(logger, CertificateStore, "Certificate is PEM with headers");
                     crtBytes = System.Convert.FromBase64String(crt);
                     certificateEntry = System.Text.ASCIIEncoding.ASCII.GetString(crtBytes);
                     break;
@@ -270,43 +286,43 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                     throw new Exception("Unknown certificate format found for device certificate");
             }
 
-            LogHandler.MethodExit(Logger, JobConfig, "GetCertificateEntry");
+            LogHandler.MethodExit(logger, CertificateStore, "GetCertificateEntry");
 
             return CSS.PKI.X509.CertificateCollectionConverterFactory.FromPEM(certificateEntry).ToX509Certificate2Collection();
         }
 
-        private void SetItemStatus(AgentCertStoreInventoryItem agentInventoryItem)
+        private void SetItemStatus(CurrentInventoryItem agentInventoryItem)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "SetItemStatus");
-            AnyJobInventoryItem keyfactorInventoryItem = JobConfig.CertificateStoreDetails.Inventory
+            LogHandler.MethodEntry(logger, CertificateStore, "SetItemStatus");
+            AnyJobInventoryItem keyfactorInventoryItem = CertificateStore.Inventory
                 .SingleOrDefault(i => i.Alias.Equals(agentInventoryItem.Alias, StringComparison.OrdinalIgnoreCase));
             if (keyfactorInventoryItem == null)
             {
-                LogHandler.Trace(Logger, JobConfig, "F5 item does not exist in Keyfactor Command and will be tagged as new");
+                LogHandler.Trace(logger, CertificateStore, "F5 item does not exist in Keyfactor Command and will be tagged as new");
                 agentInventoryItem.ItemStatus = AgentInventoryItemStatus.New;
                 Logger.MethodExit();
                 return;
             }
 
-            LogHandler.Trace(Logger, JobConfig, "Matching alias found, checking entry details");
+            LogHandler.Trace(logger, CertificateStore, "Matching alias found, checking entry details");
             if (keyfactorInventoryItem.PrivateKeyEntry != agentInventoryItem.PrivateKeyEntry)
             {
-                LogHandler.Trace(Logger, JobConfig, "Private key entry status does not match and will be tagged as modified");
+                LogHandler.Trace(logger, CertificateStore, "Private key entry status does not match and will be tagged as modified");
                 agentInventoryItem.ItemStatus = AgentInventoryItemStatus.Modified;
                 Logger.MethodExit();
                 return;
             }
 
-            LogHandler.Trace(Logger, JobConfig, "Private key entry status matches, checking certificates");
+            LogHandler.Trace(logger, CertificateStore, "Private key entry status matches, checking certificates");
             if (keyfactorInventoryItem.Thumbprints.Length != agentInventoryItem.Certificates.Length)
             {
-                LogHandler.Trace(Logger, JobConfig, $"F5 entry certificate count: {agentInventoryItem.Certificates.Length} does not match Keyfactor Command count: {keyfactorInventoryItem.Thumbprints.Length} and will be tagged as modified");
+                LogHandler.Trace(logger, CertificateStore, $"F5 entry certificate count: {agentInventoryItem.Certificates.Length} does not match Keyfactor Command count: {keyfactorInventoryItem.Thumbprints.Length} and will be tagged as modified");
                 agentInventoryItem.ItemStatus = AgentInventoryItemStatus.Modified;
                 Logger.MethodExit();
                 return;
             }
 
-            LogHandler.Trace(Logger, JobConfig, "Certificate counts match, checking individual certificates");
+            LogHandler.Trace(logger, CertificateStore, "Certificate counts match, checking individual certificates");
             foreach (string pem in agentInventoryItem.Certificates)
             {
                 string certificateBase64 = pem;
@@ -314,26 +330,26 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 certificateBase64 = Regex.Replace(certificateBase64, "-----BEGIN CERTIFICATE-----\n", "");
                 certificateBase64 = Regex.Replace(certificateBase64, "\\n-----END CERTIFICATE-----(\\n|)", "");
 
-                LogHandler.Trace(Logger, JobConfig, "Getting X509 object from F5 certificate pem");
+                LogHandler.Trace(logger, CertificateStore, "Getting X509 object from F5 certificate pem");
                 X509Certificate2 x509 = new X509Certificate2(Convert.FromBase64String(certificateBase64));
-                LogHandler.Trace(Logger, JobConfig, $"Looking for CMS thumbprint matching: '{x509.Thumbprint}'");
+                LogHandler.Trace(logger, CertificateStore, $"Looking for CMS thumbprint matching: '{x509.Thumbprint}'");
                 if (!keyfactorInventoryItem.Thumbprints.Any(t => t.Equals(x509.Thumbprint, StringComparison.OrdinalIgnoreCase)))
                 {
-                    LogHandler.Trace(Logger, JobConfig, "Thumbprint not found and will be tagged as modified");
+                    LogHandler.Trace(logger, CertificateStore, "Thumbprint not found and will be tagged as modified");
                     agentInventoryItem.ItemStatus = AgentInventoryItemStatus.Modified;
-                    LogHandler.MethodExit(Logger, JobConfig, "SetItemStatus");
+                    LogHandler.MethodExit(logger, CertificateStore, "SetItemStatus");
                     return;
                 }
             }
 
-            LogHandler.Trace(Logger, JobConfig, "The inventory item is unchanged");
+            LogHandler.Trace(logger, CertificateStore, "The inventory item is unchanged");
             agentInventoryItem.ItemStatus = AgentInventoryItemStatus.Unchanged;
-            LogHandler.MethodExit(Logger, JobConfig, "SetItemStatus");
+            LogHandler.MethodExit(logger, CertificateStore, "SetItemStatus");
         }
 
-        private AgentCertStoreInventoryItem GetInventoryItem(string partition, string name)
+        private CurrentInventoryItem GetInventoryItem(string partition, string name)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "GetInventoryItem");
+            LogHandler.MethodEntry(logger, CertificateStore, "GetInventoryItem");
 
             // Get the pfx/certificate contents from the filesystem (using a wildcard as the files have slightly randomized name suffixes)
             X509Certificate2Collection certificateCollection = GetCertificateEntry($"/config/filestore/files_d/{partition}_d/certificate_d/:{partition}:{name}_*");
@@ -347,26 +363,28 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             }
 
             string crtName = GetCrtName(name, false);
-            AgentCertStoreInventoryItem inventoryItem = new AgentCertStoreInventoryItem
+            CurrentInventoryItem inventoryItem = new CurrentInventoryItem
             {
-                ItemStatus = AgentInventoryItemStatus.Unknown,
+                ItemStatus = OrchestratorInventoryItemStatus.Unknown,
                 Alias = crtName,
                 PrivateKeyEntry = privateKeyEntry,
                 UseChainLevel = useChainLevel,
                 Certificates = certContents.ToArray()
             };
             SetItemStatus(inventoryItem);
-            LogHandler.MethodExit(Logger, JobConfig, "GetInventoryItem");
+            LogHandler.MethodExit(logger, CertificateStore, "GetInventoryItem");
             return inventoryItem;
         }
 
         private string GetCrtName(string name, bool addExtension)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "GetCrtName");
+            LogHandler.MethodEntry(logger, CertificateStore, "GetCrtName");
             string crtName = name;
 
             switch (F5Version.ToLowerInvariant())
             {
+                case "v12":
+                    throw new Exception($"F5 Version 12 is not supported by the REST-based orchestrator. The legacy SOAP-based orchestrator should be used.");
                 case "v13":
                     if (addExtension)
                     {
@@ -379,27 +397,22 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                         if (crtName.EndsWith(".crt", StringComparison.OrdinalIgnoreCase)) { crtName = crtName.Substring(0, crtName.Length - 4); }
                     }
                     break;
-                case "v14":
-                    // No action needed, this version does not use extensions
-                    break;
-                case "v15":
-                    // No action needed, this version does not use extensions
-                    break;
-                default:
-                    throw new Exception($"The provided F5 version: '{F5Version}' is not supported.");
             };
 
-            LogHandler.MethodExit(Logger, JobConfig, "GetCrtName");
+            LogHandler.MethodExit(logger, CertificateStore, "GetCrtName");
             return crtName;
         }
 
         private string GetKeyName(string name, bool addExtension)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "GetKeyName");
+            LogHandler.MethodEntry(logger, CertificateStore, "GetKeyName");
             string keyName = name;
 
+            // No longer checking past version 14 for future-proofing
             switch (F5Version.ToLowerInvariant())
             {
+                case "v12":
+                    throw new Exception($"F5 Version 12 is not supported by the REST-based orchestrator. The legacy SOAP-based orchestrator should be used.");
                 case "v13":
                     if (addExtension)
                     {
@@ -412,17 +425,9 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                         if (keyName.EndsWith(".key", StringComparison.OrdinalIgnoreCase)) { keyName = keyName.Substring(0, keyName.Length - 4); }
                     }
                     break;
-                case "v14":
-                    // No action needed, this version does not use extensions
-                    break;
-                case "v15":
-                    // No action needed, this version does not use extensions
-                    break;
-                default:
-                    throw new Exception($"The provided F5 version: '{F5Version}' is not supported.");
             };
 
-            LogHandler.MethodExit(Logger, JobConfig, "GetKeyName");
+            LogHandler.MethodExit(logger, CertificateStore, "GetKeyName");
             return keyName;
         }
 
@@ -433,17 +438,17 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
         public bool PrimaryNodeActive()
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "PrimaryNodeActive");
+            LogHandler.MethodEntry(logger, CertificateStore, "PrimaryNodeActive");
             F5NodeDevice device = REST.Get<F5NodeDevice>($"/mgmt/tm/cm/device/{PrimaryNode}?$select=name,failoverState");
             bool nodeActive = device.failoverState.Equals("active", StringComparison.OrdinalIgnoreCase);
-            LogHandler.MethodExit(Logger, JobConfig, "PrimaryNodeActive");
+            LogHandler.MethodExit(logger, CertificateStore, "PrimaryNodeActive");
 
             return nodeActive;
         }
 
         public string GetActiveNode()
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "GetActiveNode");
+            LogHandler.MethodEntry(logger, CertificateStore, "GetActiveNode");
             string activeNode = string.Empty;
             F5NodeDeviceList devices = REST.Get<F5NodeDeviceList>($"/mgmt/tm/cm/device?$select=name,failoverState");
             foreach (F5NodeDevice device in devices.items)
@@ -456,32 +461,32 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             }
             if (!string.IsNullOrEmpty(activeNode))
             {
-                LogHandler.Warn(Logger, JobConfig, "No active node found, returning an empty device name");
+                LogHandler.Warn(logger, CertificateStore, "No active node found, returning an empty device name");
             }
             else
             {
-                LogHandler.Trace(Logger, JobConfig, $"'{activeNode}' is currently active and will be considered the primary node");
+                LogHandler.Trace(logger, CertificateStore, $"'{activeNode}' is currently active and will be considered the primary node");
             }
-            LogHandler.MethodExit(Logger, JobConfig, "GetActiveNode");
+            LogHandler.MethodExit(logger, CertificateStore, "GetActiveNode");
 
             return activeNode;
         }
 
         public List<F5Partition> GetPartitions()
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "GetPartitions");
+            LogHandler.MethodEntry(logger, CertificateStore, "GetPartitions");
             F5PartitionList partitions = REST.Get<F5PartitionList>($"/mgmt/tm/auth/partition?$select=name,fullPath");
-            LogHandler.MethodExit(Logger, JobConfig, "GetPartitions");
+            LogHandler.MethodExit(logger, CertificateStore, "GetPartitions");
 
             return partitions.items.ToList<F5Partition>();
         }
 
         public string GetPartitionFromStorePath()
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "GetPartitionsFromStorePath");
-            string[] pathParts = JobConfig.CertificateStoreDetails.StorePath.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            if (pathParts.Length < 1) { throw new Exception($"The store path '{JobConfig.CertificateStoreDetails.StorePath}' does not appear to contain a partition"); }
-            LogHandler.MethodExit(Logger, JobConfig, "GetPartitionFromStorePath");
+            LogHandler.MethodEntry(logger, CertificateStore, "GetPartitionsFromStorePath");
+            string[] pathParts = CertificateStore.StorePath.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            if (pathParts.Length < 1) { throw new Exception($"The store path '{CertificateStore.StorePath}' does not appear to contain a partition"); }
+            LogHandler.MethodExit(logger, CertificateStore, "GetPartitionFromStorePath");
             return pathParts[0];
         }
 
@@ -490,10 +495,10 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
         #region Web Server
 
-        public List<AgentCertStoreInventoryItem> GetWebServerInventory(AnyJobConfigInfo jobConfig)
+        public List<CurrentInventoryItem> GetWebServerInventory()
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "GetWebServerInventory");
-            List<AgentCertStoreInventoryItem> inventory = new List<AgentCertStoreInventoryItem>();
+            LogHandler.MethodEntry(logger, CertificateStore, "GetWebServerInventory");
+            List<CurrentInventoryItem> inventory = new List<CurrentInventoryItem>();
             X509Certificate2Collection certificateCollection = GetCertificateEntry("/config/httpd/conf/ssl.crt/server.crt");
             List<string> webServerInventory = new List<string>();
             foreach (X509Certificate2 certificate in certificateCollection)
@@ -501,8 +506,8 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 webServerInventory.Add(Convert.ToBase64String(certificate.RawData));
             }
 
-            LogHandler.Trace(Logger, JobConfig, $"Obtained F5 web server device inventory");
-            AgentCertStoreInventoryItem inventoryItem = new AgentCertStoreInventoryItem
+            LogHandler.Trace(logger, CertificateStore, $"Obtained F5 web server device inventory");
+            CurrentInventoryItem inventoryItem = new CurrentInventoryItem
             {
                 Alias = "WebServer",
                 PrivateKeyEntry = true,
@@ -512,17 +517,17 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             };
             SetItemStatus(inventoryItem);
             inventory.Add(inventoryItem);
-            LogHandler.MethodExit(Logger, JobConfig, "GetWebServerInventory");
+            LogHandler.MethodExit(logger, CertificateStore, "GetWebServerInventory");
 
             return inventory;
         }
 
-        public void ReplaceWebServerCrt()
+        public void ReplaceWebServerCrt(string b64Certificate)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "ReplaceWebServerCrt");
-            LogHandler.Trace(Logger, JobConfig, "Processing web server certificate");
-            byte[] devicePfx = Convert.FromBase64String(JobConfig.Job.EntryContents);
-            string password = JobConfig.Job.PfxPassword;
+            LogHandler.MethodEntry(logger, CertificateStore, "ReplaceWebServerCrt");
+            LogHandler.Trace(logger, CertificateStore, "Processing web server certificate");
+            byte[] devicePfx = Convert.FromBase64String(b64Certificate);
+            string password = PFXPassword;
             CSS.PKI.X509.CertificateCollectionConverter converter = CSS.PKI.X509.CertificateCollectionConverterFactory.FromDER(devicePfx, password);
             string pfxPem = converter.ToPEM(password);
             List<X509Certificate2> clist = converter.ToX509Certificate2List(password);
@@ -536,7 +541,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             clist.Reverse();
             /////////////////////////////////////////////////////////////////////////////////
 
-            LogHandler.Trace(Logger, JobConfig, "Building certificate PEM");
+            LogHandler.Trace(logger, CertificateStore, "Building certificate PEM");
             foreach (X509Certificate2 cert in clist)
             {
                 certPemBuilder.AppendLine("-----BEGIN CERTIFICATE-----");
@@ -545,7 +550,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 certPemBuilder.AppendLine("-----END CERTIFICATE-----");
             }
 
-            LogHandler.Trace(Logger, JobConfig, "Building key PEM");
+            LogHandler.Trace(logger, CertificateStore, "Building key PEM");
             byte[] pkBytes = CSS.PKI.PrivateKeys.PrivateKeyConverterFactory.FromPKCS12(devicePfx, password).ToPkcs8BlobUnencrypted();
             StringBuilder keyPemBuilder = new StringBuilder();
             keyPemBuilder.AppendLine("-----BEGIN PRIVATE KEY-----");
@@ -555,27 +560,27 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
             string timestamp = DateTime.Now.ToString("MM-dd-yy:H:mm:ss");
 
-            LogHandler.Trace(Logger, JobConfig, "Uploading web server certificate");
+            LogHandler.Trace(logger, CertificateStore, "Uploading web server certificate");
             byte[] certbytes = Encoding.ASCII.GetBytes(certPemBuilder.ToString());
             RESTHandler rest = REST;
             rest.UploadFile($"kyfcert-{timestamp}.crt", certbytes);
 
-            LogHandler.Trace(Logger, JobConfig, "Uploading the web server key");
+            LogHandler.Trace(logger, CertificateStore, "Uploading the web server key");
             byte[] keybytes = Encoding.ASCII.GetBytes(keyPemBuilder.ToString());
             rest.UploadFile($"kyfcert-{timestamp}.key", keybytes);
 
             F5Transaction transaction = BeginTransaction();
 
-            LogHandler.Trace(Logger, JobConfig, "Archiving the web server certificate and key");
+            LogHandler.Trace(logger, CertificateStore, "Archiving the web server certificate and key");
             ArchiveFile("/config/httpd/conf/ssl.key/server.key", $"server-{timestamp}.key", transaction.transid);
             ArchiveFile("/config/httpd/conf/ssl.crt/server.crt", $"server-{timestamp}.crt", transaction.transid);
 
-            LogHandler.Trace(Logger, JobConfig, "Replacing the web server certificate and key");
+            LogHandler.Trace(logger, CertificateStore, "Replacing the web server certificate and key");
             CopyFile($"/var/config/rest/downloads/kyfcert-{timestamp}.key", "/config/httpd/conf/ssl.key/server.key", transaction.transid);
             CopyFile($"/var/config/rest/downloads/kyfcert-{timestamp}.crt", "/config/httpd/conf/ssl.crt/server.crt", transaction.transid);
 
             CommitTransaction(transaction);
-            LogHandler.MethodExit(Logger, JobConfig, "ReplaceWebServerCrt");
+            LogHandler.MethodExit(logger, CertificateStore, "ReplaceWebServerCrt");
         }
 
         // WebServer
@@ -583,24 +588,24 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
         #region SSL Profiles
 
-        public List<AgentCertStoreInventoryItem> GetSSLProfiles(int pageSize)
+        public List<CurrentInventoryItem> GetSSLProfiles(int pageSize)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "GetSSLProfiles");
-            string partition = JobConfig.CertificateStoreDetails.StorePath;
+            LogHandler.MethodEntry(logger, CertificateStore, "GetSSLProfiles");
+            string partition = CertificateStore.StorePath;
             string query = $"/mgmt/tm/sys/file/ssl-cert?$filter=partition+eq+{partition}&$select=name,isBundle&$top={pageSize}&$skip=0";
             F5PagedSSLProfiles pagedProfiles = REST.Get<F5PagedSSLProfiles>(query);
             List<F5SSLProfile> profiles = new List<F5SSLProfile>();
-            List<AgentCertStoreInventoryItem> inventory = new List<AgentCertStoreInventoryItem>();
+            List<CurrentInventoryItem> inventory = new List<CurrentInventoryItem>();
 
             if (pagedProfiles.totalItems == 0 || pagedProfiles.items?.Length == 0)
             {
-                LogHandler.Trace(Logger, JobConfig, $"No SSL profiles found in partition '{partition}'");
+                LogHandler.Trace(logger, CertificateStore, $"No SSL profiles found in partition '{partition}'");
                 Logger.MethodExit();
                 return inventory;
             }
             else
             {
-                LogHandler.Trace(Logger, JobConfig, $"Compiling {pagedProfiles.totalPages} pages containing {pagedProfiles.totalItems} total inventory entries");
+                LogHandler.Trace(logger, CertificateStore, $"Compiling {pagedProfiles.totalPages} pages containing {pagedProfiles.totalItems} total inventory entries");
             }
 
             // Collected all of the profile entry names
@@ -636,7 +641,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 }
             }
 
-            LogHandler.MethodExit(Logger, JobConfig, "GetSSLProfiles");
+            LogHandler.MethodExit(logger, CertificateStore, "GetSSLProfiles");
             return inventory;
         }
 
@@ -647,20 +652,20 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
         public List<F5CABundle> GetCABundles(string partition, int pageSize)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "GetCABundles");
+            LogHandler.MethodEntry(logger, CertificateStore, "GetCABundles");
             string query = $"/mgmt/tm/sys/crypto/ca-bundle-manager?$filter=partition+eq+{partition}&$select=name,fullPath&$top={pageSize}&$skip=0";
             F5PagedCABundles pagedBundles = REST.Get<F5PagedCABundles>(query);
             List<F5CABundle> bundles = new List<F5CABundle>();
 
             if (pagedBundles.totalItems == 0 || pagedBundles.items?.Length == 0)
             {
-                LogHandler.Trace(Logger, JobConfig, $"No CA bundles found in partition '{partition}'");
+                LogHandler.Trace(logger, CertificateStore, $"No CA bundles found in partition '{partition}'");
                 Logger.MethodExit();
                 return bundles;
             }
             else
             {
-                LogHandler.Trace(Logger, JobConfig, $"Compiling {pagedBundles.totalPages} pages containing {pagedBundles.totalItems} total CA bundles");
+                LogHandler.Trace(logger, CertificateStore, $"Compiling {pagedBundles.totalPages} pages containing {pagedBundles.totalItems} total CA bundles");
             }
 
             for (int i = pagedBundles.pageIndex; i <= pagedBundles.totalPages; i++)
@@ -682,28 +687,28 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 pagedBundles = REST.Get<F5PagedCABundles>(query);
             }
 
-            LogHandler.MethodExit(Logger, JobConfig, "GetCABundles");
+            LogHandler.MethodExit(logger, CertificateStore, "GetCABundles");
             return bundles;
         }
 
         public List<CurrentInventoryItem> GetCABundleInventory()
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "GetCABundleInventory");
-            List<AgentCertStoreInventoryItem> inventory = new List<AgentCertStoreInventoryItem>();
+            LogHandler.MethodEntry(logger, CertificateStore, "GetCABundleInventory");
+            List<CurrentInventoryItem> inventory = new List<CurrentInventoryItem>();
             string[] includeBundle = GetCABundleIncludes();
 
-            LogHandler.Trace(Logger, JobConfig, $"Compiling {includeBundle.Length} bundled certificates");
+            LogHandler.Trace(logger, CertificateStore, $"Compiling {includeBundle.Length} bundled certificates");
             for (int i = 0; i < includeBundle.Length; i++)
             {
                 try
                 {
-                    LogHandler.Trace(Logger, JobConfig, $"Processing certificate '{includeBundle[i]}'");
+                    LogHandler.Trace(logger, CertificateStore, $"Processing certificate '{includeBundle[i]}'");
                     string[] crtPathParts = includeBundle[i].Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                     if (crtPathParts.Length != 2) { throw new Exception($"Bundled certificate path: '{includeBundle[i]}' is invalid.  Expecting '/<partition>/<certificate>'."); }
                     string partition = crtPathParts[0];
                     string crtName = crtPathParts[1];
 
-                    LogHandler.Trace(Logger, JobConfig, $"Adding inventory item for partition '{partition}' and name '{crtName}'");
+                    LogHandler.Trace(logger, CertificateStore, $"Adding inventory item for partition '{partition}' and name '{crtName}'");
                     inventory.Add(GetInventoryItem(partition, crtName));
                 }
                 catch (Exception ex)
@@ -712,29 +717,29 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 }
             }
 
-            LogHandler.MethodExit(Logger, JobConfig, "GetCABundleInventory");
+            LogHandler.MethodExit(logger, CertificateStore, "GetCABundleInventory");
             return inventory;
         }
 
-        public bool EntryExistsInBundle()
+        public bool EntryExistsInBundle(string alias)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "EntryExistsInBundle");
+            LogHandler.MethodEntry(logger, CertificateStore, "EntryExistsInBundle");
             bool exists = false;
 
             List<string> bundleIncludes = new List<string>(GetCABundleIncludes());
             string partition = GetPartitionFromStorePath();
 
-            string crtName = GetCrtName(JobConfig.Job.Alias, true);
+            string crtName = GetCrtName(alias, true);
             exists = bundleIncludes.Any<string>(i => i.Equals($"/{partition}/{crtName}", StringComparison.OrdinalIgnoreCase));
 
-            LogHandler.MethodExit(Logger, JobConfig, "EntryExistsInBundle");
+            LogHandler.MethodExit(logger, CertificateStore, "EntryExistsInBundle");
             return exists;
         }
 
         private string[] GetCABundleIncludes()
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "GetCABundleIncludes");
-            string bundlePath = JobConfig.CertificateStoreDetails.StorePath;
+            LogHandler.MethodEntry(logger, CertificateStore, "GetCABundleIncludes");
+            string bundlePath = CertificateStore.StorePath;
             string[] bundlePathParts = bundlePath.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             if (bundlePathParts.Length != 2) { throw new Exception($"CA bundle path: '{bundlePath}' is invalid.  Expecting '/<partition>/<bundle>'."); }
             string partition = bundlePathParts[0];
@@ -744,35 +749,35 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             string[] includeBundle;
             if (bundle.includeBundle == null)
             {
-                LogHandler.Trace(Logger, JobConfig, $"Found 0 included bundles");
+                LogHandler.Trace(logger, CertificateStore, $"Found 0 included bundles");
                 includeBundle = new List<string>().ToArray();
             }
             else
             {
-                LogHandler.Trace(Logger, JobConfig, $"Found {bundle.includeBundle.Count()} included bundles");
+                LogHandler.Trace(logger, CertificateStore, $"Found {bundle.includeBundle.Count()} included bundles");
                 includeBundle = bundle.includeBundle;
             }
 
-            LogHandler.MethodExit(Logger, JobConfig, "GetCABundleIncludes");
+            LogHandler.MethodExit(logger, CertificateStore, "GetCABundleIncludes");
             return includeBundle;
         }
 
-        public void AddBundleEntry(string bundle, string partition, string name)
+        public void AddBundleEntry(string bundle, string partition, string name, string b64Certificate, string alias, bool overwrite)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "AddBundleEntry");
+            LogHandler.MethodEntry(logger, CertificateStore, "AddBundleEntry");
 
             // Add the entry to inventory
             if (!CertificateExists(partition, name))
             {
-                Logger.Debug($"Add entry '{name}' in '{JobConfig.CertificateStoreDetails.StorePath}'");
-                AddEntry(partition, name);
+                Logger.Debug($"Add entry '{name}' in '{CertificateStore.StorePath}'");
+                AddEntry(partition, name, b64Certificate);
             }
             else
             {
-                if (!JobConfig.Job.Overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
+                if (!overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
 
-                Logger.Debug($"Replace entry '{name}' in '{JobConfig.CertificateStoreDetails.StorePath}'");
-                ReplaceEntry(partition, name);
+                Logger.Debug($"Replace entry '{name}' in '{CertificateStore.StorePath}'");
+                ReplaceEntry(partition, name, b64Certificate);
             }
 
             // Add the entry to the bundle
@@ -785,30 +790,30 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 F5BundleInclude bundleInclude = new F5BundleInclude { includeBundle = bundleIncludes.ToArray() };
                 REST.Patch<F5BundleInclude>($"/mgmt/tm/sys/crypto/ca-bundle-manager/{bundle.Replace('/', '~')}", bundleInclude);
             }
-            LogHandler.MethodExit(Logger, JobConfig, "AddBundleEntry");
+            LogHandler.MethodExit(logger, CertificateStore, "AddBundleEntry");
         }
 
         public void RemoveBundleEntry(string bundle, string partition, string name)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "RemoveBundleEntry");
+            LogHandler.MethodEntry(logger, CertificateStore, "RemoveBundleEntry");
 
             string crtName = GetCrtName(name, true);
             string crtEntry = $"/{partition}/{crtName}";
 
-            LogHandler.Trace(Logger, JobConfig, $"Preparing to remove bundle entry '{crtEntry}'");
+            LogHandler.Trace(logger, CertificateStore, $"Preparing to remove bundle entry '{crtEntry}'");
             List<string> bundleIncludes = new List<string>(GetCABundleIncludes());
             if (bundleIncludes.Contains(crtEntry))
             {
-                LogHandler.Trace(Logger, JobConfig, $"The current bundle contains entry '{crtEntry}' - adding removal operation to transaction");
+                LogHandler.Trace(logger, CertificateStore, $"The current bundle contains entry '{crtEntry}' - adding removal operation to transaction");
                 bundleIncludes.Remove(crtEntry);
                 F5BundleInclude bundleInclude = new F5BundleInclude { includeBundle = bundleIncludes.ToArray() };
                 REST.Patch<F5BundleInclude>($"/mgmt/tm/sys/crypto/ca-bundle-manager/{bundle.Replace('/', '~')}", bundleInclude);
             }
             else
             {
-                LogHandler.Trace(Logger, JobConfig, $"The current bundle does not contain entry '{crtEntry}'");
+                LogHandler.Trace(logger, CertificateStore, $"The current bundle does not contain entry '{crtEntry}'");
             }
-            LogHandler.MethodExit(Logger, JobConfig, "RemoveBundleEntry");
+            LogHandler.MethodExit(logger, CertificateStore, "RemoveBundleEntry");
         }
 
         // Bundles
@@ -818,7 +823,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
         private void ArchiveFile(string sourcePath, string targetFilename, string transactionId = "")
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "ArchiveFile");
+            LogHandler.MethodEntry(logger, CertificateStore, "ArchiveFile");
 
             // Make the 'keyfactor' directory if it doesn't exist
             string mkdirResult = REST.PostBASHCommand(new F5BashCommand
@@ -828,40 +833,40 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             }, transactionId);
 
             CopyFile(sourcePath, $"/var/config/rest/downloads/keyfactor/{targetFilename}", transactionId);
-            LogHandler.MethodExit(Logger, JobConfig, "ArchiveFile");
+            LogHandler.MethodExit(logger, CertificateStore, "ArchiveFile");
         }
 
         private void CopyFile(string source, string target, string transactionId = "")
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "CopyFile");
+            LogHandler.MethodEntry(logger, CertificateStore, "CopyFile");
             string copyResult = REST.PostBASHCommand(new F5BashCommand
             {
                 command = "run",
                 utilCmdArgs = $"-c 'cp {source} {target}'"
             }, transactionId);
-            LogHandler.MethodExit(Logger, JobConfig, "CopyFile");
+            LogHandler.MethodExit(logger, CertificateStore, "CopyFile");
         }
 
         private void MoveFile(string source, string target, string transactionId = "")
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "MoveFile");
+            LogHandler.MethodEntry(logger, CertificateStore, "MoveFile");
             string moveResult = REST.PostBASHCommand(new F5BashCommand
             {
                 command = "run",
                 utilCmdArgs = $"-c 'mv {source} {target}'"
             }, transactionId);
-            LogHandler.MethodExit(Logger, JobConfig, "MoveFile");
+            LogHandler.MethodExit(logger, CertificateStore, "MoveFile");
         }
 
         private void RemoveFile(string source, string transactionId = "")
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "RemoveFile");
+            LogHandler.MethodEntry(logger, CertificateStore, "RemoveFile");
             string removeResult = REST.PostBASHCommand(new F5BashCommand
             {
                 command = "run",
                 utilCmdArgs = $"-c 'rm {source}'"
             }, transactionId);
-            LogHandler.MethodExit(Logger, JobConfig, "RemoveFile");
+            LogHandler.MethodExit(logger, CertificateStore, "RemoveFile");
         }
 
         // File Handling
@@ -871,19 +876,19 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
         private F5Transaction BeginTransaction()
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "BeingTransaction");
+            LogHandler.MethodEntry(logger, CertificateStore, "BeingTransaction");
             F5Transaction transaction = REST.Post<F5Transaction>("/mgmt/tm/transaction", "{}");
-            LogHandler.Trace(Logger, JobConfig, $"Initiated transaction '{transaction.transid}'");
-            LogHandler.MethodExit(Logger, JobConfig, "BeingTransaction");
+            LogHandler.Trace(logger, CertificateStore, $"Initiated transaction '{transaction.transid}'");
+            LogHandler.MethodExit(logger, CertificateStore, "BeingTransaction");
             return transaction;
         }
 
         private void CommitTransaction(F5Transaction transaction)
         {
-            LogHandler.MethodEntry(Logger, JobConfig, "CommitTransaction");
-            LogHandler.Trace(Logger, JobConfig, $"Committing transaction '{transaction.transid};");
+            LogHandler.MethodEntry(logger, CertificateStore, "CommitTransaction");
+            LogHandler.Trace(logger, CertificateStore, $"Committing transaction '{transaction.transid};");
             REST.Patch<F5CommitTransaction>($"/mgmt/tm/transaction/{transaction.transid}", new F5CommitTransaction { state = "VALIDATING", validateOnly = false });
-            LogHandler.MethodExit(Logger, JobConfig, "CommitTransaction");
+            LogHandler.MethodExit(logger, CertificateStore, "CommitTransaction");
         }
 
         // Transactions

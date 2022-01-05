@@ -20,11 +20,11 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
                 logger = Keyfactor.Logging.LogHandler.GetClassLogger(this.GetType());
             }
 
-            LogHandler.MethodEntry(logger, config, "processJob");
+            LogHandler.MethodEntry(logger, config.CertificateStoreDetails, "ProcessJob");
 
-            if (config.Job.OperationType != CertStoreOperationType.Add)
+            if (config.OperationType != CertStoreOperationType.Add)
             {
-                throw new Exception($"'{config.CertificateStoreDetails.ClientMachine}-{config.CertificateStoreDetails.StorePath}-{GetStoreType()}' expecting 'Add' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.Job.OperationType)}'");
+                throw new Exception($"'{config.CertificateStoreDetails.ClientMachine}-{config.CertificateStoreDetails.StorePath}-{GetStoreType()}' expecting 'Add' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
             }
 
             // Save the job config for use instead of passing it around
@@ -40,19 +40,19 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
                     PrimaryNode = base.PrimaryNode
                 };
 
-                LogHandler.Trace(logger, config, "Replacing F5 web server certificate");
-                f5.ReplaceWebServerCrt();
+                LogHandler.Trace(logger, config.CertificateStoreDetails, "Replacing F5 web server certificate");
+                f5.ReplaceWebServerCrt(JobConfig.JobCertificate.Contents);
 
-                LogHandler.Debug(logger, config, "Job complete");
-                return new AnyJobCompleteInfo { Status = 2, Message = "Successful" };
+                LogHandler.Debug(logger, config.CertificateStoreDetails, "Job complete");
+                return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
             }
             catch (Exception ex)
             {
-                return new AnyJobCompleteInfo { Status = 4, Message = ExceptionHandler.FlattenExceptionMessages(ex, "Unable to complete the management operation.") };
+                return new JobResult { Result = OrchestratorJobStatusJobResult.Failure, JobHistoryId = config.JobHistoryId, FailureMessage = ExceptionHandler.FlattenExceptionMessages(ex, "Unable to complete the management operation.") };
             }
             finally
             {
-                LogHandler.MethodExit(logger, config, "processJob");
+                LogHandler.MethodExit(logger, config.CertificateStoreDetails, "ProcessJob");
             }
         }
     }

@@ -1,17 +1,13 @@
-﻿using CSS.Common.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Net.Http;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 {
-    internal class RESTHandler : LoggingClientBase
+    internal class RESTHandler
     {
+        protected ILogger logger;
         public bool UseSSL { get; set; }
         public string Host { get; set; }
         public string User { get; set; }
@@ -20,32 +16,32 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         public T Get<T>(string requestUri, string transactionId = "")
             where T : class
         {
-            Logger.MethodEntry();
+            logger.LogTrace("Entered Get method");
 
             using (HttpClient client = new HttpClient())
             {
                 ConfigureHttpClient(client, transactionId);
                 HttpResponseMessage response = null;
 
-                Logger.Trace($"Performing 'Get' operation from '{requestUri}'");
+                logger.LogTrace($"Performing 'Get' operation from '{requestUri}'");
                 response = client.GetAsync(requestUri, HttpCompletionOption.ResponseContentRead).Result;
                 if (!response.IsSuccessStatusCode)
                 {
-                    F5RESTException restException = Newtonsoft.Json.JsonConvert.DeserializeObject<F5RESTException>(response.Content.ReadAsStringAsync().Result);
-                    restException.RequestString = requestUri;
-                    throw restException;
+                    throw ProcessFailureResponse(response.StatusCode,
+                        response.Content.ReadAsStringAsync().Result,
+                        requestUri);
                 }
 
                 T result = null;
                 try { result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result); }
                 catch 
                 {
-                    Logger.Trace($"Unable to deserialize result: {response.Content.ReadAsStringAsync().Result}");
+                    logger.LogTrace($"Unable to deserialize result: {response.Content.ReadAsStringAsync().Result}");
                     throw;
                 }
-                Logger.Trace($"Created object from result of type '{result.GetType().ToString()}' from 'Get' operation at '{requestUri}'");
+                logger.LogTrace($"Created object from result of type '{result.GetType().ToString()}' from 'Get' operation at '{requestUri}'");
 
-                Logger.MethodExit();
+                logger.LogTrace("Leaving Get method");
                 return result;
             }
         }
@@ -54,34 +50,34 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             where T : class
             where S : class
         {
-            Logger.MethodEntry();
+            logger.LogTrace("Entered Post method");
 
             using (HttpClient client = new HttpClient())
             {
                 ConfigureHttpClient(client, transactionId);
                 HttpContent content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
 
-                Logger.Trace($"Performing 'Post' operation of type '{requestContent.GetType().ToString()}' to '{requestUri}'");
+                logger.LogTrace($"Performing 'Post' operation of type '{requestContent.GetType().ToString()}' to '{requestUri}'");
                 HttpResponseMessage response = client.PostAsync(requestUri, content).Result;
                 if (!response.IsSuccessStatusCode)
                 {
-                    F5RESTException restException = Newtonsoft.Json.JsonConvert.DeserializeObject<F5RESTException>(response.Content.ReadAsStringAsync().Result);
-                    restException.RequestString = requestUri;
-                    restException.IsPost = true;
-                    restException.RequestBody = Newtonsoft.Json.JsonConvert.SerializeObject(requestContent);
-                    throw restException;
+                    throw ProcessFailureResponse(response.StatusCode,
+                        response.Content.ReadAsStringAsync().Result,
+                        requestUri,
+                        true,
+                        Newtonsoft.Json.JsonConvert.SerializeObject(requestContent));
                 }
 
                 T result = null;
                 try { result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result); }
                 catch
                 {
-                    Logger.Trace($"Unable to deserialize result: {response.Content.ReadAsStringAsync().Result}");
+                    logger.LogTrace($"Unable to deserialize result: {response.Content.ReadAsStringAsync().Result}");
                     throw;
                 }
-                Logger.Trace($"Created object from result of type '{result.GetType().ToString()}' from 'Post' operation to '{requestUri}'");
+                logger.LogTrace($"Created object from result of type '{result.GetType().ToString()}' from 'Post' operation to '{requestUri}'");
 
-                Logger.MethodExit();
+                logger.LogTrace("Leaving Post method");
                 return result;
             }
         }
@@ -89,34 +85,34 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         public T Post<T>(string requestUri, string requestContent, string transactionId = "")
             where T : class
         {
-            Logger.MethodEntry();
+            logger.LogTrace("Entered Post method");
 
             using (HttpClient client = new HttpClient())
             {
                 ConfigureHttpClient(client, transactionId);
                 HttpContent content = new StringContent(requestContent, Encoding.UTF8, "application/json");
 
-                Logger.Trace($"Performing 'Post' operation of type '{requestContent.GetType().ToString()}' to '{requestUri}'");
+                logger.LogTrace($"Performing 'Post' operation of type '{requestContent.GetType().ToString()}' to '{requestUri}'");
                 HttpResponseMessage response = client.PostAsync(requestUri, content).Result;
                 if (!response.IsSuccessStatusCode)
                 {
-                    F5RESTException restException = Newtonsoft.Json.JsonConvert.DeserializeObject<F5RESTException>(response.Content.ReadAsStringAsync().Result);
-                    restException.RequestString = requestUri;
-                    restException.IsPost = true;
-                    restException.RequestBody = Newtonsoft.Json.JsonConvert.SerializeObject(requestContent);
-                    throw restException;
+                    throw ProcessFailureResponse(response.StatusCode,
+                        response.Content.ReadAsStringAsync().Result,
+                        requestUri,
+                        true,
+                        Newtonsoft.Json.JsonConvert.SerializeObject(requestContent));
                 }
 
                 T result = null;
                 try { result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result); }
                 catch 
                 {
-                    Logger.Trace($"Unable to deserialize result: {response.Content.ReadAsStringAsync().Result}");
+                    logger.LogTrace($"Unable to deserialize result: {response.Content.ReadAsStringAsync().Result}");
                     throw;
                 }
-                Logger.Trace($"Created object from result of type '{result.GetType().ToString()}' from 'Post' operation to '{requestUri}'");
+                logger.LogTrace($"Created object from result of type '{result.GetType().ToString()}' from 'Post' operation to '{requestUri}'");
 
-                Logger.MethodExit();
+                logger.LogTrace("Leaving Post method");
                 return result;
             }
         }
@@ -124,111 +120,111 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         public void Post<S>(string requestUri, S requestContent, string transactionId = "")
             where S : class
         {
-            Logger.MethodEntry();
+            logger.LogTrace("Entered Post method");
 
             using (HttpClient client = new HttpClient())
             {
                 ConfigureHttpClient(client, transactionId);
                 HttpContent content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
 
-                Logger.Trace($"Performing 'Post' operation of type '{requestContent.GetType().ToString()}' to '{requestUri}'");
+                logger.LogTrace($"Performing 'Post' operation of type '{requestContent.GetType().ToString()}' to '{requestUri}'");
                 HttpResponseMessage response = client.PostAsync(requestUri, content).Result;
                 if (!response.IsSuccessStatusCode)
                 {
-                    F5RESTException restException = Newtonsoft.Json.JsonConvert.DeserializeObject<F5RESTException>(response.Content.ReadAsStringAsync().Result);
-                    restException.RequestString = requestUri;
-                    restException.IsPost = true;
-                    restException.RequestBody = Newtonsoft.Json.JsonConvert.SerializeObject(requestContent);
-                    throw restException;
+                    throw ProcessFailureResponse(response.StatusCode,
+                        response.Content.ReadAsStringAsync().Result,
+                        requestUri,
+                        true,
+                        Newtonsoft.Json.JsonConvert.SerializeObject(requestContent));
                 }
 
-                Logger.Trace($"'Post' operation to '{requestUri}' succeeded");
-                Logger.MethodExit();
+                logger.LogTrace($"'Post' operation to '{requestUri}' succeeded");
+                logger.LogTrace("Leaving Post method");
             }
         }
 
         public void Patch<S>(string requestUri, S requestContent, string transactionId = "")
             where S : class
         {
-            Logger.MethodEntry();
+            logger.LogTrace("Entered Patch method");
 
             using (HttpClient client = new HttpClient())
             {
                 ConfigureHttpClient(client, transactionId);
                 HttpContent content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
 
-                Logger.Trace($"Performing 'Patch' operation of type '{requestContent.GetType().ToString()}' to '{requestUri}'");
+                logger.LogTrace($"Performing 'Patch' operation of type '{requestContent.GetType().ToString()}' to '{requestUri}'");
                 HttpRequestMessage request = new System.Net.Http.HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), requestUri);
                 request.Content = content;
                 HttpResponseMessage response = client.SendAsync(request).Result;
                 if (!response.IsSuccessStatusCode)
                 {
-                    F5RESTException restException = Newtonsoft.Json.JsonConvert.DeserializeObject<F5RESTException>(response.Content.ReadAsStringAsync().Result);
-                    restException.RequestString = requestUri;
-                    restException.IsPost = true;
-                    restException.RequestBody = Newtonsoft.Json.JsonConvert.SerializeObject(requestContent);
-                    throw restException;
+                    throw ProcessFailureResponse(response.StatusCode,
+                        response.Content.ReadAsStringAsync().Result,
+                        requestUri,
+                        true,
+                        Newtonsoft.Json.JsonConvert.SerializeObject(requestContent));
                 }
 
-                Logger.Trace($"'Patch' operation to '{requestUri}' succeeded");
-                Logger.MethodExit();
+                logger.LogTrace($"'Patch' operation to '{requestUri}' succeeded");
+                logger.LogTrace("Leaving Patch method");
             }
         }
 
         public void Delete(string requestUri, string transactionId = "")
         {
-            Logger.MethodEntry();
+            logger.LogTrace("Entered Delete method");
 
             using (HttpClient client = new HttpClient())
             {
                 ConfigureHttpClient(client, transactionId);
 
-                Logger.Trace($"Performing 'Delete' operation to '{requestUri}'");
+                logger.LogTrace($"Performing 'Delete' operation to '{requestUri}'");
                 HttpResponseMessage response = client.DeleteAsync(requestUri).Result;
                 if (!response.IsSuccessStatusCode)
                 {
-                    F5RESTException restException = Newtonsoft.Json.JsonConvert.DeserializeObject<F5RESTException>(response.Content.ReadAsStringAsync().Result);
-                    restException.RequestString = requestUri;
-                    throw restException;
+                    throw ProcessFailureResponse(response.StatusCode,
+                        response.Content.ReadAsStringAsync().Result,
+                        requestUri);
                 }
 
-                Logger.Trace($"'Post' operation to '{requestUri}' succeeded");
-                Logger.MethodExit();
+                logger.LogTrace($"'Post' operation to '{requestUri}' succeeded");
+                logger.LogTrace("Leaving Delete method");
             }
         }
 
         public string PostBASHCommand(F5BashCommand command, string transactionId = "")
         {
-            Logger.MethodEntry();
+            logger.LogTrace("Entered PostBASHCommand method");
 
             using (HttpClient client = new HttpClient())
             {
                 ConfigureHttpClient(client, transactionId);
 
                 StringContent data = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(command));
-                Logger.Trace($"Posting BASH command: '{command.command}'");
+                logger.LogTrace($"Posting BASH command: '{command.command}'");
                 data.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
                 HttpResponseMessage response = client.PostAsync("/mgmt/tm/util/bash", data).Result;
                 if (!response.IsSuccessStatusCode)
                 {
-                    F5RESTException restException = Newtonsoft.Json.JsonConvert.DeserializeObject<F5RESTException>(response.Content.ReadAsStringAsync().Result);
-                    restException.RequestString = "/mgmt/tm/util/bash";
-                    restException.IsPost = true;
-                    restException.RequestBody = Newtonsoft.Json.JsonConvert.SerializeObject(command);
-                    throw restException;
+                    throw ProcessFailureResponse(response.StatusCode,
+                        response.Content.ReadAsStringAsync().Result,
+                        "/mgmt/tm/util/bash",
+                        true,
+                        Newtonsoft.Json.JsonConvert.SerializeObject(command));
                 }
 
                 string bashResult = response.Content.ReadAsStringAsync().Result;
                 F5BashCommand resultCommand = Newtonsoft.Json.JsonConvert.DeserializeObject<F5BashCommand>(bashResult);
 
-                Logger.MethodExit();
+                logger.LogTrace("Leaving PostBASHCommand method");
                 return resultCommand.commandResult;
             }
         }
 
         public void PostInstallCryptoCommand(F5InstallCommand command, string cryptoType, string transactionId = "")
         {
-            Logger.MethodEntry();
+            logger.LogTrace("Entered PostInstallCryptoCommand method");
 
             using (HttpClient client = new HttpClient())
             {
@@ -239,20 +235,77 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 HttpResponseMessage response = client.PostAsync($"/mgmt/tm/sys/crypto/{cryptoType}", data).Result;
                 if (!response.IsSuccessStatusCode)
                 {
-                    F5RESTException restException = Newtonsoft.Json.JsonConvert.DeserializeObject<F5RESTException>(response.Content.ReadAsStringAsync().Result);
-                    restException.RequestString = $"/mgmt/tm/sys/crypto/{cryptoType}";
-                    restException.IsPost = true;
-                    restException.RequestBody = Newtonsoft.Json.JsonConvert.SerializeObject(command);
-                    throw restException;
+                    throw ProcessFailureResponse(response.StatusCode,
+                        response.Content.ReadAsStringAsync().Result,
+                        $"/mgmt/tm/sys/crypto/{cryptoType}",
+                        true,
+                        Newtonsoft.Json.JsonConvert.SerializeObject(command));
                 }
 
-                Logger.MethodExit();
+                logger.LogTrace("Leaving PostInstallCryptoCommand method");
             }
+        }
+
+        private F5RESTException ProcessFailureResponse(System.Net.HttpStatusCode status, string content, string request)
+        {
+            return ProcessFailureResponse(status, content, request, false, string.Empty);
+        }
+
+        private F5RESTException ProcessFailureResponse(System.Net.HttpStatusCode status, string content, string request, bool isPost, string requestBody)
+        {
+            F5RESTException exc = new F5RESTException()
+            {
+                code = (int)status,
+                message = "An error response was returned",
+                IsPost = isPost,
+                RequestBody = requestBody,
+                RequestString = request
+            };
+
+            // This is not the most elegant manner of handling this, but it is not feasible to determine
+            //  the response codes that would result in an HTML-type message vs an F5 exception.
+            // Try to process the common codes
+            try
+            {
+                // Log the actual contents of the response
+                logger.LogError($"F5 iControl REST API returned an error code {status.ToString()}: {content}");
+
+                switch (status)
+                {
+                    case System.Net.HttpStatusCode.NotFound:
+                        exc.message = "The requested resource was not found";
+                        break;
+                    case System.Net.HttpStatusCode.Unauthorized:
+                        exc.message = "The account supplied is not permitted access or authorization failed";
+                        break;
+                    case System.Net.HttpStatusCode.Forbidden:
+                        exc.message = "The account supplied is not permitted access or authorization failed";
+                        break;
+                    case System.Net.HttpStatusCode.BadRequest:
+                        // Can be de-serialized
+                        exc = Newtonsoft.Json.JsonConvert.DeserializeObject<F5RESTException>(content);
+                        break;
+                    case System.Net.HttpStatusCode.InternalServerError:
+                        // Can be de-serialized
+                        exc = Newtonsoft.Json.JsonConvert.DeserializeObject<F5RESTException>(content);
+                        break;
+                    case System.Net.HttpStatusCode.ServiceUnavailable:
+                        // Can be de-serialized
+                        exc = Newtonsoft.Json.JsonConvert.DeserializeObject<F5RESTException>(content);
+                        break;
+                }
+            }
+            catch (Exception)
+            {
+                exc.message = $"Unable to process the failure code from F5. The contents of the response are recorded in the orchestrator log file.";
+            }
+
+            return exc;
         }
 
         public void UploadFile(string filename, byte[] fileBytes)
         {
-            Logger.MethodEntry();
+            logger.LogTrace("Entered UploadFile method");
             using (System.Net.WebClient webClient = new System.Net.WebClient())
             {
                 System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, sslcert, chain, sslPolicyErrors) => true;
@@ -263,7 +316,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
                 webClient.UploadData($"{GetProtocol()}{Host}/mgmt/shared/file-transfer/uploads/{filename}", fileBytes);
             }
-            Logger.MethodExit();
+            logger.LogTrace("Leaving UploadFile method");
         }
 
         private void ConfigureHttpClient(HttpClient client, string transactionId = "")

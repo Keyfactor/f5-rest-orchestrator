@@ -22,6 +22,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         public string ServerPassword { get; set; }
         public bool UseSSL { get; set; }
         public string PFXPassword { get; set; }
+        public IEnumerable<PreviousInventoryItem> Inventory { get; set; }
         public string PrimaryNode { get; set; }
         public string F5Version { get; set; }
         private RESTHandler REST
@@ -44,13 +45,14 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
         #region Constructors
 
-        public F5Client(CertificateStore certificateStore, string serverUserName, string serverPassword, bool useSSL, string pfxPassword)
+        public F5Client(CertificateStore certificateStore, string serverUserName, string serverPassword, bool useSSL, string pfxPassword, IEnumerable<PreviousInventoryItem> inventory)
         {
             CertificateStore = certificateStore;
             ServerUserName = serverUserName;
             ServerPassword = serverPassword;
             UseSSL = useSSL;
             PFXPassword = pfxPassword;
+            Inventory = inventory;
             
             if (logger == null)
             {
@@ -294,7 +296,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         private void SetItemStatus(CurrentInventoryItem agentInventoryItem)
         {
             LogHandler.MethodEntry(logger, CertificateStore, "SetItemStatus");
-            AnyJobInventoryItem keyfactorInventoryItem = CertificateStore.Inventory
+            PreviousInventoryItem keyfactorInventoryItem = Inventory
                 .SingleOrDefault(i => i.Alias.Equals(agentInventoryItem.Alias, StringComparison.OrdinalIgnoreCase));
             if (keyfactorInventoryItem == null)
             {
@@ -314,9 +316,9 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             }
 
             LogHandler.Trace(logger, CertificateStore, "Private key entry status matches, checking certificates");
-            if (keyfactorInventoryItem.Thumbprints.Length != agentInventoryItem.Certificates.Length)
+            if (keyfactorInventoryItem.Thumbprints.Count() != agentInventoryItem.Certificates.Count())
             {
-                LogHandler.Trace(logger, CertificateStore, $"F5 entry certificate count: {agentInventoryItem.Certificates.Length} does not match Keyfactor Command count: {keyfactorInventoryItem.Thumbprints.Length} and will be tagged as modified");
+                LogHandler.Trace(logger, CertificateStore, $"F5 entry certificate count: {agentInventoryItem.Certificates.Count()} does not match Keyfactor Command count: {keyfactorInventoryItem.Thumbprints.Count()} and will be tagged as modified");
                 agentInventoryItem.ItemStatus = OrchestratorInventoryItemStatus.Modified;
                 LogHandler.MethodExit(logger, CertificateStore, "SetItemStatus");
                 return;

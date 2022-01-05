@@ -40,7 +40,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
                 base.ParseJobProperties();
                 base.PrimaryNodeActive();
 
-                F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, config.JobCertificate.PrivateKeyPassword)
+                F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, config.JobCertificate.PrivateKeyPassword, config.LastInventory)
                 {
                     PrimaryNode = base.PrimaryNode,
                     F5Version = base.F5Version

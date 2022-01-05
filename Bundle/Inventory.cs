@@ -24,7 +24,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
             try
             {
                 base.ParseJobProperties();
-                F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, null) { F5Version = base.F5Version };
+                F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, null, config.LastInventory) { F5Version = base.F5Version };
 
                 LogHandler.Debug(logger, JobConfig.CertificateStoreDetails, $"Getting inventory for CA Bundle '{config.CertificateStoreDetails.StorePath}'");
                 inventory = f5.GetCABundleInventory();

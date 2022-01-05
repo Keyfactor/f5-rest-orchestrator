@@ -40,7 +40,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
                 base.ParseJobProperties();
                 base.PrimaryNodeActive();
 
-                F5Client f5 = new F5Client(JobConfig = config)
+                F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, config.JobCertificate.PrivateKeyPassword)
                 {
                     PrimaryNode = base.PrimaryNode,
                     F5Version = base.F5Version
@@ -89,7 +89,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
                 if (!JobConfig.Overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
 
                 LogHandler.Debug(logger, JobConfig.CertificateStoreDetails, $"Replace entry '{name}' in '{JobConfig.CertificateStoreDetails.StorePath}'");
-                f5.ReplaceEntry(partition, name);
+                f5.ReplaceEntry(partition, name, JobConfig.JobCertificate.Contents);
             }
             else
             {

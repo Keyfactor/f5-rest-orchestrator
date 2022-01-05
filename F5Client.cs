@@ -106,9 +106,9 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             }
             else
             {
-                Logger.Trace($"Certificate for partition '{partition}' and name '{name}' does not have a private key - performing replacement");
+                LogHandler.Trace(logger, CertificateStore, $"Certificate for partition '{partition}' and name '{name}' does not have a private key - performing replacement");
                 ReplaceCertificate(entryContents, partition, name);
-                Logger.Trace($"Certificate replacement for partition '{partition}' and name '{name}' completed");
+                LogHandler.Trace(logger, CertificateStore, $"Certificate replacement for partition '{partition}' and name '{name}' completed");
             }
             LogHandler.MethodExit(logger, CertificateStore, "ReplaceEntry");
         }
@@ -299,8 +299,8 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             if (keyfactorInventoryItem == null)
             {
                 LogHandler.Trace(logger, CertificateStore, "F5 item does not exist in Keyfactor Command and will be tagged as new");
-                agentInventoryItem.ItemStatus = AgentInventoryItemStatus.New;
-                Logger.MethodExit();
+                agentInventoryItem.ItemStatus = OrchestratorInventoryItemStatus.New;
+                LogHandler.MethodExit(logger, CertificateStore, "SetItemStatus");
                 return;
             }
 
@@ -308,8 +308,8 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             if (keyfactorInventoryItem.PrivateKeyEntry != agentInventoryItem.PrivateKeyEntry)
             {
                 LogHandler.Trace(logger, CertificateStore, "Private key entry status does not match and will be tagged as modified");
-                agentInventoryItem.ItemStatus = AgentInventoryItemStatus.Modified;
-                Logger.MethodExit();
+                agentInventoryItem.ItemStatus = OrchestratorInventoryItemStatus.Modified;
+                LogHandler.MethodExit(logger, CertificateStore, "SetItemStatus");
                 return;
             }
 
@@ -317,8 +317,8 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             if (keyfactorInventoryItem.Thumbprints.Length != agentInventoryItem.Certificates.Length)
             {
                 LogHandler.Trace(logger, CertificateStore, $"F5 entry certificate count: {agentInventoryItem.Certificates.Length} does not match Keyfactor Command count: {keyfactorInventoryItem.Thumbprints.Length} and will be tagged as modified");
-                agentInventoryItem.ItemStatus = AgentInventoryItemStatus.Modified;
-                Logger.MethodExit();
+                agentInventoryItem.ItemStatus = OrchestratorInventoryItemStatus.Modified;
+                LogHandler.MethodExit(logger, CertificateStore, "SetItemStatus");
                 return;
             }
 
@@ -336,14 +336,14 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 if (!keyfactorInventoryItem.Thumbprints.Any(t => t.Equals(x509.Thumbprint, StringComparison.OrdinalIgnoreCase)))
                 {
                     LogHandler.Trace(logger, CertificateStore, "Thumbprint not found and will be tagged as modified");
-                    agentInventoryItem.ItemStatus = AgentInventoryItemStatus.Modified;
+                    agentInventoryItem.ItemStatus = OrchestratorInventoryItemStatus.Modified;
                     LogHandler.MethodExit(logger, CertificateStore, "SetItemStatus");
                     return;
                 }
             }
 
             LogHandler.Trace(logger, CertificateStore, "The inventory item is unchanged");
-            agentInventoryItem.ItemStatus = AgentInventoryItemStatus.Unchanged;
+            agentInventoryItem.ItemStatus = OrchestratorInventoryItemStatus.Unchanged;
             LogHandler.MethodExit(logger, CertificateStore, "SetItemStatus");
         }
 
@@ -511,7 +511,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             {
                 Alias = "WebServer",
                 PrivateKeyEntry = true,
-                ItemStatus = AgentInventoryItemStatus.Unknown,
+                ItemStatus = OrchestratorInventoryItemStatus.Unknown,
                 UseChainLevel = true,
                 Certificates = webServerInventory.ToArray()
             };
@@ -600,7 +600,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             if (pagedProfiles.totalItems == 0 || pagedProfiles.items?.Length == 0)
             {
                 LogHandler.Trace(logger, CertificateStore, $"No SSL profiles found in partition '{partition}'");
-                Logger.MethodExit();
+                LogHandler.MethodExit(logger, CertificateStore, "GetSSLProfiles");
                 return inventory;
             }
             else
@@ -630,14 +630,14 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                     if (profiles[i].name.Equals("ca-bundle.crt", StringComparison.OrdinalIgnoreCase)
                         || profiles[i].name.Equals("f5-ca-bundle.crt", StringComparison.OrdinalIgnoreCase))
                     {
-                        Logger.Trace($"Skipping '{profiles[i].name}' because it is managed by F5");
+                        LogHandler.Trace(logger, CertificateStore, $"Skipping '{profiles[i].name}' because it is managed by F5");
                         continue;
                     }
                     inventory.Add(GetInventoryItem(partition, profiles[i].name));
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ExceptionHandler.FlattenExceptionMessages(ex, $"Unable to process inventory item {profiles[i].name}."));
+                    LogHandler.Error(logger, CertificateStore, ExceptionHandler.FlattenExceptionMessages(ex, $"Unable to process inventory item {profiles[i].name}."));
                 }
             }
 
@@ -660,7 +660,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             if (pagedBundles.totalItems == 0 || pagedBundles.items?.Length == 0)
             {
                 LogHandler.Trace(logger, CertificateStore, $"No CA bundles found in partition '{partition}'");
-                Logger.MethodExit();
+                LogHandler.MethodExit(logger, CertificateStore, "GetCABundles");
                 return bundles;
             }
             else
@@ -675,7 +675,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                     // Remove 'ca-bundle'
                     if (bundle.name.Equals("ca-bundle", StringComparison.OrdinalIgnoreCase))
                     {
-                        Logger.Trace($"Skipping '{bundle.name}' because it is managed by F5");
+                        LogHandler.Trace(logger, CertificateStore, $"Skipping '{bundle.name}' because it is managed by F5");
                         continue;
                     }
                     bundles.Add(bundle);
@@ -713,7 +713,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ExceptionHandler.FlattenExceptionMessages(ex, $"Unable to process inventory item {includeBundle[i]}."));
+                    LogHandler.Error(logger, CertificateStore, ExceptionHandler.FlattenExceptionMessages(ex, $"Unable to process inventory item {includeBundle[i]}."));
                 }
             }
 
@@ -769,14 +769,14 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             // Add the entry to inventory
             if (!CertificateExists(partition, name))
             {
-                Logger.Debug($"Add entry '{name}' in '{CertificateStore.StorePath}'");
+                LogHandler.Debug(logger, CertificateStore, $"Add entry '{name}' in '{CertificateStore.StorePath}'");
                 AddEntry(partition, name, b64Certificate);
             }
             else
             {
                 if (!overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
 
-                Logger.Debug($"Replace entry '{name}' in '{CertificateStore.StorePath}'");
+                LogHandler.Debug(logger, CertificateStore, $"Replace entry '{name}' in '{CertificateStore.StorePath}'");
                 ReplaceEntry(partition, name, b64Certificate);
             }
 

@@ -1,6 +1,6 @@
-﻿# Remote JKS
+﻿# F5
 ## orchestrator
 
-The remote JKS Orchestrator allows for the remote management of Java Key Stores. Discovery, Inventory, and Management functions are supported. The orchestrator performs operations by issuing remote commands over SSH to Linux based systems and WinRM to Windows based systems.
+The F5 Orchestrator allows for the remote management of F5 Stores. Discovery, Inventory, and Management functions are supported.
 
 <!-- add integration specific information below -->

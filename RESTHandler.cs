@@ -13,6 +13,11 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         public string User { get; set; }
         public string Password { get; set; }
 
+        public RESTHandler()
+        {
+            logger = Keyfactor.Logging.LogHandler.GetClassLogger(this.GetType());
+        }
+
         public T Get<T>(string requestUri, string transactionId = "")
             where T : class
         {

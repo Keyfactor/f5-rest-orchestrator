@@ -24,7 +24,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.SSLProfile
             try
             {
                 base.ParseJobProperties();
-                F5Client f5 = new F5Client(config) { F5Version = base.F5Version };
+                F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, null, config.LastInventory) { F5Version = base.F5Version };
 
                 LogHandler.Debug(logger, JobConfig.CertificateStoreDetails, $"Getting inventory from '{config.CertificateStoreDetails.StorePath}'");
                 inventory = f5.GetSSLProfiles(20);

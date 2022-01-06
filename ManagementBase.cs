@@ -80,7 +80,8 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
             if (PrimaryNodeOnlineRequired)
             {
-                F5Client f5 = new F5Client(JobConfig) { PrimaryNode = this.PrimaryNode };
+                F5Client f5 = new F5Client(JobConfig.CertificateStoreDetails, JobConfig.ServerUsername, JobConfig.ServerPassword, JobConfig.UseSSL, JobConfig.JobCertificate.PrivateKeyPassword, JobConfig.LastInventory)
+                { PrimaryNode = this.PrimaryNode };
                 if (!f5.PrimaryNodeActive())
                 {
                     LogHandler.Warn(logger, JobConfig.CertificateStoreDetails, $"The primary node: '{PrimaryNode}' is not active on try '{_primaryNodeRetryCount++}' of '{PrimaryNodeRetryMax}'");

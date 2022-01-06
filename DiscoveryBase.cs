@@ -1,5 +1,6 @@
 ﻿using Keyfactor.Orchestrators.Extensions;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 {
@@ -18,7 +19,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         protected string DiscoverActiveNode()
         {
             LogHandler.MethodEntry(logger, new CertificateStore(), "DiscoverActiveNode");
-            F5Client f5 = new F5Client(JobConfig);
+            F5Client f5 = new F5Client(new CertificateStore(), JobConfig.ServerUsername, JobConfig.ServerPassword, JobConfig.UseSSL, string.Empty, new List<PreviousInventoryItem>());
             string activeNode = f5.GetActiveNode();
             LogHandler.Debug(logger, new CertificateStore(), $"Active node '{activeNode}'");
             LogHandler.MethodExit(logger, new CertificateStore(), "DiscoverActiveNode");

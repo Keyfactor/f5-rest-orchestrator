@@ -16,7 +16,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.SSLProfile
         public override JobResult ProcessJob(DiscoveryJobConfiguration config, SubmitDiscoveryUpdate sdr)
         {
             LogHandler.MethodEntry(logger, new CertificateStore(), "ProcessJob");
-            F5Client f5 = new F5Client(config);
+            F5Client f5 = new F5Client(new CertificateStore(), config.ServerUsername, config.ServerPassword, config.UseSSL, string.Empty, new List<PreviousInventoryItem>());
 
             try
             {

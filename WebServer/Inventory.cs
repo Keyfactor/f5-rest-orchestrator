@@ -27,7 +27,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
                 LogHandler.Debug(logger, JobConfig.CertificateStoreDetails, "Processing job parameters");
                 dynamic properties = JsonConvert.DeserializeObject(config.CertificateStoreDetails.Properties.ToString());
 
-                F5Client f5 = new F5Client(config);
+                F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, null, config.LastInventory);
 
                 LogHandler.Debug(logger, JobConfig.CertificateStoreDetails, "Getting the F5 web server device inventory");
                 inventory = f5.GetWebServerInventory();

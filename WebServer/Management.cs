@@ -35,7 +35,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
                 base.ParseJobProperties();
                 base.PrimaryNodeActive();
 
-                F5Client f5 = new F5Client(JobConfig = config)
+                F5Client f5 = new F5Client(JobConfig.CertificateStoreDetails, JobConfig.ServerUsername, JobConfig.ServerPassword, JobConfig.UseSSL, JobConfig.JobCertificate.PrivateKeyPassword, JobConfig.LastInventory)
                 {
                     PrimaryNode = base.PrimaryNode
                 };

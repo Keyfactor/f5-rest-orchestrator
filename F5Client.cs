@@ -1,6 +1,6 @@
-﻿using Keyfactor.Logging;
-using Keyfactor.Orchestrators.Extensions;
+﻿using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.Orchestrators.Common.Enums;
+using Keyfactor.PKI.X509;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         {
             get
             {
-                return new RESTHandler
+                return new RESTHandler()
                 {
                     Host = this.CertificateStore.ClientMachine,
                     User = this.ServerUserName,
@@ -58,7 +58,6 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             {
                 logger = Keyfactor.Logging.LogHandler.GetClassLogger(this.GetType());
             }
-
         }
 
         // Constructors
@@ -74,7 +73,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             LogHandler.Trace(logger, CertificateStore, $"Processing certificate for partition '{partition}' and name '{name}'");
             byte[] entryContents = Convert.FromBase64String(b64Certificate);
             string password = PFXPassword;
-            CSS.PKI.X509.CertificateConverter converter = CSS.PKI.X509.CertificateConverterFactory.FromDER(entryContents, password);
+            CertificateConverter converter = CertificateConverterFactory.FromDER(entryContents, password);
             X509Certificate2 certificate = converter.ToX509Certificate2(password);
             if (certificate.HasPrivateKey)
             {
@@ -97,7 +96,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             LogHandler.Trace(logger, CertificateStore, $"Processing certificate for partition '{partition}' and name '{name}'");
             byte[] entryContents = Convert.FromBase64String(b64Certificate);
             string password = PFXPassword;
-            CSS.PKI.X509.CertificateConverter converter = CSS.PKI.X509.CertificateConverterFactory.FromDER(entryContents, password);
+            CertificateConverter converter = CertificateConverterFactory.FromDER(entryContents, password);
             X509Certificate2 certificate = converter.ToX509Certificate2(password);
 
             if (certificate.HasPrivateKey)
@@ -290,7 +289,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
 
             LogHandler.MethodExit(logger, CertificateStore, "GetCertificateEntry");
 
-            return CSS.PKI.X509.CertificateCollectionConverterFactory.FromPEM(certificateEntry).ToX509Certificate2Collection();
+            return CertificateCollectionConverterFactory.FromPEM(certificateEntry).ToX509Certificate2Collection();
         }
 
         private void SetItemStatus(CurrentInventoryItem agentInventoryItem)
@@ -530,7 +529,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             LogHandler.Trace(logger, CertificateStore, "Processing web server certificate");
             byte[] devicePfx = Convert.FromBase64String(b64Certificate);
             string password = PFXPassword;
-            CSS.PKI.X509.CertificateCollectionConverter converter = CSS.PKI.X509.CertificateCollectionConverterFactory.FromDER(devicePfx, password);
+            CertificateCollectionConverter converter = CertificateCollectionConverterFactory.FromDER(devicePfx, password);
             string pfxPem = converter.ToPEM(password);
             List<X509Certificate2> clist = converter.ToX509Certificate2List(password);
 
@@ -553,7 +552,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
             }
 
             LogHandler.Trace(logger, CertificateStore, "Building key PEM");
-            byte[] pkBytes = CSS.PKI.PrivateKeys.PrivateKeyConverterFactory.FromPKCS12(devicePfx, password).ToPkcs8BlobUnencrypted();
+            byte[] pkBytes = Keyfactor.PKI.PrivateKeys.PrivateKeyConverterFactory.FromPKCS12(devicePfx, password).ToPkcs8BlobUnencrypted();
             StringBuilder keyPemBuilder = new StringBuilder();
             keyPemBuilder.AppendLine("-----BEGIN PRIVATE KEY-----");
             keyPemBuilder.AppendLine(

@@ -1,10 +1,11 @@
-﻿using Keyfactor.Orchestrators.Extensions;
+﻿using Keyfactor.Logging;
+using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.Orchestrators.Common.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
+namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle
 {
     public class Discovery : DiscoveryBase
     {
@@ -15,27 +16,34 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
 
         public override JobResult ProcessJob(DiscoveryJobConfiguration config, SubmitDiscoveryUpdate sdr)
         {
-            LogHandler.MethodEntry(logger, new CertificateStore(), "ProcessJob");
+            if (logger == null)
+            {
+                logger = LogHandler.GetClassLogger(this.GetType());
+            }
 
-            F5Client f5 = new F5Client(new CertificateStore(), config.ServerUsername, config.ServerPassword, config.UseSSL, string.Empty, new List<PreviousInventoryItem>());
+
+            CertificateStore certificateStore = new CertificateStore() { ClientMachine = config.ClientMachine };
+            LogHandlerCommon.MethodEntry(logger, certificateStore, "ProcessJob");
+
+            F5Client f5 = new F5Client(certificateStore, config.ServerUsername, config.ServerPassword, config.UseSSL, string.Empty, new List<PreviousInventoryItem>());
 
             try
             {
-                LogHandler.Debug(logger, new CertificateStore(), "Getting partitions");
+                LogHandlerCommon.Debug(logger, certificateStore, "Getting partitions");
                 List<string> partitions = f5.GetPartitions().Select(p => p.name).ToList();
 
-                LogHandler.Trace(logger, new CertificateStore(), $"Found {partitions?.Count} partitions");
+                LogHandlerCommon.Trace(logger, certificateStore, $"Found {partitions?.Count} partitions");
                 List<string> locations = new List<string>();
                 foreach (string partition in partitions)
                 {
-                    LogHandler.Trace(logger, new CertificateStore(), $"Getting CA Bundles for partition '{partition}'");
+                    LogHandlerCommon.Trace(logger, certificateStore, $"Getting CA Bundles for partition '{partition}'");
                     locations.AddRange(f5.GetCABundles(partition, 20).Select(p => p.fullPath).ToList());
                 }
 
-                LogHandler.Debug(logger, new CertificateStore(), $"Submitting {locations.Count} locations");
+                LogHandlerCommon.Debug(logger, certificateStore, $"Submitting {locations.Count} locations");
                 sdr.Invoke(locations);
 
-                LogHandler.Debug(logger, new CertificateStore(), "Job complete");
+                LogHandlerCommon.Debug(logger, certificateStore, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
             }
             catch (Exception ex)
@@ -44,7 +52,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
             }
             finally
             {
-                LogHandler.MethodExit(logger, new CertificateStore(), "ProcessJob");
+                LogHandlerCommon.MethodExit(logger, certificateStore, "ProcessJob");
             }
         }
     }

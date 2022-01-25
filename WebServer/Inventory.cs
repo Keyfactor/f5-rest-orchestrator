@@ -1,10 +1,11 @@
-﻿using Keyfactor.Orchestrators.Extensions;
+﻿using Keyfactor.Logging;
+using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.Orchestrators.Common.Enums;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
-namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
+namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
 {
     public class Inventory : InventoryBase
     {
@@ -15,7 +16,11 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
 
         public override JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate submitInventory)
         {
-            LogHandler.MethodEntry(logger, config.CertificateStoreDetails, "ProcessJob");
+            if (logger == null)
+            {
+                logger = LogHandler.GetClassLogger(this.GetType());
+            }
+            LogHandlerCommon.MethodEntry(logger, config.CertificateStoreDetails, "ProcessJob");
 
             // Save the job config for use instead of passing it around
             base.JobConfig = config;
@@ -24,18 +29,18 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
 
             try
             {
-                LogHandler.Debug(logger, JobConfig.CertificateStoreDetails, "Processing job parameters");
+                LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "Processing job parameters");
                 dynamic properties = JsonConvert.DeserializeObject(config.CertificateStoreDetails.Properties.ToString());
 
                 F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, null, config.LastInventory);
 
-                LogHandler.Debug(logger, JobConfig.CertificateStoreDetails, "Getting the F5 web server device inventory");
+                LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "Getting the F5 web server device inventory");
                 inventory = f5.GetWebServerInventory();
 
-                LogHandler.Debug(logger, JobConfig.CertificateStoreDetails, "Submitting F5 web server inventory");
+                LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "Submitting F5 web server inventory");
                 submitInventory.Invoke(inventory);
 
-                LogHandler.Debug(logger, JobConfig.CertificateStoreDetails, "Job complete");
+                LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
             }
             catch (Exception ex)
@@ -44,7 +49,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
             }
             finally
             {
-                LogHandler.MethodExit(logger, config.CertificateStoreDetails, "ProcessJob");
+                LogHandlerCommon.MethodExit(logger, config.CertificateStoreDetails, "ProcessJob");
             }
         }
     }

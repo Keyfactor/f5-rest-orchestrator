@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
+namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
     #region F5 data models
 

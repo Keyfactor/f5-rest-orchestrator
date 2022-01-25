@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Text;
 using Microsoft.Extensions.Logging;
 
-namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
+namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
     internal class RESTHandler
     {

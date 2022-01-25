@@ -1,9 +1,10 @@
-﻿using Keyfactor.Orchestrators.Extensions;
+﻿using Keyfactor.Logging;
+using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.Orchestrators.Common.Enums;
 using System;
 using System.Collections.Generic;
 
-namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
+namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle
 {
     public class Inventory : InventoryBase
     {
@@ -14,7 +15,11 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
 
         public override JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate submitInventory)
         {
-            LogHandler.MethodEntry(logger, config.CertificateStoreDetails, "ProcessJob");
+            if (logger == null)
+            {
+                logger = LogHandler.GetClassLogger(this.GetType());
+            }
+            LogHandlerCommon.MethodEntry(logger, config.CertificateStoreDetails, "ProcessJob");
 
             // Save the job config for use instead of passing it around
             base.JobConfig = config;
@@ -26,13 +31,13 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
                 base.ParseJobProperties();
                 F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, null, config.LastInventory) { F5Version = base.F5Version };
 
-                LogHandler.Debug(logger, JobConfig.CertificateStoreDetails, $"Getting inventory for CA Bundle '{config.CertificateStoreDetails.StorePath}'");
+                LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Getting inventory for CA Bundle '{config.CertificateStoreDetails.StorePath}'");
                 inventory = f5.GetCABundleInventory();
 
-                LogHandler.Debug(logger, JobConfig.CertificateStoreDetails, $"Submitting {inventory?.Count} inventory entries for CA Bundle '{config.CertificateStoreDetails.StorePath}'");
+                LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Submitting {inventory?.Count} inventory entries for CA Bundle '{config.CertificateStoreDetails.StorePath}'");
                 submitInventory.Invoke(inventory);
 
-                LogHandler.Debug(logger, JobConfig.CertificateStoreDetails, "Job complete");
+                LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
             }
             catch (Exception ex)
@@ -41,7 +46,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.Bundle
             }
             finally
             {
-                LogHandler.MethodExit(logger, config.CertificateStoreDetails, "ProcessJob");
+                LogHandlerCommon.MethodExit(logger, config.CertificateStoreDetails, "ProcessJob");
             }
         }
     }

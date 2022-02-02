@@ -3,7 +3,7 @@ using Keyfactor.Orchestrators.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
+namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
     internal class ExceptionHandler
     {
@@ -40,7 +40,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator
         public string RequestBody { get; set; }
     }
 
-    internal class LogHandler
+    internal class LogHandlerCommon
     {
         public static void MethodEntry(ILogger logger, CertificateStore certificateStore, string name)
         {

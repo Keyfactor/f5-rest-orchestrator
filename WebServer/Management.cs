@@ -4,7 +4,7 @@ using Keyfactor.Orchestrators.Common.Enums;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
+namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
 {
     public class Management : ManagementBase
     {
@@ -17,10 +17,10 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
         {
             if (logger == null)
             {
-                logger = Keyfactor.Logging.LogHandler.GetClassLogger(this.GetType());
+                logger = LogHandler.GetClassLogger(this.GetType());
             }
 
-            LogHandler.MethodEntry(logger, config.CertificateStoreDetails, "ProcessJob");
+            LogHandlerCommon.MethodEntry(logger, config.CertificateStoreDetails, "ProcessJob");
 
             if (config.OperationType != CertStoreOperationType.Add)
             {
@@ -40,10 +40,10 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
                     PrimaryNode = base.PrimaryNode
                 };
 
-                LogHandler.Trace(logger, config.CertificateStoreDetails, "Replacing F5 web server certificate");
+                LogHandlerCommon.Trace(logger, config.CertificateStoreDetails, "Replacing F5 web server certificate");
                 f5.ReplaceWebServerCrt(JobConfig.JobCertificate.Contents);
 
-                LogHandler.Debug(logger, config.CertificateStoreDetails, "Job complete");
+                LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
             }
             catch (Exception ex)
@@ -52,7 +52,7 @@ namespace Keyfactor.Platform.Extensions.Agents.F5Orchestrator.WebServer
             }
             finally
             {
-                LogHandler.MethodExit(logger, config.CertificateStoreDetails, "ProcessJob");
+                LogHandlerCommon.MethodExit(logger, config.CertificateStoreDetails, "ProcessJob");
             }
         }
     }

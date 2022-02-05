@@ -49,22 +49,22 @@ The F5 Orchestrator has been tested using Keyfactor Command version 9.4 and the 
 
 **<u>CA Bundles:</u>**
 
-![](Images/image1.png)
-![](Images/image2.png)
+![](images/image1.png)
+![](images/image2.png)
 
 
 
 **<u>Web Server Certificates</u>**
 
-![](Images/image9.png)
-![](Images/image10.png)
+![](images/image9.png)
+![](images/image10.png)
 
 
 
 **<u>SSL Certificates</u>**
 
-![](Images/image11.png)
-![](Images/image12.png)
+![](images/image11.png)
+![](images/image12.png)
 
 - **Name** – Required. The display name of the new Certificate Store Type
 - **Short Name** – Required. This value ***must match*** the folder name for this store type under the "extensions" folder in the install path.

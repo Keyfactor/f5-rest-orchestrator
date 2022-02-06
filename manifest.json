@@ -1,0 +1,38 @@
+﻿{
+  "extensions": {
+    "Keyfactor.Orchestrators.Extensions.IOrchestratorJobExtension": {
+      "CertStores.F5-CA-REST.Inventory": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle.Inventory"
+      },
+      "CertStores.F5-CA-REST.Management": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle.Management"
+      },
+      "CertStores.F5-CA-REST.Discovery": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle.Discovery"
+      },
+      "CertStores.F5-SL-REST.Inventory": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile.Inventory"
+      },
+      "CertStores.F5-SL-REST.Management": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile.Management"
+      },
+      "CertStores.F5-SL-REST.Discovery": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile.Discovery"
+      },
+      "CertStores.F5-WS-REST.Inventory": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer.Inventory"
+      },
+      "CertStores.F5-WS-REST.Management": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer.Management"
+      }
+    }
+  }
+}

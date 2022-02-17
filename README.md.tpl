@@ -45,7 +45,7 @@ The F5 Orchestrator has been tested using Keyfactor Command version 9.4 and the 
 
 ## F5 Orchestrator Configuration
 
-**1. In Keyfactor Command, create a new certificate store type for each of the 3 store types above that you wish to manage.**
+**1. In Keyfactor Command, if any of the aforementioned certificate store types do not already exist, create a new certificate store type for each of the 3 that you wish to manage by navigating to Settings (the "gear" icon in the top right) => Certificate Store Types.**
 
 **<u>CA Bundles:</u>**
 
@@ -87,9 +87,10 @@ The Custom Fields tab contains 5 custom store parameters that must be set up.  T
 
 
 
-**2a. (Optional) Create a F5 Certificate Store within Keyfactor Command**
+**2a. Create a F5 Certificate Store within Keyfactor Command**
+![](images/image13.png)
 
-If you choose to manually create a F5 store In Keyfactor Command rather than running a Discovery job to automatically find the store, you can navigate to Certificate Locations =\> Certificate Stores within Keyfactor Command to add the store. Below are the values that should be entered.![](Images/Image13.png)
+If you choose to manually create a F5 store In Keyfactor Command rather than running a Discovery job (Step 2b) to automatically find the store, you can navigate to Certificate Locations =\> Certificate Stores within Keyfactor Command to add the store. Below are the values that should be entered.![](Images/Image13.png)
 
 - **Category** – Required.  One of the 3 F5 store types - F5 Web Server REST, F5 CA Bundles REST, or F5 SSL Profiles REST (your configured names may be different based on what you entered when creating the certificate store types in Step 1).
 
@@ -108,15 +109,15 @@ If you choose to manually create a F5 store In Keyfactor Command rather than run
 
 - **Version of F5** - Required.  Select v13, v14, or v15 to match the version for the F5 device being managed
 
-- **Primary Node** - Required.  Enter the fully qualified domain name of the F5 device that acts as the primary node in a highly available F5 implementation.  If you're using a single F5 device, this will typically be the same value you entered in the Client Machine field.
-
-- **Orchestrator** – Required.  Select the orchestrator you wish to use to manage this store
-
 - **Primary Node Online Required** – Required.  Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive.  If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed.
+
+- **Primary Node** - Required.  Enter the fully qualified domain name of the F5 device that acts as the primary node in a highly available F5 implementation.  If you're using a single F5 device, this will typically be the same value you entered in the Client Machine field.
 
 - **Primary Node Check Retry Maximum** - Only required (and shown) if Primary Node Online Required is selected.  Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing.
 
 - **Primary Node Check Retry Wait Seconds** - Only required (and shown) if Primary Node Online Required is selected.  Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive.
+
+- **Orchestrator** – Required.  Select the orchestrator you wish to use to manage this store
 
 - **Inventory Schedule** – Set a schedule for running Inventory jobs or none, if you choose not to schedule Inventory at this time.
 

@@ -19,7 +19,7 @@ BEGIN
 		           (@f5ws,	'PrimaryNodeOnlineRequired',	'Primary Node Online Required',			1,	1, '', '')
 
         UPDATE [cms_agents].[CertStoreTypeProperties]
-            SET [Required] = 0, [DependsOn] = 'PrimaryNodeOnlineRequired'
+            SET [Required] = 1, [DependsOn] = 'PrimaryNodeOnlineRequired'
         WHERE [StoreTypeId] = @f5ws
             AND [Name] IN ('PrimaryNode','PrimaryNodeCheckRetryWaitSecs','PrimaryNodeCheckRetryMax')
     END
@@ -43,7 +43,7 @@ BEGIN
 		           (@f5ssl,	'PrimaryNodeOnlineRequired',	'Primary Node Online Required',			1,	1, '', '')
 
         UPDATE [cms_agents].[CertStoreTypeProperties]
-            SET [Required] = 0, [DependsOn] = 'PrimaryNodeOnlineRequired'
+            SET [Required] = 1, [DependsOn] = 'PrimaryNodeOnlineRequired'
         WHERE [StoreTypeId] = @f5ssl
             AND [Name] IN ('PrimaryNode','PrimaryNodeCheckRetryWaitSecs','PrimaryNodeCheckRetryMax')
     END
@@ -67,7 +67,7 @@ BEGIN
 		           (@f5ca,	'PrimaryNodeOnlineRequired',	'Primary Node Online Required',			1,	1, '', '')
 
         UPDATE [cms_agents].[CertStoreTypeProperties]
-            SET [Required] = 0, [DependsOn] = 'PrimaryNodeOnlineRequired'
+            SET [Required] = 1, [DependsOn] = 'PrimaryNodeOnlineRequired'
         WHERE [StoreTypeId] = @f5ca
             AND [Name] IN ('PrimaryNode','PrimaryNodeCheckRetryWaitSecs','PrimaryNodeCheckRetryMax')
     END

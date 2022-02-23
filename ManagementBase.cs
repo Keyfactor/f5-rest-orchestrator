@@ -40,7 +40,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             PrimaryNodeRetryWaitSecs = 120;
             bool primaryNodeRequired = false;
             LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, "Attempting to determine if the primary node is required to be active");
-            if (properties.PrimaryNodeOnlineRequired == null) { throw new Exception("Missing job property string: PrimaryNodeOnlineRequired"); }
+            //if (properties.PrimaryNodeOnlineRequired == null) { throw new Exception("Missing job property string: PrimaryNodeOnlineRequired"); }
             bool.TryParse(properties.PrimaryNodeOnlineRequired?.ToString(), out primaryNodeRequired);
             PrimaryNodeOnlineRequired = primaryNodeRequired;
             LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"Primary node online required '{PrimaryNodeOnlineRequired}'");

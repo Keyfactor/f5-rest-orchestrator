@@ -3,6 +3,6 @@
   "integration_type": "orchestrator",
   "name": "F5",
   "status": "production",
-  "link_github": false,
+  "link_github": true,
   "description": "The F5 Orchestrator allows for the remote management of F5 Stores. Discovery, Inventory, and Management functions are supported."
 }

@@ -1,10 +1,3 @@
-# {{ name }}
-## {{ integration_type }}
-
-{{ description }}
-
-<!-- add integration specific information below -->
-
 ## Use Cases
 
 The F5 Orchestrator supports three different types of certificates stores with the capabilities for each below:

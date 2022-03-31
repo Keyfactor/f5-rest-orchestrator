@@ -12,8 +12,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         public string ExtensionName => string.Empty;
 
-        public abstract string GetStoreType();
-
         public abstract JobResult ProcessJob(DiscoveryJobConfiguration config, SubmitDiscoveryUpdate submitDiscovery);
 
         protected string DiscoverActiveNode()

@@ -18,10 +18,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         protected int PrimaryNodeRetryWaitSecs { get; set; }
         protected int _primaryNodeRetryCount = 0;
         protected string F5Version { get; set; }
+        protected bool IgnoreSSLWarning { get; set; }
 
         public string ExtensionName => string.Empty;
-
-        public abstract string GetStoreType();
 
         public abstract JobResult ProcessJob(ManagementJobConfiguration config);
 
@@ -72,6 +71,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             if (string.IsNullOrEmpty(properties.F5Version?.ToString())) { throw new Exception("Missing job property string: F5Version"); }
             F5Version = properties.F5Version.ToString();
             LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"F5 version '{F5Version}'");
+
+            IgnoreSSLWarning = properties.IgnoreSSLWarning == null || string.IsNullOrEmpty(properties.IgnoreSSLWarning.Value) ? false : bool.Parse(properties.IgnoreSSLWarning.Value);
+            LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"Ignore SSL Warnings '{IgnoreSSLWarning.ToString()}'");
         }
 
         protected void PrimaryNodeActive()

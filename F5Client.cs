@@ -25,6 +25,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public IEnumerable<PreviousInventoryItem> Inventory { get; set; }
         public string PrimaryNode { get; set; }
         public string F5Version { get; set; }
+        public bool IgnoreSSLWarning { get; set; }
         private RESTHandler REST
         {
             get
@@ -34,8 +35,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     Host = this.CertificateStore.ClientMachine,
                     User = this.ServerUserName,
                     Password = this.ServerPassword,
-                    UseSSL = this.UseSSL
-                };
+                    UseSSL = this.UseSSL,
+                    IgnoreSSLWarning = this.IgnoreSSLWarning                };
             }
         }
         private F5Transaction Transaction { get; set; }
@@ -280,6 +281,11 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     LogHandlerCommon.Trace(logger, CertificateStore, "Certificate is PEM with headers");
                     crtBytes = System.Convert.FromBase64String(crt);
                     certificateEntry = System.Text.ASCIIEncoding.ASCII.GetString(crtBytes);
+                    if (path.Contains("picking", StringComparison.OrdinalIgnoreCase))
+                    {
+                        logger.LogTrace($"Certificate Type Identifier: {crt.Substring(0, 1)}");
+                        logger.LogTrace($"Certificate: {crt}");
+                    }
                     break;
                 default:
                     crtBytes = System.Convert.FromBase64String(crt);

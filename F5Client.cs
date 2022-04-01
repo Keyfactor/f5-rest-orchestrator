@@ -1,6 +1,7 @@
 ﻿using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.PKI.X509;
+using Keyfactor.PKI.PEM;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -281,11 +282,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     LogHandlerCommon.Trace(logger, CertificateStore, "Certificate is PEM with headers");
                     crtBytes = System.Convert.FromBase64String(crt);
                     certificateEntry = System.Text.ASCIIEncoding.ASCII.GetString(crtBytes);
-                    if (path.Contains("picking", StringComparison.OrdinalIgnoreCase))
-                    {
-                        logger.LogTrace($"Certificate Type Identifier: {crt.Substring(0, 1)}");
-                        logger.LogTrace($"Certificate: {crt}");
-                    }
+                    logger.LogTrace($"Certificate Type Identifier: {crt.Substring(0, 1)}");
+                    logger.LogTrace($"Certificate: {crt}");
                     break;
                 default:
                     crtBytes = System.Convert.FromBase64String(crt);
@@ -295,7 +293,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "GetCertificateEntry");
 
-            return CertificateCollectionConverterFactory.FromPEM(certificateEntry).ToX509Certificate2Collection();
+            return CertificateCollectionConverterFactory.FromPEM(RemovePEMHeader(certificateEntry)).ToX509Certificate2Collection();
         }
 
         private void SetItemStatus(CurrentInventoryItem agentInventoryItem)
@@ -874,6 +872,10 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 utilCmdArgs = $"-c 'rm {source}'"
             }, transactionId);
             LogHandlerCommon.MethodExit(logger, CertificateStore, "RemoveFile");
+        }
+        private string RemovePEMHeader(string pem)
+        {
+            return string.IsNullOrEmpty(pem) ? string.Empty : PemUtilities.DERToPEM(PemUtilities.PEMToDER(pem), PemUtilities.PemObjectType.NoHeaders);
         }
 
         // File Handling

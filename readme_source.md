@@ -72,11 +72,11 @@ The F5 Orchestrator has been tested using Keyfactor Command version 9.4 and the 
 The Custom Fields tab contains 6 custom store parameters that must be set up.  The set up is consistent across store types, and should look as follows:
 
 ![](images/image3.png)<br>  
-![](images/image4.png)<br>  
-![](images/image5.png)<br>  
 ![](images/image6.png)<br>  
 ![](images/image7.png)<br>  
 ![](images/image8.png)<br>  
+![](images/image4.png)<br>  
+![](images/image5.png)<br>  
 
 
 

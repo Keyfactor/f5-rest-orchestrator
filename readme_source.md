@@ -82,7 +82,7 @@ The Custom Fields tab contains 6 custom store parameters that must be set up.  T
 
 
 **2a. Create a F5 Certificate Store within Keyfactor Command**
-![](images/image13.png)
+![](images/image13.png)  
 
 If you choose to manually create a F5 store In Keyfactor Command rather than running a Discovery job (Step 2b) to automatically find the store, you can navigate to Certificate Locations =\> Certificate Stores within Keyfactor Command to add the store. Below are the values that should be entered.![](Images/Image13.png)
 

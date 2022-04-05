@@ -93,6 +93,7 @@ The Custom Fields tab contains 6 custom store parameters that must be set up.  T
 ![](images/image8.png)<br>  
 ![](images/image4.png)<br>  
 ![](images/image5.png)<br>  
+![](images/image15.png)<br>  
 
 
 

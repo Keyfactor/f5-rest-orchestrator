@@ -282,8 +282,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     LogHandlerCommon.Trace(logger, CertificateStore, "Certificate is PEM with headers");
                     crtBytes = System.Convert.FromBase64String(crt);
                     certificateEntry = System.Text.ASCIIEncoding.ASCII.GetString(crtBytes);
-                    logger.LogTrace($"Certificate Type Identifier: {crt.Substring(0, 1)}");
-                    logger.LogTrace($"Certificate: {crt}");
+                    logger.LogTrace($"Certificate Before Base64 Unpack: {crt}");
+                    logger.LogTrace($"Certificate After Base64 Unpack: {certificateEntry}");
                     break;
                 default:
                     crtBytes = System.Convert.FromBase64String(crt);
@@ -293,7 +293,12 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "GetCertificateEntry");
 
-            return CertificateCollectionConverterFactory.FromPEM(RemovePEMHeader(certificateEntry)).ToX509Certificate2Collection();
+            string certificateEntryAfterRemovalOfDelim = certificateEntry.Replace("-----BEGIN CERTIFICATE----- ", "-----BEGIN CERTIFICATE-----");
+            logger.LogTrace($"Certificate After Removing Delims: {certificateEntryAfterRemovalOfDelim}");
+            CertificateCollectionConverter c = CertificateCollectionConverterFactory.FromPEM(certificateEntryAfterRemovalOfDelim);
+            logger.LogTrace("FromPem Worked");  
+
+            return c.ToX509Certificate2Collection();
         }
 
         private void SetItemStatus(CurrentInventoryItem agentInventoryItem)
@@ -873,11 +878,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             }, transactionId);
             LogHandlerCommon.MethodExit(logger, CertificateStore, "RemoveFile");
         }
-        private string RemovePEMHeader(string pem)
-        {
-            return string.IsNullOrEmpty(pem) ? string.Empty : PemUtilities.DERToPEM(PemUtilities.PEMToDER(pem), PemUtilities.PemObjectType.NoHeaders);
-        }
-
         // File Handling
         #endregion
 

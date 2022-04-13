@@ -8,11 +8,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 {
     public class Inventory : InventoryBase
     {
-        public override string GetStoreType()
-        {
-            return "F5-SL-REST";
-        }
-
         public override JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate submitInventory)
         {
             if (logger == null)
@@ -29,7 +24,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             try
             {
                 base.ParseJobProperties();
-                F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, null, config.LastInventory) { F5Version = base.F5Version };
+                F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, null, config.LastInventory) { F5Version = base.F5Version, IgnoreSSLWarning = base.IgnoreSSLWarning };
 
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Getting inventory from '{config.CertificateStoreDetails.StorePath}'");
                 inventory = f5.GetSSLProfiles(20);

@@ -7,10 +7,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 {
     public class Management : ManagementBase
     {
-        public override string GetStoreType()
-        {
-            return "F5-SL-REST";
-        }
 
         public override JobResult ProcessJob(ManagementJobConfiguration config)
         {
@@ -23,7 +19,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             if (config.OperationType != CertStoreOperationType.Add
                 && config.OperationType != CertStoreOperationType.Remove)
             {
-                throw new Exception($"'{config.CertificateStoreDetails.ClientMachine}-{config.CertificateStoreDetails.StorePath}-{GetStoreType()}'  expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
+                throw new Exception($"'{config.CertificateStoreDetails.ClientMachine}-{config.CertificateStoreDetails.StorePath}-' Management job expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
             }
             
             // Save the job config for use instead of passing it around
@@ -37,7 +33,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                 F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, config.JobCertificate.PrivateKeyPassword, config.LastInventory)
                 {
                     PrimaryNode = base.PrimaryNode,
-                    F5Version = base.F5Version
+                    F5Version = base.F5Version,
+                    IgnoreSSLWarning = base.IgnoreSSLWarning
                 };
 
                 switch (config.OperationType)
@@ -52,7 +49,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                         break;
                     default:
                         // Shouldn't get here, but just in case
-                        throw new Exception($"{GetStoreType()} expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
+                        throw new Exception($"Management job expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
                 }
 
                 LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, "Job complete");

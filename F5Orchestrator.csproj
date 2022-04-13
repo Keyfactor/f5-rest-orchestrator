@@ -1,8 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Version>12.0</Version>
+    <AssemblyVersion>11.0.0.0</AssemblyVersion>
+    <FileVersion>12.0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

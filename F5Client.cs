@@ -1,6 +1,7 @@
 ﻿using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.PKI.X509;
+using Keyfactor.PKI.PEM;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public IEnumerable<PreviousInventoryItem> Inventory { get; set; }
         public string PrimaryNode { get; set; }
         public string F5Version { get; set; }
+        public bool IgnoreSSLWarning { get; set; }
         private RESTHandler REST
         {
             get
@@ -34,8 +36,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     Host = this.CertificateStore.ClientMachine,
                     User = this.ServerUserName,
                     Password = this.ServerPassword,
-                    UseSSL = this.UseSSL
-                };
+                    UseSSL = this.UseSSL,
+                    IgnoreSSLWarning = this.IgnoreSSLWarning                };
             }
         }
         private F5Transaction Transaction { get; set; }
@@ -280,6 +282,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     LogHandlerCommon.Trace(logger, CertificateStore, "Certificate is PEM with headers");
                     crtBytes = System.Convert.FromBase64String(crt);
                     certificateEntry = System.Text.ASCIIEncoding.ASCII.GetString(crtBytes);
+                    logger.LogTrace($"Certificate Before Base64 Unpack: {crt}");
+                    logger.LogTrace($"Certificate After Base64 Unpack: {certificateEntry}");
                     break;
                 default:
                     crtBytes = System.Convert.FromBase64String(crt);
@@ -289,7 +293,12 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "GetCertificateEntry");
 
-            return CertificateCollectionConverterFactory.FromPEM(certificateEntry).ToX509Certificate2Collection();
+            string certificateEntryAfterRemovalOfDelim = certificateEntry.Replace("-----BEGIN CERTIFICATE----- ", "-----BEGIN CERTIFICATE-----");
+            logger.LogTrace($"Certificate After Removing Delims: {certificateEntryAfterRemovalOfDelim}");
+            CertificateCollectionConverter c = CertificateCollectionConverterFactory.FromPEM(certificateEntryAfterRemovalOfDelim);
+            logger.LogTrace("FromPem Worked");  
+
+            return c.ToX509Certificate2Collection();
         }
 
         private void SetItemStatus(CurrentInventoryItem agentInventoryItem)
@@ -869,7 +878,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             }, transactionId);
             LogHandlerCommon.MethodExit(logger, CertificateStore, "RemoveFile");
         }
-
         // File Handling
         #endregion
 

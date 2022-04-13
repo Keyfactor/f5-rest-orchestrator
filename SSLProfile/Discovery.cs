@@ -9,11 +9,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 {
     public class Discovery : DiscoveryBase
     {
-        public override string GetStoreType()
-        {
-            return "F5-SL-REST";
-        }
-
         public override JobResult ProcessJob(DiscoveryJobConfiguration config, SubmitDiscoveryUpdate sdr)
         {
             if (logger == null)
@@ -23,7 +18,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 
             CertificateStore certificateStore = new CertificateStore() { ClientMachine = config.ClientMachine };
             LogHandlerCommon.MethodEntry(logger, certificateStore, "ProcessJob");
-            F5Client f5 = new F5Client(certificateStore, config.ServerUsername, config.ServerPassword, config.UseSSL, string.Empty, new List<PreviousInventoryItem>());
+            F5Client f5 = new F5Client(certificateStore, config.ServerUsername, config.ServerPassword, config.UseSSL, string.Empty, new List<PreviousInventoryItem>()) { IgnoreSSLWarning = true };
 
             try
             {

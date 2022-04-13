@@ -12,6 +12,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string Host { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
+        public bool IgnoreSSLWarning { get; set; }
 
         public RESTHandler()
         {
@@ -23,7 +24,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             logger.LogTrace("Entered Get method");
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new HttpClient(GetHttpClientHandler()))
             {
                 ConfigureHttpClient(client, transactionId);
                 HttpResponseMessage response = null;
@@ -57,7 +58,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             logger.LogTrace("Entered Post method");
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new HttpClient(GetHttpClientHandler()))
             {
                 ConfigureHttpClient(client, transactionId);
                 HttpContent content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
@@ -92,7 +93,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             logger.LogTrace("Entered Post method");
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new HttpClient(GetHttpClientHandler()))
             {
                 ConfigureHttpClient(client, transactionId);
                 HttpContent content = new StringContent(requestContent, Encoding.UTF8, "application/json");
@@ -127,7 +128,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             logger.LogTrace("Entered Post method");
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new HttpClient(GetHttpClientHandler()))
             {
                 ConfigureHttpClient(client, transactionId);
                 HttpContent content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
@@ -153,7 +154,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             logger.LogTrace("Entered Patch method");
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new HttpClient(GetHttpClientHandler()))
             {
                 ConfigureHttpClient(client, transactionId);
                 HttpContent content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
@@ -180,7 +181,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             logger.LogTrace("Entered Delete method");
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new HttpClient(GetHttpClientHandler()))
             {
                 ConfigureHttpClient(client, transactionId);
 
@@ -202,7 +203,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             logger.LogTrace("Entered PostBASHCommand method");
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new HttpClient(GetHttpClientHandler()))
             {
                 ConfigureHttpClient(client, transactionId);
 
@@ -231,7 +232,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             logger.LogTrace("Entered PostInstallCryptoCommand method");
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new HttpClient(GetHttpClientHandler()))
             {
                 ConfigureHttpClient(client, transactionId);
 
@@ -326,7 +327,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         private void ConfigureHttpClient(HttpClient client, string transactionId = "")
         {
-            System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, sslcert, chain, sslPolicyErrors) => true;
+            //System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, sslcert, chain, sslPolicyErrors) => true;
             client.BaseAddress = new Uri($"{GetProtocol()}{Host}");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
@@ -338,6 +339,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         private string GetProtocol()
         {
             return UseSSL ? "https://" : "http://";
+        }
+
+        private HttpClientHandler GetHttpClientHandler()
+        {
+            HttpClientHandler handler = new HttpClientHandler();
+            if (IgnoreSSLWarning) { handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }; }
+            
+            return handler;
         }
     }
 }

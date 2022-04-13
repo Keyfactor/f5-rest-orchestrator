@@ -8,10 +8,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
 {
     public class Management : ManagementBase
     {
-        public override string GetStoreType()
-        {
-            return "F5-WS-REST";
-        }
 
         public override JobResult ProcessJob(ManagementJobConfiguration config)
         {
@@ -24,7 +20,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
 
             if (config.OperationType != CertStoreOperationType.Add)
             {
-                throw new Exception($"'{config.CertificateStoreDetails.ClientMachine}-{config.CertificateStoreDetails.StorePath}-{GetStoreType()}' expecting 'Add' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
+                throw new Exception($"'{config.CertificateStoreDetails.ClientMachine}-{config.CertificateStoreDetails.StorePath}' Management job expecting 'Add' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
             }
 
             // Save the job config for use instead of passing it around
@@ -37,7 +33,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
 
                 F5Client f5 = new F5Client(JobConfig.CertificateStoreDetails, JobConfig.ServerUsername, JobConfig.ServerPassword, JobConfig.UseSSL, JobConfig.JobCertificate.PrivateKeyPassword, JobConfig.LastInventory)
                 {
-                    PrimaryNode = base.PrimaryNode
+                    PrimaryNode = base.PrimaryNode,
+                    IgnoreSSLWarning = base.IgnoreSSLWarning
                 };
 
                 LogHandlerCommon.Trace(logger, config.CertificateStoreDetails, "Replacing F5 web server certificate");

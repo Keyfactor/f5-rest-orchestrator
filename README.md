@@ -85,19 +85,22 @@ The F5 Orchestrator has been tested using Keyfactor Command version 9.4 and the 
 
 
 
-The Custom Fields tab contains 5 custom store parameters that must be set up.  The set up is consistent across store types, and should look as follows:
+The Custom Fields tab contains 6 custom store parameters.  The set up is consistent across store types, and should look as follows:
 
 ![](images/image3.png)<br>  
-![](images/image4.png)<br>  
-![](images/image5.png)<br>  
 ![](images/image6.png)<br>  
 ![](images/image7.png)<br>  
 ![](images/image8.png)<br>  
+![](images/image4.png)<br>  
+![](images/image5.png)<br>  
+![](images/image15.png)<br>  
+
+If any or all of the 3 certificate store types were already set up on installation of Keyfactor, you may only need to add Primary Node Online Required and Ignore SSL Warning.  These parameters, however, are optional and only necessary if needed to be set to true.  Please see the descriptions below in "2a. Create a F5 Certificate Store wihin Keyfactor Command.
 
 
 
-**2a. Create a F5 Certificate Store within Keyfactor Command**
-![](images/image13.png)
+**2a. Create a F5 Certificate Store within Keyfactor Command**  
+![](images/image13.png)  
 
 If you choose to manually create a F5 store In Keyfactor Command rather than running a Discovery job (Step 2b) to automatically find the store, you can navigate to Certificate Locations =\> Certificate Stores within Keyfactor Command to add the store. Below are the values that should be entered.![](Images/Image13.png)
 
@@ -110,13 +113,10 @@ If you choose to manually create a F5 store In Keyfactor Command rather than run
   - UserId/Password
   
   - PAM provider information to pass the UserId/Password or UserId/SSH private key credentials
-  
-  
+    
   When entering the credentials, UseSSL ***must*** be selected.
   
 - **Store Path** – Required.  Enter the name of the partition on the F5 device you wish to manage.  This value is case sensitive, so if the partition name is "Common", it must be entered as "Common" and not "common".
-
-- **Version of F5** - Required.  Select v13, v14, or v15 to match the version for the F5 device being managed
 
 - **Primary Node Online Required** – Optional.  Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive.  If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed.  If you choose not to add this custom field, the default value of False will be assumed.
 
@@ -125,6 +125,10 @@ If you choose to manually create a F5 store In Keyfactor Command rather than run
 - **Primary Node Check Retry Maximum** - Only required (and shown) if Primary Node Online Required is added and selected.  Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing.
 
 - **Primary Node Check Retry Wait Seconds** - Only required (and shown) if Primary Node Online Required is added and selected.  Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive.
+
+- **Version of F5** - Required.  Select v13, v14, or v15 to match the version for the F5 device being managed
+
+- **Ignore SSL Warning** - Optional.  Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it.  If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs.
 
 - **Orchestrator** – Required.  Select the orchestrator you wish to use to manage this store
 

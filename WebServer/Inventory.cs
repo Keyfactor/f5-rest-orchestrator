@@ -9,11 +9,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
 {
     public class Inventory : InventoryBase
     {
-        public override string GetStoreType()
-        {
-            return "F5-WS-REST";
-        }
-
         public override JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate submitInventory)
         {
             if (logger == null)
@@ -32,7 +27,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "Processing job parameters");
                 dynamic properties = JsonConvert.DeserializeObject(config.CertificateStoreDetails.Properties.ToString());
 
-                F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, null, config.LastInventory);
+                F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, null, config.LastInventory) { IgnoreSSLWarning = base.IgnoreSSLWarning };
 
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "Getting the F5 web server device inventory");
                 inventory = f5.GetWebServerInventory();

@@ -282,8 +282,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     LogHandlerCommon.Trace(logger, CertificateStore, "Certificate is PEM with headers");
                     crtBytes = System.Convert.FromBase64String(crt);
                     certificateEntry = System.Text.ASCIIEncoding.ASCII.GetString(crtBytes);
-                    logger.LogTrace($"Certificate Before Base64 Unpack: {crt}");
-                    logger.LogTrace($"Certificate After Base64 Unpack: {certificateEntry}");
                     break;
                 default:
                     crtBytes = System.Convert.FromBase64String(crt);
@@ -294,9 +292,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.MethodExit(logger, CertificateStore, "GetCertificateEntry");
 
             string certificateEntryAfterRemovalOfDelim = certificateEntry.Replace("-----BEGIN CERTIFICATE----- ", "-----BEGIN CERTIFICATE-----");
-            logger.LogTrace($"Certificate After Removing Delims: {certificateEntryAfterRemovalOfDelim}");
             CertificateCollectionConverter c = CertificateCollectionConverterFactory.FromPEM(certificateEntryAfterRemovalOfDelim);
-            logger.LogTrace("FromPem Worked");  
 
             return c.ToX509Certificate2Collection();
         }

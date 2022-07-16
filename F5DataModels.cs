@@ -93,6 +93,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
     {
         public string command { get; set; }
         public string name { get; set; }
+        public string key { get; set; }
 
         [Newtonsoft.Json.JsonProperty("from-local-file")]
         public string localfile { get; set; }

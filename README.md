@@ -14,6 +14,11 @@ The Universal Orchestrator is the successor to the Windows Orchestrator. This Ca
 
 ---
 
+
+
+
+---
+
 ## Use Cases
 
 The F5 Orchestrator supports three different types of certificates stores with the capabilities for each below:
@@ -159,3 +164,4 @@ First, in Keyfactor Command navigate to Certificate Locations =\> Certificate St
 - **Directories to ignore/Extensions/File name patterns to match/Follow SymLinks/Include PKCS12 Files** – Not used.  Leave blank.
 
 Once the Discovery job has completed, a list of F5 certificate store locations should show in the Certificate Stores Discovery tab in Keyfactor Command. Right click on a store and select Approve to bring up a dialog that will ask for the remaining necessary certificate store parameters described in Step 2a.  Complete those and click Save, and the Certificate Store should now show up in the list of stores in the Certificate Stores tab.
+

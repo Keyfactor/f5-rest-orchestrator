@@ -84,8 +84,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             X509Certificate2 certificate = converter.ToX509Certificate2(password);
             if (certificate.HasPrivateKey)
             {
-                LogHandlerCommon.Trace(logger, CertificateStore, $"Certificate for partition '{partition}' and name '{name}' has a private key - performing addition", null);
-                AddPfx(entryContents, partition, name, password);
+                LogHandlerCommon.Trace(logger, CertificateStore, $"Certificate for partition '{partition}' and name '{name}' has a private key - performing addition");
+                AddPfx(entryContents, partition, name, password, null);
                 LogHandlerCommon.Trace(logger, CertificateStore, $"PFX addition for partition '{partition}' and name '{name}' completed");
             }
             else
@@ -219,29 +219,40 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             LogHandlerCommon.Trace(logger, CertificateStore, $"Installing PFX to '{name}'");
 
+            string keyNameParam = string.IsNullOrEmpty(keyName) ? string.Empty : $":key={keyName}";
+
             try
             {
                 REST.PostInstallCryptoCommand(new F5InstallCommand
                 {
                     command = "install",
                     name = $"{name}",
-                    key = string.IsNullOrEmpty(keyName) ? $"{name}" : $"{keyName}",
-                    localfile = $"/var/config/rest/downloads/{partition}-{name}.p12",
+                    localfile = $"/var/config/rest/downloads/{partition}-{name}.p12{keyNameParam}",
                     passphrase = password,
                     partition = partition
                 }, "pkcs12");
             }
             catch (F5RESTException ex)
             {
+                // Check to see if the specific error message is produced that would mean the certificate and key names are 
+                //  different.  The error message is then parsed to retrieve the key name and the /pkcs12 api call is tried
+                //  again with that key name appended onto the localfile parameter.  An F5 hotfix is necessary to produce
+                //  this message and use the updated /pkcs12 API that accepts the separate key name.
                 if (string.IsNullOrEmpty(keyName) && ex.message.Contains(INVALID_KEY_MSG_ID))
-                    AddPfx(entryContents, partition, name, password, GetKeyName(ex.Message));
+                    AddPfx(entryContents, partition, name, password, GetKeyName(ex.message));
                 else
-                    throw ex;
+                    throw (name.Contains(".crt", StringComparison.OrdinalIgnoreCase) &&
+                           ex.Message.Contains("expected to exist", StringComparison.OrdinalIgnoreCase) ? 
+                                new Exception("Certificate and Key name may be different. If so, an F5 hotfix may be required to allow for the automatic renewal of this certificate.", ex) : 
+                                ex);
             }
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "AddPfx");
         }
         
+        // Method to parse error message from /pkcs12 API call that can occur when the certificate and key have different names.
+        //  There is an F5 hotfix needed to be installed to produce the specific error message parsed by this method to get the
+        //  separate key name.
         private string GetKeyName(string errorMessage)
         {
             int locBegSubstr = errorMessage.IndexOf(INVALID_KEY_SUBSTR) + INVALID_KEY_SUBSTR.Length;
@@ -249,7 +260,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             int locEndSubstr = errorMessageSubstr.IndexOf(INVALID_KEY_END_DELIM);
             errorMessageSubstr = errorMessageSubstr.Substring(0, locEndSubstr);
             locBegSubstr = errorMessageSubstr.LastIndexOf(INVALID_KEY_BEG_DELIM);
-            string keyName = errorMessageSubstr.Substring(locEndSubstr + 1);
+            string keyName = errorMessageSubstr.Substring(locBegSubstr + 1);
 
             return keyName;
         }

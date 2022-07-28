@@ -18,6 +18,11 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         protected ILogger logger;
 
+        private const string INVALID_KEY_MSG_ID = "01070317:3";
+        private const string INVALID_KEY_SUBSTR = "key(";
+        private const string INVALID_KEY_BEG_DELIM = @"/";
+        private const string INVALID_KEY_END_DELIM = ")";
+
         public CertificateStore CertificateStore { get; set; }
         public string ServerUserName { get; set; }
         public string ServerPassword { get; set; }
@@ -80,7 +85,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             if (certificate.HasPrivateKey)
             {
                 LogHandlerCommon.Trace(logger, CertificateStore, $"Certificate for partition '{partition}' and name '{name}' has a private key - performing addition");
-                AddPfx(entryContents, partition, name, password);
+                AddPfx(entryContents, partition, name, password, null);
                 LogHandlerCommon.Trace(logger, CertificateStore, $"PFX addition for partition '{partition}' and name '{name}' completed");
             }
             else
@@ -206,22 +211,58 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.MethodExit(logger, CertificateStore, "AddCertificate");
         }
 
-        private void AddPfx(byte[] entryContents, string partition, string name, string password)
+        private void AddPfx(byte[] entryContents, string partition, string name, string password, string keyName)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "AddPfx");
             LogHandlerCommon.Trace(logger, CertificateStore, $"Uploading PFX to {partition}-{name}.p12");
             REST.UploadFile($"{partition}-{name}.p12", entryContents);
 
             LogHandlerCommon.Trace(logger, CertificateStore, $"Installing PFX to '{name}'");
-            REST.PostInstallCryptoCommand(new F5InstallCommand
+
+            string keyNameParam = string.IsNullOrEmpty(keyName) ? string.Empty : $":key={keyName}";
+
+            try
             {
-                command = "install",
-                name = $"{name}",
-                localfile = $"/var/config/rest/downloads/{partition}-{name}.p12",
-                passphrase = password,
-                partition = partition
-            }, "pkcs12");
+                REST.PostInstallCryptoCommand(new F5InstallCommand
+                {
+                    command = "install",
+                    name = $"{name}",
+                    localfile = $"/var/config/rest/downloads/{partition}-{name}.p12{keyNameParam}",
+                    passphrase = password,
+                    partition = partition
+                }, "pkcs12");
+            }
+            catch (F5RESTException ex)
+            {
+                // Check to see if the specific error message is produced that would mean the certificate and key names are 
+                //  different.  The error message is then parsed to retrieve the key name and the /pkcs12 api call is tried
+                //  again with that key name appended onto the localfile parameter.  An F5 hotfix is necessary to produce
+                //  this message and use the updated /pkcs12 API that accepts the separate key name.
+                if (string.IsNullOrEmpty(keyName) && ex.message.Contains(INVALID_KEY_MSG_ID))
+                    AddPfx(entryContents, partition, name, password, GetKeyName(ex.message));
+                else
+                    throw (name.Contains(".crt", StringComparison.OrdinalIgnoreCase) &&
+                           ex.Message.Contains("expected to exist", StringComparison.OrdinalIgnoreCase) ? 
+                                new Exception("Certificate and Key name may be different. If so, an F5 hotfix may be required to allow for the automatic renewal of this certificate.", ex) : 
+                                ex);
+            }
+
             LogHandlerCommon.MethodExit(logger, CertificateStore, "AddPfx");
+        }
+        
+        // Method to parse error message from /pkcs12 API call that can occur when the certificate and key have different names.
+        //  There is an F5 hotfix needed to be installed to produce the specific error message parsed by this method to get the
+        //  separate key name.
+        private string GetKeyName(string errorMessage)
+        {
+            int locBegSubstr = errorMessage.IndexOf(INVALID_KEY_SUBSTR) + INVALID_KEY_SUBSTR.Length;
+            string errorMessageSubstr = errorMessage.Substring(locBegSubstr);
+            int locEndSubstr = errorMessageSubstr.IndexOf(INVALID_KEY_END_DELIM);
+            errorMessageSubstr = errorMessageSubstr.Substring(0, locEndSubstr);
+            locBegSubstr = errorMessageSubstr.LastIndexOf(INVALID_KEY_BEG_DELIM);
+            string keyName = errorMessageSubstr.Substring(locBegSubstr + 1);
+
+            return keyName;
         }
 
         private void ReplaceCertificate(byte[] entryContents, string partition, string name)
@@ -247,7 +288,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             ArchiveFile($"/config/filestore/files_d/{partition}_d/certificate_d/:{partition}:{name}_*", $"{partition}-{name}-{timestamp}.crt");
 
             LogHandlerCommon.Trace(logger, CertificateStore, $"Adding PFX to partition '{partition}' and name '{name}'");
-            AddPfx(entryContents, partition, name, password);
+            AddPfx(entryContents, partition, name, password, null);
             LogHandlerCommon.MethodExit(logger, CertificateStore, "ReplacePfx");
         }
 

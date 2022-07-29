@@ -1,4 +1,4 @@
-#### Troubleshooting Guide
+# Troubleshooting Guide
 
 While attempting to renew an existing F5 certificate, you receive the following error message back in the Keyfactor Job Console: <span style="color:red">Unable to complete the management operation. 01070317:3: profile /Common/someName's key(/Common/someName.key) and certificate(/Common/someName.crt) do not match.</span>
 

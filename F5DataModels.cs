@@ -128,6 +128,23 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public bool validateOnly { get; set; }
     }
 
+    public class F5LoginRequest
+    {
+        public string username { get; set; }
+        public string password { get; set; }
+        public string loginProviderName { get; set; }
+    }
+
+    public class F5LoginResponse
+    {
+        public F5LoginToken token { get; set; }
+    }
+
+    public class F5LoginToken
+    {
+        public string token { get; set; }
+    }
+
     // F5 data models
     #endregion
 }

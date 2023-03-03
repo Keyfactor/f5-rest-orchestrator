@@ -10,6 +10,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 
+using Newtonsoft.Json;
+
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
     internal class F5Client
@@ -26,25 +28,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public CertificateStore CertificateStore { get; set; }
         public string ServerUserName { get; set; }
         public string ServerPassword { get; set; }
+        public string Token { get; set; }
         public bool UseSSL { get; set; }
         public string PFXPassword { get; set; }
         public IEnumerable<PreviousInventoryItem> Inventory { get; set; }
         public string PrimaryNode { get; set; }
         public string F5Version { get; set; }
         public bool IgnoreSSLWarning { get; set; }
-        private RESTHandler REST
-        {
-            get
-            {
-                return new RESTHandler()
-                {
-                    Host = this.CertificateStore.ClientMachine,
-                    User = this.ServerUserName,
-                    Password = this.ServerPassword,
-                    UseSSL = this.UseSSL,
-                    IgnoreSSLWarning = this.IgnoreSSLWarning                };
-            }
-        }
+        private RESTHandler REST { get; set; }
         private F5Transaction Transaction { get; set; }
 
         // Properties
@@ -65,6 +56,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             {
                 logger = Keyfactor.Logging.LogHandler.GetClassLogger(this.GetType());
             }
+
+            REST = new RESTHandler(certificateStore.ClientMachine, serverUserName, serverPassword, useSSL, IgnoreSSLWarning);
+            REST.Token = GetToken(serverUserName, serverPassword);
         }
 
         // Constructors
@@ -693,6 +687,19 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         }
 
         // SSL Profiles
+        #endregion
+
+        #region Auth
+
+        private string GetToken(string userName, string userPassword)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetToken");
+            F5LoginRequest request = new F5LoginRequest() { username = userName, password = userPassword };
+            F5LoginResponse loginResponse = REST.Post<F5LoginResponse>($"/mgmt/shared/authn/login", JsonConvert.SerializeObject(request));
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "GetToken");
+
+            return loginResponse.token.token;
+        }
         #endregion
 
         #region Bundles

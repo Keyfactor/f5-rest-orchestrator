@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
+using Keyfactor.Orchestrators.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
@@ -12,11 +15,17 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string Host { get; set; }
         public string User { get; set; }
         public string Password { get; set; }
+        public string Token { get; set; }
         public bool IgnoreSSLWarning { get; set; }
 
-        public RESTHandler()
+        public RESTHandler(string host, string user, string password, bool useSSL, bool ignoreSSLWarning)
         {
             logger = Keyfactor.Logging.LogHandler.GetClassLogger(this.GetType());
+            Host = host;
+            UseSSL = useSSL;
+            User = user;
+            Password = password;
+            IgnoreSSLWarning = ignoreSSLWarning;
         }
 
         public T Get<T>(string requestUri, string transactionId = "")
@@ -48,42 +57,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 logger.LogTrace($"Created object from result of type '{result.GetType().ToString()}' from 'Get' operation at '{requestUri}'");
 
                 logger.LogTrace("Leaving Get method");
-                return result;
-            }
-        }
-
-        public T Post<T, S>(string requestUri, S requestContent, string transactionId = "")
-            where T : class
-            where S : class
-        {
-            logger.LogTrace("Entered Post method");
-
-            using (HttpClient client = new HttpClient(GetHttpClientHandler()))
-            {
-                ConfigureHttpClient(client, transactionId);
-                HttpContent content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
-
-                logger.LogTrace($"Performing 'Post' operation of type '{requestContent.GetType().ToString()}' to '{requestUri}'");
-                HttpResponseMessage response = client.PostAsync(requestUri, content).Result;
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw ProcessFailureResponse(response.StatusCode,
-                        response.Content.ReadAsStringAsync().Result,
-                        requestUri,
-                        true,
-                        Newtonsoft.Json.JsonConvert.SerializeObject(requestContent));
-                }
-
-                T result = null;
-                try { result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(response.Content.ReadAsStringAsync().Result); }
-                catch
-                {
-                    logger.LogTrace($"Unable to deserialize result: {response.Content.ReadAsStringAsync().Result}");
-                    throw;
-                }
-                logger.LogTrace($"Created object from result of type '{result.GetType().ToString()}' from 'Post' operation to '{requestUri}'");
-
-                logger.LogTrace("Leaving Post method");
                 return result;
             }
         }
@@ -120,32 +93,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
                 logger.LogTrace("Leaving Post method");
                 return result;
-            }
-        }
-
-        public void Post<S>(string requestUri, S requestContent, string transactionId = "")
-            where S : class
-        {
-            logger.LogTrace("Entered Post method");
-
-            using (HttpClient client = new HttpClient(GetHttpClientHandler()))
-            {
-                ConfigureHttpClient(client, transactionId);
-                HttpContent content = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
-
-                logger.LogTrace($"Performing 'Post' operation of type '{requestContent.GetType().ToString()}' to '{requestUri}'");
-                HttpResponseMessage response = client.PostAsync(requestUri, content).Result;
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw ProcessFailureResponse(response.StatusCode,
-                        response.Content.ReadAsStringAsync().Result,
-                        requestUri,
-                        true,
-                        Newtonsoft.Json.JsonConvert.SerializeObject(requestContent));
-                }
-
-                logger.LogTrace($"'Post' operation to '{requestUri}' succeeded");
-                logger.LogTrace("Leaving Post method");
             }
         }
 
@@ -318,7 +265,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 webClient.Headers.Add("ServerHost", $"{GetProtocol()}{Host}/mgmt/shared/file-transfer/uploads/{filename}");
                 webClient.Headers.Add("Content-Type", "application/octet-stream");
                 webClient.Headers.Add("Content-Range", $"0-{fileBytes.Length - 1}/{fileBytes.Length}");
-                webClient.Headers.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.ASCII.GetBytes($"{User}:{Password}"))}");
+                webClient.Headers.Add("X-F5-Auth-Token", Token);
+                //webClient.Headers.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.ASCII.GetBytes($"{User}:{Password}"))}");
 
                 webClient.UploadData($"{GetProtocol()}{Host}/mgmt/shared/file-transfer/uploads/{filename}", fileBytes);
             }
@@ -331,8 +279,15 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             client.BaseAddress = new Uri($"{GetProtocol()}{Host}");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{User}:{Password}")));
+            if (Token == null)
+            {
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{User}:{Password}")));
+            }
+            else
+            {
+                client.DefaultRequestHeaders.Add("X-F5-Auth-Token", Token);
+            }
             if (!string.IsNullOrEmpty(transactionId)) { client.DefaultRequestHeaders.Add("X-F5-REST-Coordination-Id", transactionId); }
         }
 

@@ -3,11 +3,17 @@ using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.Orchestrators.Common.Enums;
 using Microsoft.Extensions.Logging;
 using System;
+using Keyfactor.Orchestrators.Extensions.Interfaces;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
 {
     public class Management : ManagementBase
     {
+
+        public Management(IPAMSecretResolver resolver)
+        {
+            _resolver = resolver;
+        }
 
         public override JobResult ProcessJob(ManagementJobConfiguration config)
         {
@@ -28,10 +34,11 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
 
             try
             {
+                SetPAMSecrets(config.ServerUsername, config.ServerPassword, logger);
                 base.ParseJobProperties();
                 base.PrimaryNodeActive();
 
-                F5Client f5 = new F5Client(JobConfig.CertificateStoreDetails, JobConfig.ServerUsername, JobConfig.ServerPassword, JobConfig.UseSSL, JobConfig.JobCertificate.PrivateKeyPassword, JobConfig.LastInventory)
+                F5Client f5 = new F5Client(JobConfig.CertificateStoreDetails, ServerUserName, ServerPassword, JobConfig.UseSSL, JobConfig.JobCertificate.PrivateKeyPassword, JobConfig.LastInventory)
                 {
                     PrimaryNode = base.PrimaryNode,
                     IgnoreSSLWarning = base.IgnoreSSLWarning

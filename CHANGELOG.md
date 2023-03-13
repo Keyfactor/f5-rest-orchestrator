@@ -12,5 +12,5 @@ v1.2
 v1.1
 - Modify PrimaryNodeOnlineRequired certificate store type parameter to be optional for backwards compatibility
 
-v1.0 
+v1.0  
 - Initial Version

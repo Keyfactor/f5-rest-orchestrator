@@ -2,11 +2,17 @@
 using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.Orchestrators.Common.Enums;
 using System;
+using Keyfactor.Orchestrators.Extensions.Interfaces;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 {
     public class Management : ManagementBase
     {
+
+        public Management(IPAMSecretResolver resolver)
+        {
+            _resolver = resolver;
+        }
 
         public override JobResult ProcessJob(ManagementJobConfiguration config)
         {
@@ -16,6 +22,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             }
 
             LogHandlerCommon.MethodEntry(logger, config.CertificateStoreDetails, "ProcessJob");
+
             if (config.OperationType != CertStoreOperationType.Add
                 && config.OperationType != CertStoreOperationType.Remove)
             {
@@ -27,10 +34,11 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 
             try
             {
+                SetPAMSecrets(config.ServerUsername, config.ServerPassword, logger);
                 base.ParseJobProperties();
                 base.PrimaryNodeActive();
 
-                F5Client f5 = new F5Client(config.CertificateStoreDetails, config.ServerUsername, config.ServerPassword, config.UseSSL, config.JobCertificate.PrivateKeyPassword, config.LastInventory)
+                F5Client f5 = new F5Client(config.CertificateStoreDetails, ServerUserName, ServerPassword, config.UseSSL, config.JobCertificate.PrivateKeyPassword, config.LastInventory)
                 {
                     PrimaryNode = base.PrimaryNode,
                     F5Version = base.F5Version,

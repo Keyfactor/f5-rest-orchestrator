@@ -123,13 +123,11 @@ The F5 Orchestrator has been tested using Keyfactor Command version 9.4 and the 
 
 ## F5 Orchestrator Installation
 
-1. In the Keyfactor Orchestrator installation folder (by convention usually C:\Program Files\Keyfactor\Keyfactor Orchestrator), find the "extensions" folder. Underneath that, create a new folder for each F5 Orchestrator certificate store type you wish to manage.  Suggested names for each are below:
-    - F5-CA-REST (for management of CA Bundles)
-    - F5-WS-REST (for management of Web Server Certificates)
-    - F5-SL-REST (for management of SSL Certificates)
+1. Stop the Keyfactor Universal Orchestrator Service.
+2. In the Keyfactor Orchestrator installation folder (by convention usually C:\Program Files\Keyfactor\Keyfactor Orchestrator), find the "extensions" folder. Underneath that, create a new folder named F5 or another name of your choosing.
 3. Download the latest version of the F5 Orchestrator from [GitHub](https://github.com/Keyfactor/f5-rest-orchestrator).
-4. Copy the contents of the download installation zip file to each of the folders created in step 1.
-5. (Optional) If you decided to name any of the folders in step 1 to something different than the suggested names, you will need to edit the manifest.json file in each of the folders.  For each section change {folder name} in "CertStores.{folder name}.*Capability*" to the folder name you used for each store type.
+4. Copy the contents of the download installation zip file into the folder created in step 1.
+5. Start the Keyfactor Universal Orchestrator Service.
 
 
 ## F5 Orchestrator Configuration

@@ -57,34 +57,36 @@ The secrets that this orchestrator extension supports for use with a PAM Provide
 |ServerPassword|The password that will be used to authenticate to the F5 installation|
   
 
-It is not necessary to implement all of the secrets available to be managed by a PAM provider.  For each value that you want managed by a PAM provider, simply enter the key value inside your specific PAM provider that will hold this value into the corresponding field when setting up the certificate store, discovery job, or API call.
+It is not necessary to use a PAM Provider for all of the secrets available above. If a PAM Provider should not be used, simply enter in the actual value to be used, as normal.
 
-Setting up a PAM provider for use involves adding an additional section to the manifest.json file for this extension as well as setting up the PAM provider you will be using.  Each of these steps is specific to the PAM provider you will use and are documented in the specific GitHub repo for that provider.  For a list of Keyfactor supported PAM providers, please reference the [Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam).
+If a PAM Provider will be used for one of the fields above, start by referencing the [Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam). The GitHub repo for the PAM Provider to be used contains important information such as the format of the `json` needed. What follows is an example but does not reflect the `json` values for all PAM Providers as they have different "instance" and "initialization" parameter names and values.
 
+### Example PAM Provider Setup
 
-### Register the PAM Provider
+To use a PAM Provider to resolve a field, in this example the __Server Password__ will be resolved by the `Hashicorp-Vault` provider, first install the PAM Provider extension from the [Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam) on the Universal Orchestrator.
 
-A PAM Provider needs to be registered on the Universal Orchestrator in the same way other extensions are. Create a folder for the specific PAM Provider to be added, and place the contents of the PAM Provider into the folder. There needs to be a manifest.json with the PAM Provider.
+Next, complete configuration of the PAM Provider on the UO by editing the `manifest.json` of the __PAM Provider__ (e.g. located at extensions/Hashicorp-Vault/manifest.json). The "initialization" parameters need to be entered here:
 
-After a manifest.json is added, the final step for configuration is setting the "provider-level" parameters for the PAM Provider. These are also known as the "initialization-level" parameters. These need to be placed in a json file that gets loaded by the Orchestrator by default. 
+~~~ json
+  "Keyfactor:PAMProviders:Hashicorp-Vault:InitializationInfo": {
+    "Host": "http://127.0.0.1:8200",
+    "Path": "v1/secret/data",
+    "Token": "xxxxxx"
+  }
+~~~
 
-example manifest.json for MY-PROVIDER-NAME
-```
-{
-    "extensions": {
-        "Keyfactor.Platform.Extensions.IPAMProvider": {
-            "PAMProviders.MY-PROVIDER-NAME.PAMProvider": {
-                "assemblyPath": "my-pam-provider.dll",
-                "TypeFullName": "Keyfactor.Extensions.Pam.MyPamProviderClass"
-            }
-        }
-    },
-    "Keyfactor:PAMProviders:MY-PROVIDER-NAME:InitializationInfo": {
-        "InitParam1": "InitValue1",
-        "InitParam2": "InitValue2"
-    }
-}
-```
+After these values are entered, the Orchestrator needs to be restarted to pick up the configuration. Now the PAM Provider can be used on other Orchestrator Extensions.
+
+### Use the PAM Provider
+With the PAM Provider configured as an extenion on the UO, a `json` object can be passed instead of an actual value to resolve the field with a PAM Provider. Consult the [Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam) for the specific format of the `json` object.
+
+To have the __Server Password__ field resolved by the `Hashicorp-Vault` provider, the corresponding `json` object from the `Hashicorp-Vault` extension needs to be copied and filed in with the correct information:
+
+~~~ json
+{"Secret":"my-kv-secret","Key":"myServerPassword"}
+~~~
+
+This text would be entered in as the value for the __Server Password__, instead of entering in the actual password. The Orchestrator will attempt to use the PAM Provider to retrieve the __Server Password__. If PAM should not be used, just directly enter in the value for the field.
 
 
 
@@ -121,13 +123,11 @@ The F5 Orchestrator has been tested using Keyfactor Command version 9.4 and the 
 
 ## F5 Orchestrator Installation
 
-1. In the Keyfactor Orchestrator installation folder (by convention usually C:\Program Files\Keyfactor\Keyfactor Orchestrator), find the "extensions" folder. Underneath that, create a new folder for each F5 Orchestrator certificate store type you wish to manage.  Suggested names for each are below:
-    - F5-CA-REST (for management of CA Bundles)
-    - F5-WS-REST (for management of Web Server Certificates)
-    - F5-SL-REST (for management of SSL Certificates)
+1. Stop the Keyfactor Universal Orchestrator Service.
+2. In the Keyfactor Orchestrator installation folder (by convention usually C:\Program Files\Keyfactor\Keyfactor Orchestrator), find the "extensions" folder. Underneath that, create a new folder named F5 or another name of your choosing.
 3. Download the latest version of the F5 Orchestrator from [GitHub](https://github.com/Keyfactor/f5-rest-orchestrator).
-4. Copy the contents of the download installation zip file to each of the folders created in step 1.
-5. (Optional) If you decided to name any of the folders in step 1 to something different than the suggested names, you will need to edit the manifest.json file in each of the folders.  For each section change {folder name} in "CertStores.{folder name}.*Capability*" to the folder name you used for each store type.
+4. Copy the contents of the download installation zip file into the folder created in step 1.
+5. Start the Keyfactor Universal Orchestrator Service.
 
 
 ## F5 Orchestrator Configuration

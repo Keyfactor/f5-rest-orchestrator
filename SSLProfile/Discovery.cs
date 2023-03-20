@@ -4,11 +4,17 @@ using Keyfactor.Orchestrators.Common.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Keyfactor.Orchestrators.Extensions.Interfaces;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 {
     public class Discovery : DiscoveryBase
     {
+        public Discovery(IPAMSecretResolver resolver)
+        {
+            _resolver = resolver;
+        }
+
         public override JobResult ProcessJob(DiscoveryJobConfiguration config, SubmitDiscoveryUpdate sdr)
         {
             if (logger == null)
@@ -18,11 +24,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 
             CertificateStore certificateStore = new CertificateStore() { ClientMachine = config.ClientMachine };
             LogHandlerCommon.MethodEntry(logger, certificateStore, "ProcessJob");
-            F5Client f5 = new F5Client(certificateStore, config.ServerUsername, config.ServerPassword, config.UseSSL, string.Empty, new List<PreviousInventoryItem>()) { IgnoreSSLWarning = true };
 
             try
             {
                 LogHandlerCommon.Debug(logger, certificateStore, "Getting partitions");
+
+                SetPAMSecrets(config.ServerUsername, config.ServerPassword, logger);
+
+                F5Client f5 = new F5Client(certificateStore, ServerUserName, ServerPassword, config.UseSSL, string.Empty, new List<PreviousInventoryItem>()) { IgnoreSSLWarning = true };
                 List<string> locations = f5.GetPartitions().Select(p => p.name).ToList();
 
                 LogHandlerCommon.Debug(logger, certificateStore, $"Submitting {locations?.Count} partitions");

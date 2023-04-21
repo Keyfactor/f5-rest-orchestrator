@@ -4,7 +4,7 @@ The F5 Orchestrator allows for the remote management of F5 Stores. Discovery, In
 
 #### Integration status: Production - Ready for use in production environments.
 
-## About the Keyfactor Universal Orchestrator Capability
+## About the Keyfactor Universal Orchestrator Extension
 
 This repository contains a Universal Orchestrator Extension which is a plugin to the Keyfactor Universal Orchestrator. Within the Keyfactor Platform, Orchestrators are used to manage “certificate stores” &mdash; collections of certificates and roots of trust that are found within and used by various applications.
 
@@ -100,15 +100,17 @@ The F5 Orchestrator supports three different types of certificates stores with t
 
 - CA Bundles
   - Discovery
-  - Inventory
-  - Management (Add)
+  - Inventory*
+  - Management (Add and Remove)
 - Web Server Device Certificates
-  - Inventory
+  - Inventory*
   - Management (Add, but replacement/renewal of existing certificate only) 
 - SSL Certificates
   - Discovery
-  - Inventory
-  - Management (Add)
+  - Inventory*
+  - Management (Add and Remove)  
+
+* Special note on private keys: One of the pieces of information that Keyfactor collects during an Inventory job is whether or not the certificate stored in F5 has a private key.  The private key is NEVER actually retrieved by Keyfactor, but Keyfactor does track whether one exists.  F5 does not provide an API to determine this, so by convention, all CA Bundle certificates are deemed to not have private keys, while Web Server and SSL certificates are deemed to have them.  Any Management jobs adding (new or renewal) a certificate will renew without the private key for CA Bundle stores and with the private key for Web Server or SSL stores.
 
 
 

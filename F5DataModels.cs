@@ -62,6 +62,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
     {
         public string name { get; set; }
         public bool isBundle { get; set; }
+        public string keyType { get; set; }
     }
 
     internal class F5Key

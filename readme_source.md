@@ -4,15 +4,17 @@ The F5 Orchestrator supports three different types of certificates stores with t
 
 - CA Bundles
   - Discovery
-  - Inventory
-  - Management (Add)
+  - Inventory*
+  - Management (Add and Remove)
 - Web Server Device Certificates
-  - Inventory
+  - Inventory*
   - Management (Add, but replacement/renewal of existing certificate only) 
 - SSL Certificates
   - Discovery
-  - Inventory
-  - Management (Add)
+  - Inventory*
+  - Management (Add and Remove)  
+
+*Special note on private keys: One of the pieces of information that Keyfactor collects during an Inventory job is whether or not the certificate stored in F5 has a private key.  The private key is NEVER actually retrieved by Keyfactor, but Keyfactor does track whether one exists.  F5 does not provide an API to determine this, so by convention, all CA Bundle certificates are deemed to not have private keys, while Web Server and SSL certificates are deemed to have them.  Any Management jobs adding (new or renewal) a certificate will renew without the private key for CA Bundle stores and with the private key for Web Server or SSL stores.
 
 
 
@@ -27,13 +29,11 @@ The F5 Orchestrator has been tested using Keyfactor Command version 9.4 and the 
 
 ## F5 Orchestrator Installation
 
-1. In the Keyfactor Orchestrator installation folder (by convention usually C:\Program Files\Keyfactor\Keyfactor Orchestrator), find the "extensions" folder. Underneath that, create a new folder for each F5 Orchestrator certificate store type you wish to manage.  Suggested names for each are below:
-    - F5-CA-REST (for management of CA Bundles)
-    - F5-WS-REST (for management of Web Server Certificates)
-    - F5-SL-REST (for management of SSL Certificates)
+1. Stop the Keyfactor Universal Orchestrator Service.
+2. In the Keyfactor Orchestrator installation folder (by convention usually C:\Program Files\Keyfactor\Keyfactor Orchestrator), find the "extensions" folder. Underneath that, create a new folder named F5 or another name of your choosing.
 3. Download the latest version of the F5 Orchestrator from [GitHub](https://github.com/Keyfactor/f5-rest-orchestrator).
-4. Copy the contents of the download installation zip file to each of the folders created in step 1.
-5. (Optional) If you decided to name any of the folders in step 1 to something different than the suggested names, you will need to edit the manifest.json file in each of the folders.  For each section change {folder name} in "CertStores.{folder name}.*Capability*" to the folder name you used for each store type.
+4. Copy the contents of the download installation zip file into the folder created in step 1.
+5. Start the Keyfactor Universal Orchestrator Service.
 
 
 ## F5 Orchestrator Configuration

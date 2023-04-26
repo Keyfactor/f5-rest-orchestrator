@@ -6,7 +6,7 @@ using System;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
-    public abstract class InventoryBase : IInventoryJobExtension
+    public abstract class InventoryBase : F5JobBase, IInventoryJobExtension
     {
         protected ILogger logger;
 

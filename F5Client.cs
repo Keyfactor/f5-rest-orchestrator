@@ -388,7 +388,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.MethodExit(logger, CertificateStore, "SetItemStatus");
         }
 
-        private CurrentInventoryItem GetInventoryItem(string partition, string name)
+        private CurrentInventoryItem GetInventoryItem(string partition, string name, bool hasPrivateKey)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetInventoryItem");
 
@@ -396,10 +396,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             X509Certificate2Collection certificateCollection = GetCertificateEntry($"/config/filestore/files_d/{partition}_d/certificate_d/:{partition}:{name}_*");
             List<string> certContents = new List<string>();
             bool useChainLevel = certificateCollection.Count > 1;
-            bool privateKeyEntry = false;
             foreach (X509Certificate2 certificate in certificateCollection)
             {
-                if (certificate.HasPrivateKey) { privateKeyEntry = true; }
                 certContents.Add(Convert.ToBase64String(certificate.Export(X509ContentType.Cert)));
             }
 
@@ -408,7 +406,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             {
                 ItemStatus = OrchestratorInventoryItemStatus.Unknown,
                 Alias = crtName,
-                PrivateKeyEntry = privateKeyEntry,
+                PrivateKeyEntry = hasPrivateKey,
                 UseChainLevel = useChainLevel,
                 Certificates = certContents.ToArray()
             };
@@ -633,7 +631,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetSSLProfiles");
             string partition = CertificateStore.StorePath;
-            string query = $"/mgmt/tm/sys/file/ssl-cert?$filter=partition+eq+{partition}&$select=name,isBundle&$top={pageSize}&$skip=0";
+            string query = $"/mgmt/tm/sys/file/ssl-cert?$filter=partition+eq+{partition}&$select=name,keyType,isBundle&$top={pageSize}&$skip=0";
             F5PagedSSLProfiles pagedProfiles = REST.Get<F5PagedSSLProfiles>(query);
             List<F5SSLProfile> profiles = new List<F5SSLProfile>();
             List<CurrentInventoryItem> inventory = new List<CurrentInventoryItem>();
@@ -674,7 +672,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                         LogHandlerCommon.Trace(logger, CertificateStore, $"Skipping '{profiles[i].name}' because it is managed by F5");
                         continue;
                     }
-                    inventory.Add(GetInventoryItem(partition, profiles[i].name));
+                    inventory.Add(GetInventoryItem(partition, profiles[i].name, true));
                 }
                 catch (Exception ex)
                 {
@@ -763,7 +761,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     string crtName = crtPathParts[1];
 
                     LogHandlerCommon.Trace(logger, CertificateStore, $"Adding inventory item for partition '{partition}' and name '{crtName}'");
-                    inventory.Add(GetInventoryItem(partition, crtName));
+                    inventory.Add(GetInventoryItem(partition, crtName, false));
                 }
                 catch (Exception ex)
                 {

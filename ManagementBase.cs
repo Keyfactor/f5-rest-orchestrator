@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
-    public abstract class ManagementBase : IManagementJobExtension
+    public abstract class ManagementBase : F5JobBase, IManagementJobExtension
     {
         protected ILogger logger; 
         
@@ -82,7 +82,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             if (PrimaryNodeOnlineRequired)
             {
-                F5Client f5 = new F5Client(JobConfig.CertificateStoreDetails, JobConfig.ServerUsername, JobConfig.ServerPassword, JobConfig.UseSSL, JobConfig.JobCertificate.PrivateKeyPassword, JobConfig.LastInventory)
+                F5Client f5 = new F5Client(JobConfig.CertificateStoreDetails, ServerUserName, ServerPassword, JobConfig.UseSSL, JobConfig.JobCertificate.PrivateKeyPassword, JobConfig.LastInventory)
                 { PrimaryNode = this.PrimaryNode };
                 if (!f5.PrimaryNodeActive())
                 {

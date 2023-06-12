@@ -31,7 +31,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 
                 SetPAMSecrets(config.ServerUsername, config.ServerPassword, logger);
 
-                F5Client f5 = new F5Client(certificateStore, ServerUserName, ServerPassword, config.UseSSL, string.Empty, new List<PreviousInventoryItem>()) { IgnoreSSLWarning = true };
+                F5Client f5 = new F5Client(certificateStore, ServerUserName, ServerPassword, config.UseSSL, string.Empty, true, new List<PreviousInventoryItem>());
                 List<string> locations = f5.GetPartitions().Select(p => p.name).ToList();
 
                 LogHandlerCommon.Debug(logger, certificateStore, $"Submitting {locations?.Count} partitions");

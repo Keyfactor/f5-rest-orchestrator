@@ -82,7 +82,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             if (PrimaryNodeOnlineRequired)
             {
-                F5Client f5 = new F5Client(JobConfig.CertificateStoreDetails, ServerUserName, ServerPassword, JobConfig.UseSSL, JobConfig.JobCertificate.PrivateKeyPassword, JobConfig.LastInventory)
+                F5Client f5 = new F5Client(JobConfig.CertificateStoreDetails, ServerUserName, ServerPassword, JobConfig.UseSSL, JobConfig.JobCertificate.PrivateKeyPassword, IgnoreSSLWarning, JobConfig.LastInventory)
                 { PrimaryNode = this.PrimaryNode };
                 if (!f5.PrimaryNodeActive())
                 {

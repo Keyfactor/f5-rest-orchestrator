@@ -23,10 +23,6 @@ The F5 Orchestrator supports three different types of certificates stores with t
 
 The version number of a the F5 Orchestrator can be verified by right clicking on the F5Orchestrator.dll file, selecting Properties, and then clicking on the Details tab.
 
-## Keyfactor Version Supported
-
-The F5 Orchestrator has been tested using Keyfactor Command version 9.4 and the Keyfactor Universal Orchestrator version 9.5.  However, this should be compatible with any Keyfactor versions 9.x and above.
-
 ## F5 Orchestrator Installation
 
 1. Stop the Keyfactor Universal Orchestrator Service.

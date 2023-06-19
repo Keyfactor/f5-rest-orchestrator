@@ -1,3 +1,12 @@
+// Copyright 2023 Keyfactor                                                   
+// Licensed under the Apache License, Version 2.0 (the "License"); you may    
+// not use this file except in compliance with the License.  You may obtain a 
+// copy of the License at http://www.apache.org/licenses/LICENSE-2.0.  Unless 
+// required by applicable law or agreed to in writing, software distributed   
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES   
+// OR CONDITIONS OF ANY KIND, either express or implied. See the License for  
+// thespecific language governing permissions and limitations under the       
+// License. 
 ﻿using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.PKI.X509;
@@ -43,13 +52,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         #region Constructors
 
-        public F5Client(CertificateStore certificateStore, string serverUserName, string serverPassword, bool useSSL, string pfxPassword, IEnumerable<PreviousInventoryItem> inventory)
+        public F5Client(CertificateStore certificateStore, string serverUserName, string serverPassword, bool useSSL, string pfxPassword, bool ignoreSSLWarning, IEnumerable<PreviousInventoryItem> inventory)
         {
             CertificateStore = certificateStore;
             ServerUserName = serverUserName;
             ServerPassword = serverPassword;
             UseSSL = useSSL;
             PFXPassword = pfxPassword;
+            IgnoreSSLWarning = ignoreSSLWarning;
             Inventory = inventory;
             
             if (logger == null)
@@ -692,7 +702,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         private string GetToken(string userName, string userPassword)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetToken");
-            F5LoginRequest request = new F5LoginRequest() { username = userName, password = userPassword };
+            F5LoginRequest request = new F5LoginRequest() { username = userName, password = userPassword, loginProviderName = "tmos" };
             F5LoginResponse loginResponse = REST.Post<F5LoginResponse>($"/mgmt/shared/authn/login", JsonConvert.SerializeObject(request));
             LogHandlerCommon.MethodExit(logger, CertificateStore, "GetToken");
 

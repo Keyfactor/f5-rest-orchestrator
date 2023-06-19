@@ -1,3 +1,7 @@
+v1.4.1
+- Bug Fix: IgnoreSSLWarning was not recognized when set to true
+- Modified login API call for token auth to fix issue some users were experiencing
+
 v1.4
 - Modified authentication for API calls from Basic to Token Auth.  Initial login uses id/password to retrieve temporary access token, so the same id/password credentials are still required for the certificate store, but all subsequent API calls will use the token retrieved on initial login.
 - Added PAM Support

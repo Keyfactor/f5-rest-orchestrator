@@ -1,0 +1,16 @@
+./Bundle/Discovery.cs
+./Bundle/Inventory.cs
+./Bundle/Management.cs
+./DiscoveryBase.cs
+./F5Client.cs
+./F5DataModels.cs
+./F5JobBase.cs
+./InventoryBase.cs
+./ManagementBase.cs
+./RESTHandler.cs
+./SSLProfile/Discovery.cs
+./SSLProfile/Inventory.cs
+./SSLProfile/Management.cs
+./Utilities.cs
+./WebServer/Inventory.cs
+./WebServer/Management.cs

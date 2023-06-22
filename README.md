@@ -102,6 +102,8 @@ This text would be entered in as the value for the __Server Password__, instead 
 ---
 
 
+<span style="color:red">**Please note that this integration will work with the Universal Orchestrator version 10.1 or earlier, OR 10.4.1 or greater**</span
+
 ## Use Cases
 
 The F5 Orchestrator supports three different types of certificates stores with the capabilities for each below:

@@ -1,4 +1,4 @@
-v1.4.1
+v1.4.3
 - Bug Fix: IgnoreSSLWarning was not recognized when set to true
 - Modified login API call for token auth to fix issue some users were experiencing
 

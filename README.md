@@ -102,6 +102,8 @@ This text would be entered in as the value for the __Server Password__, instead 
 ---
 
 
+<span style="color:red">**Please note that this integration will work with the Universal Orchestrator version 10.1 or earlier, OR 10.4.1 or greater**</span>
+
 ## Use Cases
 
 The F5 Orchestrator supports three different types of certificates stores with the capabilities for each below:
@@ -126,10 +128,6 @@ The F5 Orchestrator supports three different types of certificates stores with t
 ## Versioning
 
 The version number of a the F5 Orchestrator can be verified by right clicking on the F5Orchestrator.dll file, selecting Properties, and then clicking on the Details tab.
-
-## Keyfactor Version Supported
-
-The F5 Orchestrator has been tested using Keyfactor Command version 9.4 and the Keyfactor Universal Orchestrator version 9.5.  However, this should be compatible with any Keyfactor versions 9.x and above.
 
 ## F5 Orchestrator Installation
 

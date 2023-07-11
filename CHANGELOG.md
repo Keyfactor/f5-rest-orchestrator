@@ -1,3 +1,6 @@
+v1.4.4
+- Buf Fix: Allow PEM formats with # comments at top of file during inventory
+
 v1.4.3
 - Bug Fix: IgnoreSSLWarning was not recognized when set to true
 - Modified login API call for token auth to fix issue some users were experiencing

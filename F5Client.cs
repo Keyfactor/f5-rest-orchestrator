@@ -322,8 +322,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     crtBytes = System.Convert.FromBase64String(crt);
                     certificateEntry = System.Text.ASCIIEncoding.ASCII.GetString(crtBytes);
                     break;
-                //PEM(w / headers)-- > L
+                //PEM(w / headers)-- > L or I
                 case "L":
+                case "I":
                     LogHandlerCommon.Trace(logger, CertificateStore, "Certificate is PEM with headers");
                     crtBytes = System.Convert.FromBase64String(crt);
                     certificateEntry = System.Text.ASCIIEncoding.ASCII.GetString(crtBytes);
@@ -335,7 +336,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             }
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "GetCertificateEntry");
-
+            //LogHandlerCommon.Debug(logger, CertificateStore, certificateEntry);
             string certificateEntryAfterRemovalOfDelim = certificateEntry.Replace("-----BEGIN CERTIFICATE----- ", "-----BEGIN CERTIFICATE-----");
             CertificateCollectionConverter c = CertificateCollectionConverterFactory.FromPEM(certificateEntryAfterRemovalOfDelim);
 
@@ -409,6 +410,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             foreach (X509Certificate2 certificate in certificateCollection)
             {
                 certContents.Add(Convert.ToBase64String(certificate.Export(X509ContentType.Cert)));
+                //LogHandlerCommon.Debug(logger, CertificateStore, $"ALIAS: {name}: {Convert.ToBase64String(certificate.Export(X509ContentType.Cert))}");
             }
 
             string crtName = GetCrtName(name, false);

@@ -1,4 +1,5 @@
-v1.4.4
+v1.4.5
+- Bug Fix: For F5-WS-REST store type, make sure certificate chain is ordered properly when installing to F5 - EE Cert => Issuing CA Cert => One-to-many Intermediate CA Certs => Root CA Cert.
 - Bug Fix: Allow PEM formats with # comments at top of file during inventory
 
 v1.4.3
@@ -22,3 +23,4 @@ v1.1
 
 v1.0  
 - Initial Version
+

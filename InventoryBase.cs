@@ -23,6 +23,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         protected string F5Version { get; set; }
         protected bool IgnoreSSLWarning { get; set; }
+        protected bool UseTokenAuth { get; set; }
 
         public string ExtensionName => string.Empty;
 
@@ -38,6 +39,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"F5 version '{F5Version}'");
 
             IgnoreSSLWarning = properties.IgnoreSSLWarning == null || string.IsNullOrEmpty(properties.IgnoreSSLWarning.Value) ? false : bool.Parse(properties.IgnoreSSLWarning.Value);
+            UseTokenAuth = properties.UseTokenAuth == null || string.IsNullOrEmpty(properties.UseTokenAuth.Value) ? false : bool.Parse(properties.UseTokenAuth.Value);
             LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"Ignore SSL Warnings '{IgnoreSSLWarning.ToString()}'");
         }
     }

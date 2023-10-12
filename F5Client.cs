@@ -45,6 +45,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string PrimaryNode { get; set; }
         public string F5Version { get; set; }
         public bool IgnoreSSLWarning { get; set; }
+        public bool UseTokenAuth { get; set; }
         private RESTHandler REST { get; set; }
         private F5Transaction Transaction { get; set; }
 
@@ -53,7 +54,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         #region Constructors
 
-        public F5Client(CertificateStore certificateStore, string serverUserName, string serverPassword, bool useSSL, string pfxPassword, bool ignoreSSLWarning, IEnumerable<PreviousInventoryItem> inventory)
+        public F5Client(CertificateStore certificateStore, string serverUserName, string serverPassword, bool useSSL, string pfxPassword, bool ignoreSSLWarning, bool useTokenAuth, IEnumerable<PreviousInventoryItem> inventory)
         {
             CertificateStore = certificateStore;
             ServerUserName = serverUserName;
@@ -61,6 +62,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             UseSSL = useSSL;
             PFXPassword = pfxPassword;
             IgnoreSSLWarning = ignoreSSLWarning;
+            UseTokenAuth = UseTokenAuth;
             Inventory = inventory;
 
             if (logger == null)
@@ -69,7 +71,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             }
 
             REST = new RESTHandler(certificateStore.ClientMachine, serverUserName, serverPassword, useSSL, IgnoreSSLWarning);
-            REST.Token = GetToken(serverUserName, serverPassword);
+
+            if (UseTokenAuth)
+                REST.Token = GetToken(serverUserName, serverPassword);
         }
 
         // Constructors

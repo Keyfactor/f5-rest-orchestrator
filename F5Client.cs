@@ -62,7 +62,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             UseSSL = useSSL;
             PFXPassword = pfxPassword;
             IgnoreSSLWarning = ignoreSSLWarning;
-            UseTokenAuth = UseTokenAuth;
+            UseTokenAuth = useTokenAuth;
             Inventory = inventory;
 
             if (logger == null)

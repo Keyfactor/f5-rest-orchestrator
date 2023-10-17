@@ -168,7 +168,7 @@ The version number of a the F5 Orchestrator can be verified by right clicking on
 
 
 
-The Custom Fields tab contains 6 custom store parameters.  The set up is consistent across store types, and should look as follows:
+The Custom Fields tab contains 10 custom store parameters (3 of which, Server Username, Server Password, and Use SSL were set up on the Basic tab and are not actually custom parameters you need or want to modify on this tab).  The set up is consistent across store types, and should look as follows:
 
 ![](images/image3.png)<br>  
 ![](images/image6.png)<br>  
@@ -177,6 +177,7 @@ The Custom Fields tab contains 6 custom store parameters.  The set up is consist
 ![](images/image4.png)<br>  
 ![](images/image5.png)<br>  
 ![](images/image15.png)<br>  
+![](images/image16.png)<br>  
 
 If any or all of the 3 certificate store types were already set up on installation of Keyfactor, you may only need to add Primary Node Online Required and Ignore SSL Warning.  These parameters, however, are optional and only necessary if needed to be set to true.  Please see the descriptions below in "2a. Create a F5 Certificate Store wihin Keyfactor Command.
 

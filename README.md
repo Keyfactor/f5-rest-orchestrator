@@ -168,7 +168,7 @@ The version number of a the F5 Orchestrator can be verified by right clicking on
 
 
 
-The Custom Fields tab contains 6 custom store parameters.  The set up is consistent across store types, and should look as follows:
+The Custom Fields tab contains 10 custom store parameters (3 of which, Server Username, Server Password, and Use SSL were set up on the Basic tab and are not actually custom parameters you need or want to modify on this tab).  The set up is consistent across store types, and should look as follows:
 
 ![](images/image3.png)<br>  
 ![](images/image6.png)<br>  
@@ -177,6 +177,7 @@ The Custom Fields tab contains 6 custom store parameters.  The set up is consist
 ![](images/image4.png)<br>  
 ![](images/image5.png)<br>  
 ![](images/image15.png)<br>  
+![](images/image16.png)<br>  
 
 If any or all of the 3 certificate store types were already set up on installation of Keyfactor, you may only need to add Primary Node Online Required and Ignore SSL Warning.  These parameters, however, are optional and only necessary if needed to be set to true.  Please see the descriptions below in "2a. Create a F5 Certificate Store wihin Keyfactor Command.
 
@@ -212,6 +213,8 @@ If you choose to manually create a F5 store In Keyfactor Command rather than run
 - **Version of F5** - Required.  Select v13, v14, or v15 to match the version for the F5 device being managed
 
 - **Ignore SSL Warning** - Optional.  Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it.  If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs.
+
+- **Use Token Authentication** - Optional.  Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests.  If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs.  Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests.
 
 - **Orchestrator** – Required.  Select the orchestrator you wish to use to manage this store
 

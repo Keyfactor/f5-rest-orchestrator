@@ -274,8 +274,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 webClient.Headers.Add("ServerHost", $"{GetProtocol()}{Host}/mgmt/shared/file-transfer/uploads/{filename}");
                 webClient.Headers.Add("Content-Type", "application/octet-stream");
                 webClient.Headers.Add("Content-Range", $"0-{fileBytes.Length - 1}/{fileBytes.Length}");
-                webClient.Headers.Add("X-F5-Auth-Token", Token);
-                //webClient.Headers.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.ASCII.GetBytes($"{User}:{Password}"))}");
+                if (Token == null)
+                {
+                    webClient.Headers.Add("Authorization", $"Basic {Convert.ToBase64String(Encoding.ASCII.GetBytes($"{User}:{Password}"))}");
+                }
+                else
+                {
+                    webClient.Headers.Add("X-F5-Auth-Token", Token);
+                }
 
                 webClient.UploadData($"{GetProtocol()}{Host}/mgmt/shared/file-transfer/uploads/{filename}", fileBytes);
             }

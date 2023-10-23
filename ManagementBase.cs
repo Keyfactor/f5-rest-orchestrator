@@ -28,6 +28,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         protected int _primaryNodeRetryCount = 0;
         protected string F5Version { get; set; }
         protected bool IgnoreSSLWarning { get; set; }
+        protected bool UseTokenAuth { get; set; }
 
         public string ExtensionName => string.Empty;
 
@@ -82,6 +83,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"F5 version '{F5Version}'");
 
             IgnoreSSLWarning = properties.IgnoreSSLWarning == null || string.IsNullOrEmpty(properties.IgnoreSSLWarning.Value) ? false : bool.Parse(properties.IgnoreSSLWarning.Value);
+            UseTokenAuth = properties.UseTokenAuth == null || string.IsNullOrEmpty(properties.UseTokenAuth.Value) ? false : bool.Parse(properties.UseTokenAuth.Value);
             LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"Ignore SSL Warnings '{IgnoreSSLWarning.ToString()}'");
         }
 
@@ -91,7 +93,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             if (PrimaryNodeOnlineRequired)
             {
-                F5Client f5 = new F5Client(JobConfig.CertificateStoreDetails, ServerUserName, ServerPassword, JobConfig.UseSSL, JobConfig.JobCertificate.PrivateKeyPassword, IgnoreSSLWarning, JobConfig.LastInventory)
+                F5Client f5 = new F5Client(JobConfig.CertificateStoreDetails, ServerUserName, ServerPassword, JobConfig.UseSSL, JobConfig.JobCertificate.PrivateKeyPassword, IgnoreSSLWarning, UseTokenAuth, JobConfig.LastInventory)
                 { PrimaryNode = this.PrimaryNode };
                 if (!f5.PrimaryNodeActive())
                 {

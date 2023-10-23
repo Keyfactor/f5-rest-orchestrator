@@ -29,7 +29,327 @@
         "supportsReenrollment": false,
         "supportsInventory": true,
         "platformSupport": "Unused"
-      }
+      },
+      "store_types": {
+        "F5-SL-REST": {
+          "Name": "F5 SSL Profiles REST",
+          "ShortName": "F5-SL-REST",
+          "Capability": "F5-SL-REST",
+          "SupportedOperations": {
+            "Add": true,
+            "Create": false,
+            "Discovery": true,
+            "Enrollment": false,
+            "Remove": true
+          },
+          "Properties": [
+            {
+              "Name": "PrimaryNode",
+              "DisplayName": "Primary Node",
+              "Type": "String",
+              "DependsOn": "PrimaryNodeOnlineRequired",
+              "DefaultValue": "",
+              "Required": true
+            },
+            {
+              "Name": "PrimaryNodeCheckRetryWaitSecs",
+              "DisplayName": "Primary Node Check Retry Wait Seconds",
+              "Type": "String",
+              "DependsOn": "PrimaryNodeOnlineRequired",
+              "DefaultValue": "120",
+              "Required": true
+            },
+            {
+              "Name": "PrimaryNodeCheckRetryMax",
+              "DisplayName": "Primary Node Check Retry Maximum",
+              "Type": "String",
+              "DependsOn": "PrimaryNodeOnlineRequired",
+              "DefaultValue": "3",
+              "Required": true
+            },
+            {
+              "Name": "F5Version",
+              "DisplayName": "Version of F5",
+              "Type": "MultipleChoice",
+              "DependsOn": "",
+              "DefaultValue": "v12,v13,v14,v15",
+              "Required": true
+            },
+            {
+              "Name": "ServerUsername",
+              "DisplayName": "Server Username",
+              "Type": "Secret",
+              "DependsOn": "",
+              "DefaultValue": null,
+              "Required": false
+            },
+            {
+              "Name": "ServerPassword",
+              "DisplayName": "Server Password",
+              "Type": "Secret",
+              "DependsOn": "",
+              "DefaultValue": null,
+              "Required": false
+            },
+            {
+              "Name": "ServerUseSsl",
+              "DisplayName": "Use SSL",
+              "Type": "Bool",
+              "DependsOn": "",
+              "DefaultValue": "true",
+              "Required": true
+            },
+            {
+              "Name": "PrimaryNodeOnlineRequired",
+              "DisplayName": "Primary Node Online Required",
+              "Type": "Bool",
+              "DependsOn": "",
+              "DefaultValue": "",
+              "Required": true
+            },
+            {
+              "Name": "IgnoreSSLWarning",
+              "DisplayName": "Ignore SSL Warning",
+              "Type": "Bool",
+              "DependsOn": "",
+              "DefaultValue": "False",
+              "Required": true
+            },
+            {
+              "Name": "UseTokenAuth",
+              "DisplayName": "Use Token Authentication",
+              "Type": "Bool",
+              "DependsOn": "",
+              "DefaultValue": "false",
+              "Required": true
+            }
+          ],
+          "EntryParameters": [],
+          "PasswordOptions": {
+            "EntrySupported": false,
+            "StoreRequired": false,
+            "Style": "Default"
+          },
+          "PrivateKeyAllowed": "Optional",
+          "JobProperties": [],
+          "ServerRequired": true,
+          "PowerShell": false,
+          "BlueprintAllowed": true,
+          "CustomAliasAllowed": "Required"
+        },
+        "F5-WS-REST": {
+          "Name": "F5 WS Profiles REST",
+          "ShortName": "F5-WS-REST",
+          "Capability": "F5-WS-REST",
+          "SupportedOperations": {
+            "Add": true,
+            "Create": false,
+            "Discovery": false,
+            "Enrollment": false,
+            "Remove": false
+          },
+          "Properties": [
+            {
+              "Name": "PrimaryNode",
+              "DisplayName": "Primary Node",
+              "Type": "String",
+              "DependsOn": "PrimaryNodeOnlineRequired",
+              "DefaultValue": "",
+              "Required": true
+            },
+            {
+              "Name": "PrimaryNodeCheckRetryWaitSecs",
+              "DisplayName": "Primary Node Check Retry Wait Seconds",
+              "Type": "String",
+              "DependsOn": "PrimaryNodeOnlineRequired",
+              "DefaultValue": "120",
+              "Required": true
+            },
+            {
+              "Name": "PrimaryNodeCheckRetryMax",
+              "DisplayName": "Primary Node Check Retry Maximum",
+              "Type": "String",
+              "DependsOn": "PrimaryNodeOnlineRequired",
+              "DefaultValue": "3",
+              "Required": true
+            },
+            {
+              "Name": "F5Version",
+              "DisplayName": "Version of F5",
+              "Type": "MultipleChoice",
+              "DependsOn": "",
+              "DefaultValue": "v12,v13,v14,v15",
+              "Required": true
+            },
+            {
+              "Name": "ServerUsername",
+              "DisplayName": "Server Username",
+              "Type": "Secret",
+              "DependsOn": "",
+              "DefaultValue": null,
+              "Required": false
+            },
+            {
+              "Name": "ServerPassword",
+              "DisplayName": "Server Password",
+              "Type": "Secret",
+              "DependsOn": "",
+              "DefaultValue": null,
+              "Required": false
+            },
+            {
+              "Name": "ServerUseSsl",
+              "DisplayName": "Use SSL",
+              "Type": "Bool",
+              "DependsOn": "",
+              "DefaultValue": "true",
+              "Required": true
+            },
+            {
+              "Name": "PrimaryNodeOnlineRequired",
+              "DisplayName": "Primary Node Online Required",
+              "Type": "Bool",
+              "DependsOn": "",
+              "DefaultValue": "",
+              "Required": true
+            },
+            {
+              "Name": "IgnoreSSLWarning",
+              "DisplayName": "Ignore SSL Warning",
+              "Type": "Bool",
+              "DependsOn": "",
+              "DefaultValue": "False",
+              "Required": true
+            },
+            {
+              "Name": "UseTokenAuth",
+              "DisplayName": "Use Token Authentication",
+              "Type": "Bool",
+              "DependsOn": "",
+              "DefaultValue": "false",
+              "Required": true
+            }
+          ],
+          "EntryParameters": [],
+          "PasswordOptions": {
+            "EntrySupported": false,
+            "StoreRequired": false,
+            "Style": "Default"
+          },
+          "PrivateKeyAllowed": "Required",
+          "JobProperties": [],
+          "ServerRequired": true,
+          "PowerShell": false,
+          "BlueprintAllowed": true,
+          "CustomAliasAllowed": "Forbidden"
+        },
+        "F5-CA-REST": {
+          "Name": "F5 CA Profiles REST",
+          "ShortName": "F5-CA-REST",
+          "Capability": "F5-CA-REST",
+          "SupportedOperations": {
+            "Add": true,
+            "Create": false,
+            "Discovery": true,
+            "Enrollment": false,
+            "Remove": true
+          },
+          "Properties": [
+            {
+              "Name": "PrimaryNode",
+              "DisplayName": "Primary Node",
+              "Type": "String",
+              "DependsOn": "PrimaryNodeOnlineRequired",
+              "DefaultValue": "",
+              "Required": true
+            },
+            {
+              "Name": "PrimaryNodeCheckRetryWaitSecs",
+              "DisplayName": "Primary Node Check Retry Wait Seconds",
+              "Type": "String",
+              "DependsOn": "PrimaryNodeOnlineRequired",
+              "DefaultValue": "120",
+              "Required": true
+            },
+            {
+              "Name": "PrimaryNodeCheckRetryMax",
+              "DisplayName": "Primary Node Check Retry Maximum",
+              "Type": "String",
+              "DependsOn": "PrimaryNodeOnlineRequired",
+              "DefaultValue": "3",
+              "Required": true
+            },
+            {
+              "Name": "F5Version",
+              "DisplayName": "Version of F5",
+              "Type": "MultipleChoice",
+              "DependsOn": "",
+              "DefaultValue": "v12,v13,v14,v15",
+              "Required": true
+            },
+            {
+              "Name": "ServerUsername",
+              "DisplayName": "Server Username",
+              "Type": "Secret",
+              "DependsOn": "",
+              "DefaultValue": null,
+              "Required": false
+            },
+            {
+              "Name": "ServerPassword",
+              "DisplayName": "Server Password",
+              "Type": "Secret",
+              "DependsOn": "",
+              "DefaultValue": null,
+              "Required": false
+            },
+            {
+              "Name": "ServerUseSsl",
+              "DisplayName": "Use SSL",
+              "Type": "Bool",
+              "DependsOn": "",
+              "DefaultValue": "true",
+              "Required": true
+            },
+            {
+              "Name": "PrimaryNodeOnlineRequired",
+              "DisplayName": "Primary Node Online Required",
+              "Type": "Bool",
+              "DependsOn": "",
+              "DefaultValue": "",
+              "Required": true
+            },
+            {
+              "Name": "IgnoreSSLWarning",
+              "DisplayName": "Ignore SSL Warning",
+              "Type": "Bool",
+              "DependsOn": "",
+              "DefaultValue": "False",
+              "Required": true
+            },
+            {
+              "Name": "UseTokenAuth",
+              "DisplayName": "Use Token Authentication",
+              "Type": "Bool",
+              "DependsOn": "",
+              "DefaultValue": "false",
+              "Required": true
+            }
+          ],
+          "EntryParameters": [],
+          "PasswordOptions": {
+            "EntrySupported": false,
+            "StoreRequired": false,
+            "Style": "Default"
+          },
+          "PrivateKeyAllowed": "Forbidden",
+          "JobProperties": [],
+          "ServerRequired": true,
+          "PowerShell": false,
+          "BlueprintAllowed": true,
+          "CustomAliasAllowed": "Required"
+        }
+      } 
     }
   }
 }

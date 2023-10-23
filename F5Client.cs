@@ -20,6 +20,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Newtonsoft.Json;
+using System.Collections;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
@@ -44,6 +45,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string PrimaryNode { get; set; }
         public string F5Version { get; set; }
         public bool IgnoreSSLWarning { get; set; }
+        public bool UseTokenAuth { get; set; }
         private RESTHandler REST { get; set; }
         private F5Transaction Transaction { get; set; }
 
@@ -52,7 +54,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         #region Constructors
 
-        public F5Client(CertificateStore certificateStore, string serverUserName, string serverPassword, bool useSSL, string pfxPassword, bool ignoreSSLWarning, IEnumerable<PreviousInventoryItem> inventory)
+        public F5Client(CertificateStore certificateStore, string serverUserName, string serverPassword, bool useSSL, string pfxPassword, bool ignoreSSLWarning, bool useTokenAuth, IEnumerable<PreviousInventoryItem> inventory)
         {
             CertificateStore = certificateStore;
             ServerUserName = serverUserName;
@@ -60,15 +62,18 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             UseSSL = useSSL;
             PFXPassword = pfxPassword;
             IgnoreSSLWarning = ignoreSSLWarning;
+            UseTokenAuth = useTokenAuth;
             Inventory = inventory;
-            
+
             if (logger == null)
             {
                 logger = Keyfactor.Logging.LogHandler.GetClassLogger(this.GetType());
             }
 
             REST = new RESTHandler(certificateStore.ClientMachine, serverUserName, serverPassword, useSSL, IgnoreSSLWarning);
-            REST.Token = GetToken(serverUserName, serverPassword);
+
+            if (UseTokenAuth)
+                REST.Token = GetToken(serverUserName, serverPassword);
         }
 
         // Constructors
@@ -246,14 +251,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     AddPfx(entryContents, partition, name, password, GetKeyName(ex.message));
                 else
                     throw (name.Contains(".crt", StringComparison.OrdinalIgnoreCase) &&
-                           ex.Message.Contains("expected to exist", StringComparison.OrdinalIgnoreCase) ? 
-                                new Exception("Certificate and Key name may be different. If so, an F5 hotfix may be required to allow for the automatic renewal of this certificate.", ex) : 
+                           ex.Message.Contains("expected to exist", StringComparison.OrdinalIgnoreCase) ?
+                                new Exception("Certificate and Key name may be different. If so, an F5 hotfix may be required to allow for the automatic renewal of this certificate.", ex) :
                                 ex);
             }
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "AddPfx");
         }
-        
+
         // Method to parse error message from /pkcs12 API call that can occur when the certificate and key have different names.
         //  There is an F5 hotfix needed to be installed to produce the specific error message parsed by this method to get the
         //  separate key name.
@@ -585,12 +590,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             StringBuilder certPemBuilder = new StringBuilder();
 
-
-
-            //////// THE LIST MUST BE REVERSED SO THAT THE END-ENTITY CERT IS FIRST /////////
-            //////// CAN IT BE ASSUMED THE LAST ENTRY IS END-ENTIT? /////////////////////////
-            clist.Reverse();
-            /////////////////////////////////////////////////////////////////////////////////
+            //reordering of certificate chain necessary because of BouncyCastle bug.  Being fixed in a later release
+            if (clist.Count > 1)
+                clist = ReorderPEMLIst(clist);
 
             LogHandlerCommon.Trace(logger, CertificateStore, "Building certificate PEM");
             foreach (X509Certificate2 cert in clist)
@@ -632,6 +634,30 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             CommitTransaction(transaction);
             LogHandlerCommon.MethodExit(logger, CertificateStore, "ReplaceWebServerCrt");
+        }
+
+        // Put certificate chain in proper order - EE => issuing => intermediate1 => ... => intermediateN => root
+        private List<X509Certificate2> ReorderPEMLIst(List<X509Certificate2> certList)
+        {
+            List<X509Certificate2> rtnList = new List<X509Certificate2>();
+            X509Certificate2 root = certList.FirstOrDefault(p => p.IssuerName.RawData.SequenceEqual(p.SubjectName.RawData));
+            if (root == null || string.IsNullOrEmpty(root.SerialNumber))
+                throw new Exception("Invalid certificate chain.  No root CA certificate found.");
+
+            rtnList.Add(root);
+
+            X509Certificate2 parentCert = root;
+            for (int i=1; i<certList.Count; i++)
+            {
+                X509Certificate2 childCert = certList.FirstOrDefault(p => p.IssuerName.RawData.SequenceEqual(parentCert.SubjectName.RawData) && !p.IssuerName.RawData.SequenceEqual(p.SubjectName.RawData));
+                if (root == null || string.IsNullOrEmpty(root.SerialNumber))
+                    throw new Exception("Invalid certificate chain.  End entity or issuing CA certificate not found.");
+
+                rtnList.Insert(0, childCert);
+                parentCert = childCert;
+            }
+
+            return rtnList;
         }
 
         // WebServer

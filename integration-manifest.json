@@ -6,6 +6,7 @@
   "update_catalog": true,
   "link_github": true,
   "support_level": "kf-supported",
+  "release_dir": "bin/Release",
   "description": "The F5 Orchestrator allows for the remote management of F5 Stores. Discovery, Inventory, and Management functions are supported.",
   "about": {
     "orchestrator": {

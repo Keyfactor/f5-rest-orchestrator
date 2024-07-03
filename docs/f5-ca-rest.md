@@ -214,8 +214,8 @@ The following table describes the required and optional fields for the `F5-CA-RE
 | --------- | ----------- | ------------------------- |
 | Category | Select "F5 CA Profiles REST" or the customized certificate store name from the previous step. | |
 | Container | Optional container to associate certificate store with. | |
-| Client Machine | For the Client Machine field, enter the server name or IP address of the F5 device you wish to manage. Ensure that the format is consistent, such as 'f5server.example.com' or '192.168.1.1'. | |
-| Store Path | For the Store Path field, enter the name of the partition on the F5 device you wish to manage. This value is case-sensitive, so if the partition name is 'Common', it must be entered as 'Common' and not 'common'. | |
+| Client Machine | The fully qualified domain name or IP address of the F5 device where the CA Profiles are managed. For example, 'f5.example.com' or '192.168.1.1'. | |
+| Store Path | The name of the partition on the F5 device where the CA Profiles are managed, such as 'Common'. This value is case-sensitive. | |
 | Orchestrator | Select an approved orchestrator capable of managing `F5-CA-REST` certificates. Specifically, one with the `F5-CA-REST` capability. | |
 
 * **Using kfutil**

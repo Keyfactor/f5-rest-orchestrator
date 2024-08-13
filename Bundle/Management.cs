@@ -97,7 +97,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle
                 if (!JobConfig.Overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
 
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Replace entry '{name}' in '{JobConfig.CertificateStoreDetails.StorePath}'");
-                f5.ReplaceEntry(partition, name, JobConfig.JobCertificate.Contents);
+                f5.ReplaceEntry(partition, name, JobConfig.JobCertificate.Contents, null);
             }
             else
             {

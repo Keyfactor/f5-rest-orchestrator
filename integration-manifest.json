@@ -1,37 +1,20 @@
 {
-  "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
+  "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
   "integration_type": "orchestrator",
-  "name": "F5",
+  "name": "F5 REST Orchestrator",
   "status": "production",
   "update_catalog": true,
   "link_github": true,
   "support_level": "kf-supported",
   "release_dir": "bin/Release",
-  "description": "The F5 Orchestrator allows for the remote management of F5 Stores. Discovery, Inventory, and Management functions are supported.",
+  "description": "The F5 Universal Orchestrator extension enables remote management of cryptographic certificates within F5 devices using Keyfactor Command, supporting tasks such as inventory, certificate addition, removal, and discovery.",
   "about": {
     "orchestrator": {
       "UOFramework": "10.1",
+      "keyfactor_platform_version": "9.10",
       "pam_support": true,
-      "win": {
-        "supportsCreateStore": false,
-        "supportsDiscovery": true,
-        "supportsManagementAdd": true,
-        "supportsManagementRemove": true,
-        "supportsReenrollment": false,
-        "supportsInventory": true,
-        "platformSupport": "Unused"
-      },
-      "linux": {
-        "supportsCreateStore": false,
-        "supportsDiscovery": true,
-        "supportsManagementAdd": true,
-        "supportsManagementRemove": true,
-        "supportsReenrollment": false,
-        "supportsInventory": true,
-        "platformSupport": "Unused"
-      },
-      "store_types": {
-        "F5-SL-REST": {
+      "store_types": [
+        {
           "Name": "F5 SSL Profiles REST",
           "ShortName": "F5-SL-REST",
           "Capability": "F5-SL-REST",
@@ -42,88 +25,7 @@
             "Enrollment": false,
             "Remove": true
           },
-          "Properties": [
-            {
-              "Name": "PrimaryNode",
-              "DisplayName": "Primary Node",
-              "Type": "String",
-              "DependsOn": "PrimaryNodeOnlineRequired",
-              "DefaultValue": "",
-              "Required": true
-            },
-            {
-              "Name": "PrimaryNodeCheckRetryWaitSecs",
-              "DisplayName": "Primary Node Check Retry Wait Seconds",
-              "Type": "String",
-              "DependsOn": "PrimaryNodeOnlineRequired",
-              "DefaultValue": "120",
-              "Required": true
-            },
-            {
-              "Name": "PrimaryNodeCheckRetryMax",
-              "DisplayName": "Primary Node Check Retry Maximum",
-              "Type": "String",
-              "DependsOn": "PrimaryNodeOnlineRequired",
-              "DefaultValue": "3",
-              "Required": true
-            },
-            {
-              "Name": "F5Version",
-              "DisplayName": "Version of F5",
-              "Type": "MultipleChoice",
-              "DependsOn": "",
-              "DefaultValue": "v12,v13,v14,v15",
-              "Required": true
-            },
-            {
-              "Name": "ServerUsername",
-              "DisplayName": "Server Username",
-              "Type": "Secret",
-              "DependsOn": "",
-              "DefaultValue": null,
-              "Required": false
-            },
-            {
-              "Name": "ServerPassword",
-              "DisplayName": "Server Password",
-              "Type": "Secret",
-              "DependsOn": "",
-              "DefaultValue": null,
-              "Required": false
-            },
-            {
-              "Name": "ServerUseSsl",
-              "DisplayName": "Use SSL",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "true",
-              "Required": true
-            },
-            {
-              "Name": "PrimaryNodeOnlineRequired",
-              "DisplayName": "Primary Node Online Required",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "",
-              "Required": true
-            },
-            {
-              "Name": "IgnoreSSLWarning",
-              "DisplayName": "Ignore SSL Warning",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "False",
-              "Required": true
-            },
-            {
-              "Name": "UseTokenAuth",
-              "DisplayName": "Use Token Authentication",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "false",
-              "Required": true
-            }
-          ],
+          "Properties": [],
           "EntryParameters": [],
           "PasswordOptions": {
             "EntrySupported": false,
@@ -135,9 +37,11 @@
           "ServerRequired": true,
           "PowerShell": false,
           "BlueprintAllowed": true,
-          "CustomAliasAllowed": "Required"
+          "CustomAliasAllowed": "Required",
+          "ClientMachineDescription": "The fully qualified domain name or IP address of the F5 device where the SSL Profiles are managed. For example, 'f5.example.com' or '192.168.1.1'.",
+          "StorePathDescription": "The name of the partition on the F5 device where the SSL Profiles are managed, such as 'Common'. This value is case-sensitive."
         },
-        "F5-WS-REST": {
+        {
           "Name": "F5 WS Profiles REST",
           "ShortName": "F5-WS-REST",
           "Capability": "F5-WS-REST",
@@ -148,88 +52,7 @@
             "Enrollment": false,
             "Remove": false
           },
-          "Properties": [
-            {
-              "Name": "PrimaryNode",
-              "DisplayName": "Primary Node",
-              "Type": "String",
-              "DependsOn": "PrimaryNodeOnlineRequired",
-              "DefaultValue": "",
-              "Required": true
-            },
-            {
-              "Name": "PrimaryNodeCheckRetryWaitSecs",
-              "DisplayName": "Primary Node Check Retry Wait Seconds",
-              "Type": "String",
-              "DependsOn": "PrimaryNodeOnlineRequired",
-              "DefaultValue": "120",
-              "Required": true
-            },
-            {
-              "Name": "PrimaryNodeCheckRetryMax",
-              "DisplayName": "Primary Node Check Retry Maximum",
-              "Type": "String",
-              "DependsOn": "PrimaryNodeOnlineRequired",
-              "DefaultValue": "3",
-              "Required": true
-            },
-            {
-              "Name": "F5Version",
-              "DisplayName": "Version of F5",
-              "Type": "MultipleChoice",
-              "DependsOn": "",
-              "DefaultValue": "v12,v13,v14,v15",
-              "Required": true
-            },
-            {
-              "Name": "ServerUsername",
-              "DisplayName": "Server Username",
-              "Type": "Secret",
-              "DependsOn": "",
-              "DefaultValue": null,
-              "Required": false
-            },
-            {
-              "Name": "ServerPassword",
-              "DisplayName": "Server Password",
-              "Type": "Secret",
-              "DependsOn": "",
-              "DefaultValue": null,
-              "Required": false
-            },
-            {
-              "Name": "ServerUseSsl",
-              "DisplayName": "Use SSL",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "true",
-              "Required": true
-            },
-            {
-              "Name": "PrimaryNodeOnlineRequired",
-              "DisplayName": "Primary Node Online Required",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "",
-              "Required": true
-            },
-            {
-              "Name": "IgnoreSSLWarning",
-              "DisplayName": "Ignore SSL Warning",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "False",
-              "Required": true
-            },
-            {
-              "Name": "UseTokenAuth",
-              "DisplayName": "Use Token Authentication",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "false",
-              "Required": true
-            }
-          ],
+          "Properties": [],
           "EntryParameters": [],
           "PasswordOptions": {
             "EntrySupported": false,
@@ -241,9 +64,11 @@
           "ServerRequired": true,
           "PowerShell": false,
           "BlueprintAllowed": true,
-          "CustomAliasAllowed": "Forbidden"
+          "CustomAliasAllowed": "Forbidden",
+          "ClientMachineDescription": "The fully qualified domain name or IP address of the F5 device where the Web Server (WS) Profiles are managed. For example, 'f5.example.com' or '192.168.1.1'.",
+          "StorePathDescription": "The name of the partition on the F5 device where the Web Server (WS) Profiles are managed, such as 'Common'. This value is case-sensitive."
         },
-        "F5-CA-REST": {
+        {
           "Name": "F5 CA Profiles REST",
           "ShortName": "F5-CA-REST",
           "Capability": "F5-CA-REST",
@@ -254,88 +79,7 @@
             "Enrollment": false,
             "Remove": true
           },
-          "Properties": [
-            {
-              "Name": "PrimaryNode",
-              "DisplayName": "Primary Node",
-              "Type": "String",
-              "DependsOn": "PrimaryNodeOnlineRequired",
-              "DefaultValue": "",
-              "Required": true
-            },
-            {
-              "Name": "PrimaryNodeCheckRetryWaitSecs",
-              "DisplayName": "Primary Node Check Retry Wait Seconds",
-              "Type": "String",
-              "DependsOn": "PrimaryNodeOnlineRequired",
-              "DefaultValue": "120",
-              "Required": true
-            },
-            {
-              "Name": "PrimaryNodeCheckRetryMax",
-              "DisplayName": "Primary Node Check Retry Maximum",
-              "Type": "String",
-              "DependsOn": "PrimaryNodeOnlineRequired",
-              "DefaultValue": "3",
-              "Required": true
-            },
-            {
-              "Name": "F5Version",
-              "DisplayName": "Version of F5",
-              "Type": "MultipleChoice",
-              "DependsOn": "",
-              "DefaultValue": "v12,v13,v14,v15",
-              "Required": true
-            },
-            {
-              "Name": "ServerUsername",
-              "DisplayName": "Server Username",
-              "Type": "Secret",
-              "DependsOn": "",
-              "DefaultValue": null,
-              "Required": false
-            },
-            {
-              "Name": "ServerPassword",
-              "DisplayName": "Server Password",
-              "Type": "Secret",
-              "DependsOn": "",
-              "DefaultValue": null,
-              "Required": false
-            },
-            {
-              "Name": "ServerUseSsl",
-              "DisplayName": "Use SSL",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "true",
-              "Required": true
-            },
-            {
-              "Name": "PrimaryNodeOnlineRequired",
-              "DisplayName": "Primary Node Online Required",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "",
-              "Required": true
-            },
-            {
-              "Name": "IgnoreSSLWarning",
-              "DisplayName": "Ignore SSL Warning",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "False",
-              "Required": true
-            },
-            {
-              "Name": "UseTokenAuth",
-              "DisplayName": "Use Token Authentication",
-              "Type": "Bool",
-              "DependsOn": "",
-              "DefaultValue": "false",
-              "Required": true
-            }
-          ],
+          "Properties": [],
           "EntryParameters": [],
           "PasswordOptions": {
             "EntrySupported": false,
@@ -347,9 +91,11 @@
           "ServerRequired": true,
           "PowerShell": false,
           "BlueprintAllowed": true,
-          "CustomAliasAllowed": "Required"
+          "CustomAliasAllowed": "Required",
+          "ClientMachineDescription": "The fully qualified domain name or IP address of the F5 device where the CA Profiles are managed. For example, 'f5.example.com' or '192.168.1.1'.",
+          "StorePathDescription": "The name of the partition on the F5 device where the CA Profiles are managed, such as 'Common'. This value is case-sensitive."
         }
-      } 
+      ]
     }
   }
 }

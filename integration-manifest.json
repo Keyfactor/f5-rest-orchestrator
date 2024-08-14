@@ -1,101 +1,101 @@
 {
-  "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
-  "integration_type": "orchestrator",
-  "name": "F5 REST Orchestrator",
-  "status": "production",
-  "update_catalog": true,
-  "link_github": true,
-  "support_level": "kf-supported",
-  "release_dir": "bin/Release",
-  "description": "The F5 Universal Orchestrator extension enables remote management of cryptographic certificates within F5 devices using Keyfactor Command, supporting tasks such as inventory, certificate addition, removal, and discovery.",
-  "about": {
-    "orchestrator": {
-      "UOFramework": "10.1",
-      "keyfactor_platform_version": "9.10",
-      "pam_support": true,
-      "store_types": [
-        {
-          "Name": "F5 SSL Profiles REST",
-          "ShortName": "F5-SL-REST",
-          "Capability": "F5-SL-REST",
-          "SupportedOperations": {
-            "Add": true,
-            "Create": false,
-            "Discovery": true,
-            "Enrollment": false,
-            "Remove": true
-          },
-          "Properties": [],
-          "EntryParameters": [],
-          "PasswordOptions": {
-            "EntrySupported": false,
-            "StoreRequired": false,
-            "Style": "Default"
-          },
-          "PrivateKeyAllowed": "Optional",
-          "JobProperties": [],
-          "ServerRequired": true,
-          "PowerShell": false,
-          "BlueprintAllowed": true,
-          "CustomAliasAllowed": "Required",
-          "ClientMachineDescription": "The fully qualified domain name or IP address of the F5 device where the SSL Profiles are managed. For example, 'f5.example.com' or '192.168.1.1'.",
-          "StorePathDescription": "The name of the partition on the F5 device where the SSL Profiles are managed, such as 'Common'. This value is case-sensitive."
-        },
-        {
-          "Name": "F5 WS Profiles REST",
-          "ShortName": "F5-WS-REST",
-          "Capability": "F5-WS-REST",
-          "SupportedOperations": {
-            "Add": true,
-            "Create": false,
-            "Discovery": false,
-            "Enrollment": false,
-            "Remove": false
-          },
-          "Properties": [],
-          "EntryParameters": [],
-          "PasswordOptions": {
-            "EntrySupported": false,
-            "StoreRequired": false,
-            "Style": "Default"
-          },
-          "PrivateKeyAllowed": "Required",
-          "JobProperties": [],
-          "ServerRequired": true,
-          "PowerShell": false,
-          "BlueprintAllowed": true,
-          "CustomAliasAllowed": "Forbidden",
-          "ClientMachineDescription": "The fully qualified domain name or IP address of the F5 device where the Web Server (WS) Profiles are managed. For example, 'f5.example.com' or '192.168.1.1'.",
-          "StorePathDescription": "The name of the partition on the F5 device where the Web Server (WS) Profiles are managed, such as 'Common'. This value is case-sensitive."
-        },
-        {
-          "Name": "F5 CA Profiles REST",
-          "ShortName": "F5-CA-REST",
-          "Capability": "F5-CA-REST",
-          "SupportedOperations": {
-            "Add": true,
-            "Create": false,
-            "Discovery": true,
-            "Enrollment": false,
-            "Remove": true
-          },
-          "Properties": [],
-          "EntryParameters": [],
-          "PasswordOptions": {
-            "EntrySupported": false,
-            "StoreRequired": false,
-            "Style": "Default"
-          },
-          "PrivateKeyAllowed": "Forbidden",
-          "JobProperties": [],
-          "ServerRequired": true,
-          "PowerShell": false,
-          "BlueprintAllowed": true,
-          "CustomAliasAllowed": "Required",
-          "ClientMachineDescription": "The fully qualified domain name or IP address of the F5 device where the CA Profiles are managed. For example, 'f5.example.com' or '192.168.1.1'.",
-          "StorePathDescription": "The name of the partition on the F5 device where the CA Profiles are managed, such as 'Common'. This value is case-sensitive."
+    "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
+    "integration_type": "orchestrator",
+    "name": "F5 REST Orchestrator",
+    "status": "production",
+    "update_catalog": true,
+    "link_github": true,
+    "support_level": "kf-supported",
+    "release_dir": "bin/Release",
+    "description": "The F5 Universal Orchestrator extension enables remote management of cryptographic certificates within F5 devices using Keyfactor Command, supporting tasks such as inventory, certificate addition, removal, and discovery.",
+    "about": {
+        "orchestrator": {
+            "UOFramework": "10.1",
+            "keyfactor_platform_version": "9.10",
+            "pam_support": true,
+            "store_types": [
+                {
+                    "Name": "F5 SSL Profiles REST",
+                    "ShortName": "F5-SL-REST",
+                    "Capability": "F5-SL-REST",
+                    "SupportedOperations": {
+                        "Add": true,
+                        "Create": false,
+                        "Discovery": true,
+                        "Enrollment": false,
+                        "Remove": true
+                    },
+                    "Properties": [],
+                    "EntryParameters": [],
+                    "PasswordOptions": {
+                        "EntrySupported": false,
+                        "StoreRequired": false,
+                        "Style": "Default"
+                    },
+                    "PrivateKeyAllowed": "Optional",
+                    "JobProperties": [],
+                    "ServerRequired": true,
+                    "PowerShell": false,
+                    "BlueprintAllowed": true,
+                    "CustomAliasAllowed": "Required",
+                    "ClientMachineDescription": "The fully qualified domain name or IP address of the F5 device where the SSL Profiles are managed. For example, 'f5.example.com' or '192.168.1.1'.",
+                    "StorePathDescription": "The name of the partition on the F5 device where the SSL Profiles are managed, such as 'Common'. This value is case-sensitive."
+                },
+                {
+                    "Name": "F5 WS Profiles REST",
+                    "ShortName": "F5-WS-REST",
+                    "Capability": "F5-WS-REST",
+                    "SupportedOperations": {
+                        "Add": true,
+                        "Create": false,
+                        "Discovery": false,
+                        "Enrollment": false,
+                        "Remove": false
+                    },
+                    "Properties": [],
+                    "EntryParameters": [],
+                    "PasswordOptions": {
+                        "EntrySupported": false,
+                        "StoreRequired": false,
+                        "Style": "Default"
+                    },
+                    "PrivateKeyAllowed": "Required",
+                    "JobProperties": [],
+                    "ServerRequired": true,
+                    "PowerShell": false,
+                    "BlueprintAllowed": true,
+                    "CustomAliasAllowed": "Forbidden",
+                    "ClientMachineDescription": "The fully qualified domain name or IP address of the F5 device where the Web Server (WS) Profiles are managed. For example, 'f5.example.com' or '192.168.1.1'.",
+                    "StorePathDescription": "The name of the partition on the F5 device where the Web Server (WS) Profiles are managed, such as 'Common'. This value is case-sensitive."
+                },
+                {
+                    "Name": "F5 CA Profiles REST",
+                    "ShortName": "F5-CA-REST",
+                    "Capability": "F5-CA-REST",
+                    "SupportedOperations": {
+                        "Add": true,
+                        "Create": false,
+                        "Discovery": true,
+                        "Enrollment": false,
+                        "Remove": true
+                    },
+                    "Properties": [],
+                    "EntryParameters": [],
+                    "PasswordOptions": {
+                        "EntrySupported": false,
+                        "StoreRequired": false,
+                        "Style": "Default"
+                    },
+                    "PrivateKeyAllowed": "Forbidden",
+                    "JobProperties": [],
+                    "ServerRequired": true,
+                    "PowerShell": false,
+                    "BlueprintAllowed": true,
+                    "CustomAliasAllowed": "Required",
+                    "ClientMachineDescription": "The fully qualified domain name or IP address of the F5 device where the CA Profiles are managed. For example, 'f5.example.com' or '192.168.1.1'.",
+                    "StorePathDescription": "The name of the partition on the F5 device where the CA Profiles are managed, such as 'Common'. This value is case-sensitive."
+                }
+            ]
         }
-      ]
     }
-  }
 }

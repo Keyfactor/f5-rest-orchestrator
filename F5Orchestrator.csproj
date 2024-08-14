@@ -16,13 +16,10 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<ItemGroup>
 			<None Update="manifest.json">
 				<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			</None>
 		</ItemGroup>
-
-	</Target>
 
 </Project>

@@ -17,7 +17,12 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo F | xcopy &quot;$(ProjectDir)manifest.json&quot; &quot;$(TargetDir)\manifest.json&quot; /Y" />
-  </Target>
+		<ItemGroup>
+			<None Update="manifest.json">
+				<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			</None>
+		</ItemGroup>
+
+	</Target>
 
 </Project>

@@ -83,7 +83,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         #region Certificate/PFX Shared
 
-        public void AddEntry(string partition, string name, string b64Certificate)
+        public void AddEntry(string partition, string name, string b64Certificate, string certificatePassword)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "AddEntry");
             LogHandlerCommon.Trace(logger, CertificateStore, $"Processing certificate for partition '{partition}' and name '{name}'");
@@ -94,7 +94,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             if (certificate.HasPrivateKey)
             {
                 LogHandlerCommon.Trace(logger, CertificateStore, $"Certificate for partition '{partition}' and name '{name}' has a private key - performing addition");
-                AddPfx(entryContents, partition, name, password, null);
+                AddPfx(entryContents, partition, name, password, null, certificatePassword);
                 LogHandlerCommon.Trace(logger, CertificateStore, $"PFX addition for partition '{partition}' and name '{name}' completed");
             }
             else
@@ -106,7 +106,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.MethodExit(logger, CertificateStore, "AddEntry");
         }
 
-        public void ReplaceEntry(string partition, string name, string b64Certificate)
+        public void ReplaceEntry(string partition, string name, string b64Certificate, string certificatePassword)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "ReplaceEntry");
             LogHandlerCommon.Trace(logger, CertificateStore, $"Processing certificate for partition '{partition}' and name '{name}'");
@@ -118,7 +118,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             if (certificate.HasPrivateKey)
             {
                 LogHandlerCommon.Trace(logger, CertificateStore, $"Certificate for partition '{partition}' and name '{name}' has a private key - performing replacement");
-                ReplacePfx(entryContents, partition, name, password);
+                ReplacePfx(entryContents, partition, name, password, certificatePassword);
                 LogHandlerCommon.Trace(logger, CertificateStore, $"PFX replacement for partition '{partition}' and name '{name}' completed");
             }
             else
@@ -220,7 +220,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.MethodExit(logger, CertificateStore, "AddCertificate");
         }
 
-        private void AddPfx(byte[] entryContents, string partition, string name, string password, string keyName)
+        private void AddPfx(byte[] entryContents, string partition, string name, string password, string keyName, string certificatePassword)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "AddPfx");
             LogHandlerCommon.Trace(logger, CertificateStore, $"Uploading PFX to {partition}-{name}.p12");
@@ -238,6 +238,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     name = $"{name}",
                     localfile = $"/var/config/rest/downloads/{partition}-{name}.p12{keyNameParam}",
                     passphrase = password,
+                    keyPassphrase = String.IsNullOrEmpty(certificatePassword) ? string.Empty : certificatePassword,
+                    keySecurityType = String.IsNullOrEmpty(certificatePassword) ? "normal" : "password",
                     partition = partition
                 }, "pkcs12");
             }
@@ -248,7 +250,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 //  again with that key name appended onto the localfile parameter.  An F5 hotfix is necessary to produce
                 //  this message and use the updated /pkcs12 API that accepts the separate key name.
                 if (string.IsNullOrEmpty(keyName) && ex.message.Contains(INVALID_KEY_MSG_ID))
-                    AddPfx(entryContents, partition, name, password, GetKeyName(ex.message));
+                    AddPfx(entryContents, partition, name, password, GetKeyName(ex.message), certificatePassword);
                 else
                     throw (name.Contains(".crt", StringComparison.OrdinalIgnoreCase) &&
                            ex.Message.Contains("expected to exist", StringComparison.OrdinalIgnoreCase) ?
@@ -287,7 +289,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.MethodExit(logger, CertificateStore, "ReplaceCertificate");
         }
 
-        private void ReplacePfx(byte[] entryContents, string partition, string name, string password)
+        private void ReplacePfx(byte[] entryContents, string partition, string name, string password, string certificatePassword)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "ReplacePfx");
             string timestamp = DateTime.Now.ToString("MM-dd-yy:H:mm:ss");
@@ -297,7 +299,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             ArchiveFile($"/config/filestore/files_d/{partition}_d/certificate_d/:{partition}:{name}_*", $"{partition}-{name}-{timestamp}.crt");
 
             LogHandlerCommon.Trace(logger, CertificateStore, $"Adding PFX to partition '{partition}' and name '{name}'");
-            AddPfx(entryContents, partition, name, password, null);
+            AddPfx(entryContents, partition, name, password, null, certificatePassword);
             LogHandlerCommon.MethodExit(logger, CertificateStore, "ReplacePfx");
         }
 
@@ -703,6 +705,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             {
                 try
                 {
+                    LogHandlerCommon.Trace(logger, CertificateStore, $"Processing alias {profiles[i].name}");
                     // Exclude 'ca-bundle.crt' as that can only be managed by F5
                     if (profiles[i].name.Equals("ca-bundle.crt", StringComparison.OrdinalIgnoreCase)
                         || profiles[i].name.Equals("f5-ca-bundle.crt", StringComparison.OrdinalIgnoreCase))
@@ -860,14 +863,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             if (!CertificateExists(partition, name))
             {
                 LogHandlerCommon.Debug(logger, CertificateStore, $"Add entry '{name}' in '{CertificateStore.StorePath}'");
-                AddEntry(partition, name, b64Certificate);
+                AddEntry(partition, name, b64Certificate, null);
             }
             else
             {
                 if (!overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
 
                 LogHandlerCommon.Debug(logger, CertificateStore, $"Replace entry '{name}' in '{CertificateStore.StorePath}'");
-                ReplaceEntry(partition, name, b64Certificate);
+                ReplaceEntry(partition, name, b64Certificate, null);
             }
 
             // Add the entry to the bundle

@@ -108,6 +108,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string localfile { get; set; }
 
         public string passphrase { get; set; }
+        public string keyPassphrase { get; set; }
+        public string keySecurityType { get; set; }
         public string partition { get; set; }
     }
 

@@ -1,9 +1,9 @@
+
 # F5
 
 The F5 Orchestrator allows for the remote management of F5 Stores. Discovery, Inventory, and Management functions are supported.
 
 #### Integration status: Production - Ready for use in production environments.
-
 
 ## About the Keyfactor Universal Orchestrator Extension
 
@@ -13,23 +13,22 @@ The Universal Orchestrator is part of the Keyfactor software distribution and is
 
 The Universal Orchestrator is the successor to the Windows Orchestrator. This Orchestrator Extension plugin only works with the Universal Orchestrator and does not work with the Windows Orchestrator.
 
-
 ## Support for F5
 
-F5 is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket with your Keyfactor representative.
+F5 is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket via the Keyfactor Support Portal at https://support.keyfactor.com
 
 ###### To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
+
+---
 
 
 ---
 
 
 
-
 ## Keyfactor Version Supported
 
 The minimum version of the Keyfactor Universal Orchestrator Framework needed to run this version of the extension is 10.1
-
 ## Platform Specific Notes
 
 The Keyfactor Universal Orchestrator may be installed on either Windows or Linux based platforms. The certificate operations supported by a capability may vary based what platform the capability is installed on. The table below indicates what capabilities are supported based on which platform the encompassing Universal Orchestrator is running.
@@ -39,7 +38,7 @@ The Keyfactor Universal Orchestrator may be installed on either Windows or Linux
 |Supports Management Remove|&check; |&check; |
 |Supports Create Store|  |  |
 |Supports Discovery|&check; |&check; |
-|Supports Renrollment|  |  |
+|Supports Reenrollment|  |  |
 |Supports Inventory|&check; |&check; |
 
 
@@ -192,31 +191,35 @@ If you choose to manually create a F5 store In Keyfactor Command rather than run
 
 - **Container** – Optional.  Select a container if utilized.
 
-- **Client Machine & Credentials** – Required.  The server name or IP Address and login credentials for the F5 device.  The credentials for server login can be any of:
-  
-  - UserId/Password
-  
-  - PAM provider information to pass the UserId/Password or UserId/SSH private key credentials
-    
-  When entering the credentials, UseSSL ***must*** be selected.
+- **Client Machine** – Required.  The server name or IP Address for the F5 device.
   
 - **Store Path** – Required.  Enter the name of the partition on the F5 device you wish to manage.  This value is case sensitive, so if the partition name is "Common", it must be entered as "Common" and not "common".
+
+- **Orchestrator** – Required.  Select the orchestrator you wish to use to manage this store
 
 - **Primary Node Online Required** – Optional.  Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive.  If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed.  If you choose not to add this custom field, the default value of False will be assumed.
 
 - **Primary Node** - Only required (and shown) if Primary Node Online Required is added and selected.  Enter the fully qualified domain name of the F5 device that acts as the primary node in a highly available F5 implementation.  If you're using a single F5 device, this will typically be the same value you entered in the Client Machine field.
 
-- **Primary Node Check Retry Maximum** - Only required (and shown) if Primary Node Online Required is added and selected.  Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing.
-
 - **Primary Node Check Retry Wait Seconds** - Only required (and shown) if Primary Node Online Required is added and selected.  Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive.
 
+- **Primary Node Check Retry Maximum** - Only required (and shown) if Primary Node Online Required is added and selected.  Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing.
+
 - **Version of F5** - Required.  Select v13, v14, or v15 to match the version for the F5 device being managed
+
+- **Server Username/Server Password** - Required.  The credentials for server login can be any of:
+  
+  - UserId/Password
+  
+  - PAM provider information to pass the UserId/Password or UserId/SSH private key credentials
+
+- **Use SSL** - Required.  True if using https to access the F5 device.  False if using http.
 
 - **Ignore SSL Warning** - Optional.  Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it.  If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs.
 
 - **Use Token Authentication** - Optional.  Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests.  If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs.  Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests.
 
-- **Orchestrator** – Required.  Select the orchestrator you wish to use to manage this store
+- **Store Password** - Required for F5-SL-REST only.  Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal".  Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password".
 
 - **Inventory Schedule** – Set a schedule for running Inventory jobs or none, if you choose not to schedule Inventory at this time.
 
@@ -245,4 +248,7 @@ First, in Keyfactor Command navigate to Certificate Locations =\> Certificate St
 - **Directories to ignore/Extensions/File name patterns to match/Follow SymLinks/Include PKCS12 Files** – Not used.  Leave blank.
 
 Once the Discovery job has completed, a list of F5 certificate store locations should show in the Certificate Stores Discovery tab in Keyfactor Command. Right click on a store and select Approve to bring up a dialog that will ask for the remaining necessary certificate store parameters described in Step 2a.  Complete those and click Save, and the Certificate Store should now show up in the list of stores in the Certificate Stores tab.
+
+When creating cert store type manually, that store property names and entry parameter names are case sensitive
+
 

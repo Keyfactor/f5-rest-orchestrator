@@ -128,7 +128,7 @@
           "EntryParameters": [],
           "PasswordOptions": {
             "EntrySupported": false,
-            "StoreRequired": false,
+            "StoreRequired": true,
             "Style": "Default"
           },
           "PrivateKeyAllowed": "Optional",

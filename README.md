@@ -162,7 +162,7 @@ The version number of a the F5 Orchestrator can be verified by right clicking on
 - **Custom Capability** - Leave unchecked
 - **Supported Job Types** – Select Inventory and Add for all 3 types, and Discovery for CA Bundles and SSL Certificates.
 - **General Settings** - Select Needs Server.  Leave Uses PowerShell unchecked.  Select Blueprint Allowed if you plan to use blueprinting.
-- **Password Settings** - Leave both options unchecked
+- **Password Settings** - Leave both options unchecked for F5-WS-REST and F5-CA-REST.  Select Needs Store Password for F5-SL-REST.
 - **All selections on Advanced tab** - Set the values on this tab ***exactly*** as they are shown in the above screen prints for each applicable store type.
 
 

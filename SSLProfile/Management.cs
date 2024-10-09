@@ -57,7 +57,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                 {
                     case CertStoreOperationType.Add:
                         LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, $"Add entry '{config.JobCertificate.Alias}' to '{config.CertificateStoreDetails.StorePath}'");
-                        PerformAddJob(f5);
+                        PerformAddJob(f5, config.CertificateStoreDetails.StorePassword);
                         break;
                     case CertStoreOperationType.Remove:
                         LogHandlerCommon.Trace(logger, config.CertificateStoreDetails, $"Remove entry '{config.JobCertificate.Alias}' from '{config.CertificateStoreDetails.StorePath}'");
@@ -81,7 +81,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             }
         }
 
-        private void PerformAddJob(F5Client f5)
+        private void PerformAddJob(F5Client f5, string certificatePassword)
         {
             LogHandlerCommon.MethodEntry(logger, JobConfig.CertificateStoreDetails, "PerformAddJob");
             string name = JobConfig.JobCertificate.Alias;
@@ -92,12 +92,12 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                 if (!JobConfig.Overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
 
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Replace entry '{name}' in '{JobConfig.CertificateStoreDetails.StorePath}'");
-                f5.ReplaceEntry(partition, name, JobConfig.JobCertificate.Contents);
+                f5.ReplaceEntry(partition, name, JobConfig.JobCertificate.Contents, null);
             }
             else
             {
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"The entry '{name}' does not exist in '{JobConfig.CertificateStoreDetails.StorePath}' and will be added");
-                f5.AddEntry(partition, name, JobConfig.JobCertificate.Contents);
+                f5.AddEntry(partition, name, JobConfig.JobCertificate.Contents, certificatePassword);
             }
             LogHandlerCommon.MethodExit(logger, JobConfig.CertificateStoreDetails, "PerformAddJob");
         }

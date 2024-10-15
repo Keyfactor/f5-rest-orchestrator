@@ -1,3 +1,6 @@
+v1.6.0
+- Add Store Password (optional) to allow for setting key type to "Password" when adding/replacing a certificate.  This will encrypt the private key deployed on the F5 device with the password set as the Store Password.
+
 v1.5.0
 - Add new optional custom paramter - UseTokenAuth - to make token auth vs basic auth (default) a selectable option
 

@@ -12,6 +12,7 @@
     "orchestrator": {
       "UOFramework": "10.1",
       "pam_support": true,
+      "keyfactor_platform_version": "10.4",
       "win": {
         "supportsCreateStore": false,
         "supportsDiscovery": true,
@@ -127,7 +128,7 @@
           "EntryParameters": [],
           "PasswordOptions": {
             "EntrySupported": false,
-            "StoreRequired": false,
+            "StoreRequired": true,
             "Style": "Default"
           },
           "PrivateKeyAllowed": "Optional",
@@ -349,7 +350,7 @@
           "BlueprintAllowed": true,
           "CustomAliasAllowed": "Required"
         }
-      } 
+      }
     }
   }
 }

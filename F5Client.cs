@@ -21,6 +21,9 @@ using System.Text.RegularExpressions;
 
 using Newtonsoft.Json;
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Drawing.Printing;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
@@ -34,6 +37,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         private const string INVALID_KEY_SUBSTR = "key(";
         private const string INVALID_KEY_BEG_DELIM = @"/";
         private const string INVALID_KEY_END_DELIM = ")";
+        private const int MIN_VERSION_SUPPORTED = 14;
+        private const string VERSION_DELIMITER = "?ver=";
 
         public CertificateStore CertificateStore { get; set; }
         public string ServerUserName { get; set; }
@@ -43,7 +48,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string PFXPassword { get; set; }
         public IEnumerable<PreviousInventoryItem> Inventory { get; set; }
         public string PrimaryNode { get; set; }
-        public string F5Version { get; set; }
         public bool IgnoreSSLWarning { get; set; }
         public bool UseTokenAuth { get; set; }
         private RESTHandler REST { get; set; }
@@ -141,26 +145,23 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 ArchiveFile($"/config/filestore/files_d/{partition}_d/certificate_key_d/:{partition}:{name}_*", $"{partition}-{name}-{timestamp}.key");
                 LogHandlerCommon.Trace(logger, CertificateStore, $"Removing certificate and key at '{partition}' and name '{name}'");
 
-                string keyName = GetKeyName(name, true);
-                REST.Delete($"/mgmt/tm/sys/file/ssl-key/~{partition}~{keyName}");
+                REST.Delete($"/mgmt/tm/sys/file/ssl-key/~{partition}~{name}");
             }
             LogHandlerCommon.Trace(logger, CertificateStore, $"Archiving certificate at '{partition}' and name '{name}'");
             ArchiveFile($"/config/filestore/files_d/{partition}_d/certificate_d/:{partition}:{name}_*", $"{partition}-{name}-{timestamp}.crt");
             LogHandlerCommon.Trace(logger, CertificateStore, $"Removing certificate at '{partition}' and name '{name}'");
 
-            string crtName = GetCrtName(name, true);
-            REST.Delete($"/mgmt/tm/sys/file/ssl-cert/~{partition}~{crtName}");
+            REST.Delete($"/mgmt/tm/sys/file/ssl-cert/~{partition}~{name}");
             LogHandlerCommon.MethodExit(logger, CertificateStore, "RemoveEntry");
         }
 
-        public bool KeyExists(string partition, string name)
+        public bool KeyExists(string partition, string keyName)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "KeyExists");
             bool exists = false;
 
             try
             {
-                string keyName = GetKeyName(name, true);
                 string query = $"/mgmt/tm/sys/file/ssl-key/~{partition}~{keyName}";
                 F5Key key = REST.Get<F5Key>(query);
                 exists = (key != null);
@@ -178,14 +179,13 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             return exists;
         }
 
-        public bool CertificateExists(string partition, string name)
+        public bool CertificateExists(string partition, string crtName)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "CertificateExists");
             bool exists = false;
 
             try
             {
-                string crtName = GetCrtName(name, true);
                 string query = $"/mgmt/tm/sys/file/ssl-cert/~{partition}~{crtName}";
                 F5SSLProfile certificate = REST.Get<F5SSLProfile>(query);
                 exists = (certificate != null);
@@ -406,12 +406,12 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.MethodExit(logger, CertificateStore, "SetItemStatus");
         }
 
-        private CurrentInventoryItem GetInventoryItem(string partition, string name, bool hasPrivateKey)
+        private CurrentInventoryItem GetInventoryItem(string partition, string crtName, bool hasPrivateKey)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetInventoryItem");
 
             // Get the pfx/certificate contents from the filesystem (using a wildcard as the files have slightly randomized name suffixes)
-            X509Certificate2Collection certificateCollection = GetCertificateEntry($"/config/filestore/files_d/{partition}_d/certificate_d/:{partition}:{name}_*");
+            X509Certificate2Collection certificateCollection = GetCertificateEntry($"/config/filestore/files_d/{partition}_d/certificate_d/:{partition}:{crtName}_*");
             List<string> certContents = new List<string>();
             bool useChainLevel = certificateCollection.Count > 1;
             foreach (X509Certificate2 certificate in certificateCollection)
@@ -420,7 +420,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 //LogHandlerCommon.Debug(logger, CertificateStore, $"ALIAS: {name}: {Convert.ToBase64String(certificate.Export(X509ContentType.Cert))}");
             }
 
-            string crtName = GetCrtName(name, false);
             CurrentInventoryItem inventoryItem = new CurrentInventoryItem
             {
                 ItemStatus = OrchestratorInventoryItemStatus.Unknown,
@@ -432,61 +431,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             SetItemStatus(inventoryItem);
             LogHandlerCommon.MethodExit(logger, CertificateStore, "GetInventoryItem");
             return inventoryItem;
-        }
-
-        private string GetCrtName(string name, bool addExtension)
-        {
-            LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetCrtName");
-            string crtName = name;
-
-            switch (F5Version.ToLowerInvariant())
-            {
-                case "v12":
-                    throw new Exception($"F5 Version 12 is not supported by the REST-based orchestrator. The legacy SOAP-based orchestrator should be used.");
-                case "v13":
-                    if (addExtension)
-                    {
-                        // The .crt extension must be added
-                        if (!crtName.EndsWith(".crt", StringComparison.OrdinalIgnoreCase)) { crtName = $"{crtName}.crt"; }
-                    }
-                    else
-                    {
-                        // The .crt extension must be removed
-                        if (crtName.EndsWith(".crt", StringComparison.OrdinalIgnoreCase)) { crtName = crtName.Substring(0, crtName.Length - 4); }
-                    }
-                    break;
-            };
-
-            LogHandlerCommon.MethodExit(logger, CertificateStore, "GetCrtName");
-            return crtName;
-        }
-
-        private string GetKeyName(string name, bool addExtension)
-        {
-            LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetKeyName");
-            string keyName = name;
-
-            // No longer checking past version 14 for future-proofing
-            switch (F5Version.ToLowerInvariant())
-            {
-                case "v12":
-                    throw new Exception($"F5 Version 12 is not supported by the REST-based orchestrator. The legacy SOAP-based orchestrator should be used.");
-                case "v13":
-                    if (addExtension)
-                    {
-                        // The .key extension must be added
-                        if (!keyName.EndsWith(".key", StringComparison.OrdinalIgnoreCase)) { keyName = $"{keyName}.key"; }
-                    }
-                    else
-                    {
-                        // The .key extension must be removed
-                        if (keyName.EndsWith(".key", StringComparison.OrdinalIgnoreCase)) { keyName = keyName.Substring(0, keyName.Length - 4); }
-                    }
-                    break;
-            };
-
-            LogHandlerCommon.MethodExit(logger, CertificateStore, "GetKeyName");
-            return keyName;
         }
 
         // Certificate PFX Shared
@@ -728,7 +672,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         // SSL Profiles
         #endregion
 
-        #region Auth
+        #region Auth & Version
 
         private string GetToken(string userName, string userPassword)
         {
@@ -738,6 +682,32 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.MethodExit(logger, CertificateStore, "GetToken");
 
             return loginResponse.token.token;
+        }
+
+        internal void ValidateF5Version()
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "IsVersionSupported");
+
+            string query = $"/mgmt/tm/sys/version";
+            F5Version f5Version = REST.Get<F5Version>(query);
+            LogHandlerCommon.Debug(logger, CertificateStore, $"Version supported self link: {f5Version.selfLink}");
+            if (!f5Version.selfLink.Contains(VERSION_DELIMITER))
+                return;
+
+            string selfLink = f5Version.selfLink;
+            string strVersion = selfLink.Substring(selfLink.IndexOf(VERSION_DELIMITER, StringComparison.CurrentCultureIgnoreCase) + VERSION_DELIMITER.Length, 2);
+            int version;
+            if (!int.TryParse(strVersion, out version))
+                return;
+
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "IsVersionSupported");
+
+            if (version < MIN_VERSION_SUPPORTED)
+            {
+                string errMesage = $"F5 version {version.ToString()} not supported by this version of the F5 Orchestrator Extension.  This orchestrator extension only supports verion {MIN_VERSION_SUPPORTED.ToString()} and later.";
+                logger.LogError(errMesage);
+                throw new Exception(errMesage);
+            }
         }
         #endregion
 
@@ -822,8 +792,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             List<string> bundleIncludes = new List<string>(GetCABundleIncludes());
             string partition = GetPartitionFromStorePath();
 
-            string crtName = GetCrtName(alias, true);
-            exists = bundleIncludes.Any<string>(i => i.Equals($"/{partition}/{crtName}", StringComparison.OrdinalIgnoreCase));
+            exists = bundleIncludes.Any<string>(i => i.Equals($"/{partition}/{alias}", StringComparison.OrdinalIgnoreCase));
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "EntryExistsInBundle");
             return exists;
@@ -855,26 +824,25 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             return includeBundle;
         }
 
-        public void AddBundleEntry(string bundle, string partition, string name, string b64Certificate, string alias, bool overwrite)
+        public void AddBundleEntry(string bundle, string partition, string crtName, string b64Certificate, string alias, bool overwrite)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "AddBundleEntry");
 
             // Add the entry to inventory
-            if (!CertificateExists(partition, name))
+            if (!CertificateExists(partition, crtName))
             {
-                LogHandlerCommon.Debug(logger, CertificateStore, $"Add entry '{name}' in '{CertificateStore.StorePath}'");
-                AddEntry(partition, name, b64Certificate, null);
+                LogHandlerCommon.Debug(logger, CertificateStore, $"Add entry '{crtName}' in '{CertificateStore.StorePath}'");
+                AddEntry(partition, crtName, b64Certificate, null);
             }
             else
             {
-                if (!overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
+                if (!overwrite) { throw new Exception($"An entry named '{crtName}' exists and 'overwrite' was not selected"); }
 
-                LogHandlerCommon.Debug(logger, CertificateStore, $"Replace entry '{name}' in '{CertificateStore.StorePath}'");
-                ReplaceEntry(partition, name, b64Certificate, null);
+                LogHandlerCommon.Debug(logger, CertificateStore, $"Replace entry '{crtName}' in '{CertificateStore.StorePath}'");
+                ReplaceEntry(partition, crtName, b64Certificate, null);
             }
 
             // Add the entry to the bundle
-            string crtName = GetCrtName(name, true);
             string crt = $"/{partition}/{crtName}";
             List<string> bundleIncludes = new List<string>(GetCABundleIncludes());
             if (!bundleIncludes.Contains(crt))
@@ -886,11 +854,10 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.MethodExit(logger, CertificateStore, "AddBundleEntry");
         }
 
-        public void RemoveBundleEntry(string bundle, string partition, string name)
+        public void RemoveBundleEntry(string bundle, string partition, string crtName)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "RemoveBundleEntry");
 
-            string crtName = GetCrtName(name, true);
             string crtEntry = $"/{partition}/{crtName}";
 
             LogHandlerCommon.Trace(logger, CertificateStore, $"Preparing to remove bundle entry '{crtEntry}'");

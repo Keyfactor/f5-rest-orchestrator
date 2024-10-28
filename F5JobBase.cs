@@ -7,7 +7,8 @@
 // OR CONDITIONS OF ANY KIND, either express or implied. See the License for  
 // thespecific language governing permissions and limitations under the       
 // License. 
-﻿using Keyfactor.Orchestrators.Extensions.Interfaces;
+using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Extensions.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,15 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             ServerUserName = PAMUtilities.ResolvePAMField(_resolver, logger, "Server User Name", serverUserName);
             ServerPassword = PAMUtilities.ResolvePAMField(_resolver, logger, "Server Password", serverPassword);
+        }
+
+        internal void ValidateF5Release(ILogger logger, CertificateStore certificateStore, F5Client f5Client)
+        {
+            LogHandlerCommon.MethodEntry(logger, certificateStore, "ValidateF5Release");
+
+            f5Client.ValidateF5Version();
+
+            LogHandlerCommon.MethodExit(logger, certificateStore, "ValidateF5Release");
         }
     }
 }

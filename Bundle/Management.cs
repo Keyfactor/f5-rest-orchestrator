@@ -50,9 +50,10 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle
 
                 F5Client f5 = new F5Client(config.CertificateStoreDetails, ServerUserName, ServerPassword, config.UseSSL, config.JobCertificate.PrivateKeyPassword, IgnoreSSLWarning, UseTokenAuth, config.LastInventory)
                 {
-                    PrimaryNode = base.PrimaryNode,
-                    F5Version = base.F5Version
+                    PrimaryNode = base.PrimaryNode
                 };
+
+                ValidateF5Release(logger, JobConfig.CertificateStoreDetails, f5);
 
                 switch (config.OperationType)
                 {

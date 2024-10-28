@@ -69,14 +69,6 @@
               "Required": true
             },
             {
-              "Name": "F5Version",
-              "DisplayName": "Version of F5",
-              "Type": "MultipleChoice",
-              "DependsOn": "",
-              "DefaultValue": "v12,v13,v14,v15",
-              "Required": true
-            },
-            {
               "Name": "ServerUsername",
               "DisplayName": "Server Username",
               "Type": "Secret",
@@ -175,14 +167,6 @@
               "Required": true
             },
             {
-              "Name": "F5Version",
-              "DisplayName": "Version of F5",
-              "Type": "MultipleChoice",
-              "DependsOn": "",
-              "DefaultValue": "v12,v13,v14,v15",
-              "Required": true
-            },
-            {
               "Name": "ServerUsername",
               "DisplayName": "Server Username",
               "Type": "Secret",
@@ -278,14 +262,6 @@
               "Type": "String",
               "DependsOn": "PrimaryNodeOnlineRequired",
               "DefaultValue": "3",
-              "Required": true
-            },
-            {
-              "Name": "F5Version",
-              "DisplayName": "Version of F5",
-              "Type": "MultipleChoice",
-              "DependsOn": "",
-              "DefaultValue": "v12,v13,v14,v15",
               "Required": true
             },
             {

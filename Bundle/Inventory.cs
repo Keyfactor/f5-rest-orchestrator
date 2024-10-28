@@ -40,7 +40,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle
             {
                 base.ParseJobProperties();
                 SetPAMSecrets(config.ServerUsername, config.ServerPassword, logger);
-                F5Client f5 = new F5Client(config.CertificateStoreDetails, ServerUserName, ServerPassword, config.UseSSL, null, IgnoreSSLWarning, UseTokenAuth, config.LastInventory) { F5Version = base.F5Version };
+                F5Client f5 = new F5Client(config.CertificateStoreDetails, ServerUserName, ServerPassword, config.UseSSL, null, IgnoreSSLWarning, UseTokenAuth, config.LastInventory);
+
+                ValidateF5Release(logger, JobConfig.CertificateStoreDetails, f5);
 
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Getting inventory for CA Bundle '{config.CertificateStoreDetails.StorePath}'");
                 inventory = f5.GetCABundleInventory();

@@ -52,6 +52,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
                     PrimaryNode = base.PrimaryNode
                 };
 
+                ValidateF5Release(logger, JobConfig.CertificateStoreDetails, f5);
+
                 LogHandlerCommon.Trace(logger, config.CertificateStoreDetails, "Replacing F5 web server certificate");
                 f5.ReplaceWebServerCrt(JobConfig.JobCertificate.Contents);
 

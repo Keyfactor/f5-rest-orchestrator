@@ -45,6 +45,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
 
                 F5Client f5 = new F5Client(config.CertificateStoreDetails, ServerUserName, ServerPassword, config.UseSSL, null, IgnoreSSLWarning, UseTokenAuth, config.LastInventory);
 
+                ValidateF5Release(logger, JobConfig.CertificateStoreDetails, f5);
+
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "Getting the F5 web server device inventory");
                 inventory = f5.GetWebServerInventory();
 

@@ -687,7 +687,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         internal void RemoveToken()
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "RemoveToken");
-            REST.Delete($"/mgmt/shared/authz/tokens{REST.Token}");
+            REST.Delete($"/mgmt/shared/authz/tokens/{REST.Token}");
             LogHandlerCommon.MethodExit(logger, CertificateStore, "RemoveToken");
         }
 

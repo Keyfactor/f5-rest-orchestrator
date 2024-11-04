@@ -1,6 +1,6 @@
 ## Overview
 
-The F55 Orchestrator supports three different types of certificates stores with the capabilities for each below:
+The F5 Orchestrator supports three different types of certificates stores with the capabilities for each below:
 
 - CA Bundles
   - Discovery

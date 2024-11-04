@@ -50,6 +50,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Submitting {inventory?.Count} inventory entries for '{config.CertificateStoreDetails.StorePath}'");
                 submitInventory.Invoke(inventory);
 
+                if (UseTokenAuth)
+                    f5.RemoveToken();
+
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
             }

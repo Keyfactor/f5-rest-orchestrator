@@ -684,6 +684,13 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             return loginResponse.token.token;
         }
 
+        internal void RemoveToken()
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "RemoveToken");
+            REST.Delete($"/mgmt/shared/authz/tokens{REST.Token}");
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "RemoveToken");
+        }
+
         internal void ValidateF5Version()
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "IsVersionSupported");

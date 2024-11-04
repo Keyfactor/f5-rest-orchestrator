@@ -23,12 +23,21 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         protected string ServerPassword { get; set; }
 
+        protected string StorePassword { get; set; }
+
         public IPAMSecretResolver _resolver;
 
         internal void SetPAMSecrets(string serverUserName, string serverPassword, ILogger logger)
         {
             ServerUserName = PAMUtilities.ResolvePAMField(_resolver, logger, "Server User Name", serverUserName);
             ServerPassword = PAMUtilities.ResolvePAMField(_resolver, logger, "Server Password", serverPassword);
+        }
+
+        internal void SetPAMSecrets(string serverUserName, string serverPassword, string storePassword, ILogger logger)
+        {
+            ServerUserName = PAMUtilities.ResolvePAMField(_resolver, logger, "Server User Name", serverUserName);
+            ServerPassword = PAMUtilities.ResolvePAMField(_resolver, logger, "Server Password", serverPassword);
+            StorePassword = PAMUtilities.ResolvePAMField(_resolver, logger, "Store Password", storePassword);
         }
 
         internal void ValidateF5Release(ILogger logger, CertificateStore certificateStore, F5Client f5Client)

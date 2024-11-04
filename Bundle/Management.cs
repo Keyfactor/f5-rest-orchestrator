@@ -70,6 +70,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle
                         throw new Exception($"Management job expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
                 }
 
+                if (UseTokenAuth)
+                    f5.RemoveToken();
+
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId};
             }

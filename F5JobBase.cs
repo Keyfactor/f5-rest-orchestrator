@@ -7,7 +7,8 @@
 // OR CONDITIONS OF ANY KIND, either express or implied. See the License for  
 // thespecific language governing permissions and limitations under the       
 // License. 
-﻿using Keyfactor.Orchestrators.Extensions.Interfaces;
+using Keyfactor.Orchestrators.Extensions;
+using Keyfactor.Orchestrators.Extensions.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -22,12 +23,30 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         protected string ServerPassword { get; set; }
 
+        protected string StorePassword { get; set; }
+
         public IPAMSecretResolver _resolver;
 
         internal void SetPAMSecrets(string serverUserName, string serverPassword, ILogger logger)
         {
             ServerUserName = PAMUtilities.ResolvePAMField(_resolver, logger, "Server User Name", serverUserName);
             ServerPassword = PAMUtilities.ResolvePAMField(_resolver, logger, "Server Password", serverPassword);
+        }
+
+        internal void SetPAMSecrets(string serverUserName, string serverPassword, string storePassword, ILogger logger)
+        {
+            ServerUserName = PAMUtilities.ResolvePAMField(_resolver, logger, "Server User Name", serverUserName);
+            ServerPassword = PAMUtilities.ResolvePAMField(_resolver, logger, "Server Password", serverPassword);
+            StorePassword = PAMUtilities.ResolvePAMField(_resolver, logger, "Store Password", storePassword);
+        }
+
+        internal void ValidateF5Release(ILogger logger, CertificateStore certificateStore, F5Client f5Client)
+        {
+            LogHandlerCommon.MethodEntry(logger, certificateStore, "ValidateF5Release");
+
+            f5Client.ValidateF5Version();
+
+            LogHandlerCommon.MethodExit(logger, certificateStore, "ValidateF5Release");
         }
     }
 }

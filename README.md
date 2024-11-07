@@ -235,8 +235,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
     | Supports Discovery | ✅ Checked | Check the box. Indicates that the Store Type supports Discovery |
     | Supports Reenrollment | 🔲 Unchecked |  Indicates that the Store Type supports Reenrollment |
     | Supports Create | 🔲 Unchecked |  Indicates that the Store Type supports store creation |
-    | Needs Server | 🔲 Unchecked | Determines if a target server name is required when creating store |
-    | Blueprint Allowed | 🔲 Unchecked | Determines if store type may be included in an Orchestrator blueprint |
+    | Needs Server | ✅ Checked | Determines if a target server name is required when creating store |
+    | Blueprint Allowed | ✅ Checked | Determines if store type may be included in an Orchestrator blueprint |
     | Uses PowerShell | 🔲 Unchecked | Determines if underlying implementation is PowerShell |
     | Requires Store Password | 🔲 Unchecked | Enables users to optionally specify a store password when defining a Certificate Store. |
     | Supports Entry Password | 🔲 Unchecked | Determines if an individual entry within a store can have a password. |
@@ -248,8 +248,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
     #### Advanced Tab
     | Attribute | Value | Description |
     | --------- | ----- | ----- |
-    | Supports Custom Alias |  | Determines if an individual entry within a store can have a custom Alias. |
-    | Private Key Handling |  | This determines if Keyfactor can send the private key associated with a certificate to the store. Required because IIS certificates without private keys would be invalid. |
+    | Supports Custom Alias | Required | Determines if an individual entry within a store can have a custom Alias. |
+    | Private Key Handling | Forbidden | This determines if Keyfactor can send the private key associated with a certificate to the store. Required because IIS certificates without private keys would be invalid. |
     | PFX Password Style | Default | 'Default' - PFX password is randomly generated, 'Custom' - PFX password may be specified when the enrollment job is created (Requires the Allow Custom Password application setting to be enabled.) |
 
     The Advanced tab should look like this:
@@ -261,6 +261,12 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 
     | Name | Display Name | Description | Type | Default Value/Options | Required |
     | ---- | ------------ | ---- | --------------------- | -------- | ----------- |
+    | PrimaryNode | Primary Node | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. | String |  | ✅ Checked |
+    | PrimaryNodeCheckRetryWaitSecs | Primary Node Check Retry Wait Seconds | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. | String | 120 | ✅ Checked |
+    | PrimaryNodeCheckRetryMax | Primary Node Check Retry Maximum | Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing. | String | 3 | ✅ Checked |
+    | PrimaryNodeOnlineRequired | Primary Node Online Required | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. | Bool |  | ✅ Checked |
+    | IgnoreSSLWarning | Ignore SSL Warning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. | Bool | False | ✅ Checked |
+    | UseTokenAuth | Use Token Authentication | Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. | Bool | false | ✅ Checked |
 
     The Custom Fields tab should look like this:
 
@@ -407,8 +413,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
         | --------- | ----------- |
         | Category | Select "F5 WS Profiles REST" or the customized certificate store name from the previous step. |
         | Container | Optional container to associate certificate store with. |
-        | Client Machine |  |
-        | Store Path |  |
+        | Client Machine | The server name or IP Address for the F5 device. |
+        | Store Path | Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is "Common", it must be entered as "Common" and not "common", |
         | Orchestrator | Select an approved orchestrator capable of managing `F5-WS-REST` certificates. Specifically, one with the `F5-WS-REST` capability. |
         | PrimaryNode | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. |
         | PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
@@ -438,8 +444,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
         | --------- | ----------- |
         | Category | Select "F5 WS Profiles REST" or the customized certificate store name from the previous step. |
         | Container | Optional container to associate certificate store with. |
-        | Client Machine |  |
-        | Store Path |  |
+        | Client Machine | The server name or IP Address for the F5 device. |
+        | Store Path | Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is "Common", it must be entered as "Common" and not "common", |
         | Orchestrator | Select an approved orchestrator capable of managing `F5-WS-REST` certificates. Specifically, one with the `F5-WS-REST` capability. |
         | PrimaryNode | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. |
         | PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
@@ -481,9 +487,15 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
         | --------- | ----------- |
         | Category | Select "F5 CA Profiles REST" or the customized certificate store name from the previous step. |
         | Container | Optional container to associate certificate store with. |
-        | Client Machine |  |
-        | Store Path |  |
+        | Client Machine | The server name or IP Address for the F5 device. |
+        | Store Path | Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is "Common", it must be entered as "Common" and not "common", |
         | Orchestrator | Select an approved orchestrator capable of managing `F5-CA-REST` certificates. Specifically, one with the `F5-CA-REST` capability. |
+        | PrimaryNode | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. |
+        | PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
+        | PrimaryNodeCheckRetryMax | Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing. |
+        | PrimaryNodeOnlineRequired | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. |
+        | IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
+        | UseTokenAuth | Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
 
 
         
@@ -506,9 +518,15 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
         | --------- | ----------- |
         | Category | Select "F5 CA Profiles REST" or the customized certificate store name from the previous step. |
         | Container | Optional container to associate certificate store with. |
-        | Client Machine |  |
-        | Store Path |  |
+        | Client Machine | The server name or IP Address for the F5 device. |
+        | Store Path | Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is "Common", it must be entered as "Common" and not "common", |
         | Orchestrator | Select an approved orchestrator capable of managing `F5-CA-REST` certificates. Specifically, one with the `F5-CA-REST` capability. |
+        | PrimaryNode | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. |
+        | PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
+        | PrimaryNodeCheckRetryMax | Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing. |
+        | PrimaryNodeOnlineRequired | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. |
+        | IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
+        | UseTokenAuth | Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
 
 
         

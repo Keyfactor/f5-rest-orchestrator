@@ -157,6 +157,11 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string token { get; set; }
     }
 
+    public class F5Version
+    {
+        public string selfLink { get; set; }
+    }
+
     // F5 data models
     #endregion
 }

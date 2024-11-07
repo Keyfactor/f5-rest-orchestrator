@@ -50,9 +50,10 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle
 
                 F5Client f5 = new F5Client(config.CertificateStoreDetails, ServerUserName, ServerPassword, config.UseSSL, config.JobCertificate.PrivateKeyPassword, IgnoreSSLWarning, UseTokenAuth, config.LastInventory)
                 {
-                    PrimaryNode = base.PrimaryNode,
-                    F5Version = base.F5Version
+                    PrimaryNode = base.PrimaryNode
                 };
+
+                ValidateF5Release(logger, JobConfig.CertificateStoreDetails, f5);
 
                 switch (config.OperationType)
                 {
@@ -68,6 +69,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle
                         // Shouldn't get here, but just in case
                         throw new Exception($"Management job expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
                 }
+
+                if (UseTokenAuth)
+                    f5.RemoveToken();
 
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId};

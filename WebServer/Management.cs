@@ -52,8 +52,13 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
                     PrimaryNode = base.PrimaryNode
                 };
 
+                ValidateF5Release(logger, JobConfig.CertificateStoreDetails, f5);
+
                 LogHandlerCommon.Trace(logger, config.CertificateStoreDetails, "Replacing F5 web server certificate");
                 f5.ReplaceWebServerCrt(JobConfig.JobCertificate.Contents);
+
+                if (UseTokenAuth)
+                    f5.RemoveToken();
 
                 LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };

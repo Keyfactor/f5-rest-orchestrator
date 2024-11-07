@@ -163,7 +163,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
     | Short Name | F5-WS-REST | Short display name for the store type |
     | Capability | F5-WS-REST | Store type name orchestrator will register with. Check the box to allow entry of value |
     | Supports Add | ✅ Checked | Check the box. Indicates that the Store Type supports Management Add |
-    | Supports Remove | ✅ Checked | Check the box. Indicates that the Store Type supports Management Remove |
+    | Supports Remove | 🔲 Unchecked |  Indicates that the Store Type supports Management Remove |
     | Supports Discovery | 🔲 Unchecked |  Indicates that the Store Type supports Discovery |
     | Supports Reenrollment | 🔲 Unchecked |  Indicates that the Store Type supports Reenrollment |
     | Supports Create | 🔲 Unchecked |  Indicates that the Store Type supports store creation |

@@ -1,5 +1,5 @@
 {
-    "$schema": "https://keyfactor.github.io/integration-manifest-schema.json",
+    "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
     "integration_type": "orchestrator",
     "name": "F5",
     "status": "production",
@@ -109,6 +109,8 @@
                     "CustomAliasAllowed": "Forbidden",
                     "PowerShell": false,
                     "PrivateKeyAllowed": "Required",
+                    "ClientMachineDescription": "The server name or IP Address for the F5 device.",
+                    "StorePathDescription": "Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is \"Common\", it must be entered as \"Common\" and not \"common\",",
                     "SupportedOperations": {
                         "Add": true,
                         "Create": false,
@@ -183,6 +185,9 @@
                     "Name": "F5 CA Profiles REST",
                     "ShortName": "F5-CA-REST",
                     "Capability": "F5-CA-REST",
+                    "ServerRequired": true,
+                    "ClientMachineDescription": "The server name or IP Address for the F5 device.",
+                    "StorePathDescription": "Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is \"Common\", it must be entered as \"Common\" and not \"common\",",
                     "SupportedOperations": {
                         "Add": true,
                         "Create": false,
@@ -193,71 +198,70 @@
                     "PasswordOptions": {
                         "Style": "Default",
                         "EntrySupported": false,
-                        "StoreRequired": false,
-                        "PrivateKeyAllowed": "Forbidden",
-                        "JobProperties": [],
-                        "ServerRequired": true,
-                        "PowerShell": false,
-                        "BlueprintAllowed": true,
-                        "CustomAliasAllowed": "Required",
-                        "Properties": [
-                            {
-                                "Name": "PrimaryNode",
-                                "DisplayName": "Primary Node",
-                                "Type": "String",
-                                "DependsOn": "PrimaryNodeOnlineRequired",
-                                "DefaultValue": "",
-                                "Required": true,
-                                "Description": "Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive."
-                            },
-                            {
-                                "Name": "PrimaryNodeCheckRetryWaitSecs",
-                                "DisplayName": "Primary Node Check Retry Wait Seconds",
-                                "Type": "String",
-                                "DependsOn": "PrimaryNodeOnlineRequired",
-                                "DefaultValue": "120",
-                                "Required": true,
-                                "Description": "Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive."
-                            },
-                            {
-                                "Name": "PrimaryNodeCheckRetryMax",
-                                "DisplayName": "Primary Node Check Retry Maximum",
-                                "Type": "String",
-                                "DependsOn": "PrimaryNodeOnlineRequired",
-                                "DefaultValue": "3",
-                                "Required": true,
-                                "Description": "Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing."
-                            },
-                            {
-                                "Name": "PrimaryNodeOnlineRequired",
-                                "DisplayName": "Primary Node Online Required",
-                                "Type": "Bool",
-                                "DependsOn": "",
-                                "DefaultValue": "",
-                                "Required": true,
-                                "Description": "Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed."
-                            },
-                            {
-                                "Name": "IgnoreSSLWarning",
-                                "DisplayName": "Ignore SSL Warning",
-                                "Type": "Bool",
-                                "DependsOn": "",
-                                "DefaultValue": "False",
-                                "Required": true,
-                                "Description": "Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs."
-                            },
-                            {
-                                "Name": "UseTokenAuth",
-                                "DisplayName": "Use Token Authentication",
-                                "Type": "Bool",
-                                "DependsOn": "",
-                                "DefaultValue": "false",
-                                "Required": true,
-                                "Description": "Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests."
-                            }
-                        ],
-                        "EntryParameters": []
-                    }
+                        "StoreRequired": false
+                    },
+                    "PrivateKeyAllowed": "Forbidden",
+                    "JobProperties": [],
+                    "PowerShell": false,
+                    "BlueprintAllowed": true,
+                    "CustomAliasAllowed": "Required",
+                    "Properties": [
+                        {
+                            "Name": "PrimaryNode",
+                            "DisplayName": "Primary Node",
+                            "Type": "String",
+                            "DependsOn": "PrimaryNodeOnlineRequired",
+                            "DefaultValue": "",
+                            "Required": true,
+                            "Description": "Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive."
+                        },
+                        {
+                            "Name": "PrimaryNodeCheckRetryWaitSecs",
+                            "DisplayName": "Primary Node Check Retry Wait Seconds",
+                            "Type": "String",
+                            "DependsOn": "PrimaryNodeOnlineRequired",
+                            "DefaultValue": "120",
+                            "Required": true,
+                            "Description": "Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive."
+                        },
+                        {
+                            "Name": "PrimaryNodeCheckRetryMax",
+                            "DisplayName": "Primary Node Check Retry Maximum",
+                            "Type": "String",
+                            "DependsOn": "PrimaryNodeOnlineRequired",
+                            "DefaultValue": "3",
+                            "Required": true,
+                            "Description": "Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing."
+                        },
+                        {
+                            "Name": "PrimaryNodeOnlineRequired",
+                            "DisplayName": "Primary Node Online Required",
+                            "Type": "Bool",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "Required": true,
+                            "Description": "Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed."
+                        },
+                        {
+                            "Name": "IgnoreSSLWarning",
+                            "DisplayName": "Ignore SSL Warning",
+                            "Type": "Bool",
+                            "DependsOn": "",
+                            "DefaultValue": "False",
+                            "Required": true,
+                            "Description": "Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs."
+                        },
+                        {
+                            "Name": "UseTokenAuth",
+                            "DisplayName": "Use Token Authentication",
+                            "Type": "Bool",
+                            "DependsOn": "",
+                            "DefaultValue": "false",
+                            "Required": true,
+                            "Description": "Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests."
+                        }
+                    ],
+                    "EntryParameters": []
                 }
             ]
         }

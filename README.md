@@ -49,18 +49,6 @@ The F5 Orchestrator supports three different types of certificates stores with t
 
 The F5 Universal Orchestrator extension implements 3 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types. Descriptions of each are provided below.
 
-<details><summary>F5 SSL Profiles REST (F5-SL-REST)</summary>
-
-</details>
-
-<details><summary>F5 WS Profiles REST (F5-WS-REST)</summary>
-
-</details>
-
-<details><summary>F5 CA Profiles REST (F5-CA-REST)</summary>
-
-</details>
-
 
 ## Compatibility
 

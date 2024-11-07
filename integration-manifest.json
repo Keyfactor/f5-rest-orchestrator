@@ -116,7 +116,7 @@
                         "Create": false,
                         "Discovery": false,
                         "Enrollment": false,
-                        "Remove": true
+                        "Remove": false
                     },
                     "PasswordOptions": {
                         "Style": "Default",

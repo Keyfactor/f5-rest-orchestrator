@@ -7,7 +7,7 @@
   "link_github": true,
   "support_level": "kf-supported",
   "release_project": "F5Orchestrator.csproj",
-  "release_dir": "F5/bin/Release",
+  "release_dir": "bin/Release",
   "description": "The F5 Orchestrator allows for the remote management of F5 Stores. Discovery, Inventory, and Management functions are supported.",
   "about": {
     "orchestrator": {
@@ -48,7 +48,7 @@
               "DependsOn": "PrimaryNodeOnlineRequired",
               "DefaultValue": "",
               "Required": true,
-              "Description": "Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed."
+              "Description": "Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive."
             },
             {
               "Name": "PrimaryNodeCheckRetryWaitSecs",
@@ -129,7 +129,7 @@
               "DependsOn": "PrimaryNodeOnlineRequired",
               "DefaultValue": "",
               "Required": true,
-              "Description": "Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed."
+              "Description": "Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive."
             },
             {
               "Name": "PrimaryNodeCheckRetryWaitSecs",
@@ -208,7 +208,7 @@
                 "DependsOn": "PrimaryNodeOnlineRequired",
                 "DefaultValue": "",
                 "Required": true,
-                "Description": "Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed."
+                "Description": "Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive."
               },
               {
                 "Name": "PrimaryNodeCheckRetryWaitSecs",

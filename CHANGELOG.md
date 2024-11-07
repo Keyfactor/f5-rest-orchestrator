@@ -1,6 +1,6 @@
 v1.7.0
 - Deprecate F5 Version Custom Field for all store types.
-- Make Store Password a "PAM eligible" field on the orchestrator
+- Make Store Password a "PAM eligible" field on the orchestratorr
 - Remove session token at end of each job
 - Convert documentation to use Doctool
 - Create separate .net6 and .net8 builds on release

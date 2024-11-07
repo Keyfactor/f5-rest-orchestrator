@@ -19,7 +19,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         protected DiscoveryJobConfiguration JobConfig { get; set; }
 
-        public string ExtensionName => string.Empty;
+        public string ExtensionName => "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Discovery";
 
         public abstract JobResult ProcessJob(DiscoveryJobConfiguration config, SubmitDiscoveryUpdate submitDiscovery);
     }

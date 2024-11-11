@@ -37,7 +37,7 @@
                         "StoreRequired": true,
                         "StorePassword": {
                             "Description": "Check \"No Password\" if you wish the private key of any added certificate to be set to Key Security Type \"Normal\". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of \"Password\".",
-                            "IsPAMEligible": false
+                            "IsPAMEligible": true
                         }
                     },
                     "Properties": [

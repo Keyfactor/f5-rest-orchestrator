@@ -24,6 +24,8 @@
                     "CustomAliasAllowed": "Required",
                     "PowerShell": false,
                     "PrivateKeyAllowed": "Optional",
+                    "ClientMachineDescription": "The server name or IP Address for the F5 device.",
+                    "StorePathDescription": "Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is \"Common\", it must be entered as \"Common\" and not \"common\",",
                     "SupportedOperations": {
                         "Add": true,
                         "Create": false,
@@ -94,11 +96,38 @@
                             "DefaultValue": "false",
                             "Required": true,
                             "Description": "Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests."
+                        },
+                        {
+                            "Name": "ServerUsername",
+                            "DisplayName": "Server Username",
+                            "Type": "Secret",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "IsPAMEligible": true,
+                            "Required": false,
+                            "Description": "Login credential for the F5 device.  MUST be an Admin account."
+                        },
+                        {
+                            "Name": "ServerPassword",
+                            "DisplayName": "Server Password",
+                            "Type": "Secret",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "IsPAMEligible": true,
+                            "Required": false,
+                            "Description": "Login password for the F5 device."
+                        },
+                        {
+                            "Name": "ServerUseSsl",
+                            "DisplayName": "Use SSL",
+                            "Type": "Bool",
+                            "DependsOn": "",
+                            "DefaultValue": "true",
+                            "Required": true,
+                            "Description": "True if using https to access the F5 device. False if using http."
                         }
                     ],
-                    "EntryParameters": [],
-                    "ClientMachineDescription": "The server name or IP Address for the F5 device.",
-                    "StorePathDescription": "Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is \"Common\", it must be entered as \"Common\" and not \"common\","
+                    "EntryParameters": []
                 },
                 {
                     "Name": "F5 WS Profiles REST",
@@ -177,6 +206,35 @@
                             "DefaultValue": "false",
                             "Required": true,
                             "Description": "Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests."
+                        },
+                        {
+                            "Name": "ServerUsername",
+                            "DisplayName": "Server Username",
+                            "Type": "Secret",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "IsPAMEligible": true,
+                            "Required": false,
+                            "Description": "Login credential for the F5 device.  MUST be an Admin account."
+                        },
+                        {
+                            "Name": "ServerPassword",
+                            "DisplayName": "Server Password",
+                            "Type": "Secret",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "IsPAMEligible": true,
+                            "Required": false,
+                            "Description": "Login password for the F5 device."
+                        },
+                        {
+                            "Name": "ServerUseSsl",
+                            "DisplayName": "Use SSL",
+                            "Type": "Bool",
+                            "DependsOn": "",
+                            "DefaultValue": "true",
+                            "Required": true,
+                            "Description": "True if using https to access the F5 device. False if using http."
                         }
                     ],
                     "EntryParameters": []
@@ -259,6 +317,35 @@
                             "DefaultValue": "false",
                             "Required": true,
                             "Description": "Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests."
+                        },
+                        {
+                            "Name": "ServerUsername",
+                            "DisplayName": "Server Username",
+                            "Type": "Secret",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "IsPAMEligible": true,
+                            "Required": false,
+                            "Description": "Login credential for the F5 device.  MUST be an Admin account."
+                        },
+                        {
+                            "Name": "ServerPassword",
+                            "DisplayName": "Server Password",
+                            "Type": "Secret",
+                            "DependsOn": "",
+                            "DefaultValue": "",
+                            "IsPAMEligible": true,
+                            "Required": false,
+                            "Description": "Login password for the F5 device."
+                        },
+                        {
+                            "Name": "ServerUseSsl",
+                            "DisplayName": "Use SSL",
+                            "Type": "Bool",
+                            "DependsOn": "",
+                            "DefaultValue": "true",
+                            "Required": true,
+                            "Description": "True if using https to access the F5 device. False if using http."
                         }
                     ],
                     "EntryParameters": []

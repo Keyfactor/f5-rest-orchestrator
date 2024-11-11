@@ -40,6 +40,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle
                 SetPAMSecrets(config.ServerUsername, config.ServerPassword, logger);
 
                 F5Client f5 = new F5Client(certificateStore, ServerUserName, ServerPassword, config.UseSSL, string.Empty, true, false, new List<PreviousInventoryItem>());
+
+                ValidateF5Release(logger, certificateStore, f5);
+
                 List<string> partitions = f5.GetPartitions().Select(p => p.name).ToList();
 
                 LogHandlerCommon.Trace(logger, certificateStore, $"Found {partitions?.Count} partitions");

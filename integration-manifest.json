@@ -103,6 +103,7 @@
                     "Type": "Secret",
                     "DependsOn": "",
                     "DefaultValue": "",
+                    "IsPAMEligible": true,
                     "Required": false,
                     "Description": "Login credential for the F5 device.  MUST be an Admin account."
                   },
@@ -112,6 +113,7 @@
                     "Type": "Secret",
                     "DependsOn": "",
                     "DefaultValue": "",
+                    "IsPAMEligible": true,
                     "Required": false,
                     "Description": "Login password for the F5 device."
                   },
@@ -211,6 +213,7 @@
                       "Type": "Secret",
                       "DependsOn": "",
                       "DefaultValue": "",
+                      "IsPAMEligible": true,
                       "Required": false,
                       "Description": "Login credential for the F5 device.  MUST be an Admin account."
                     },
@@ -220,6 +223,7 @@
                       "Type": "Secret",
                       "DependsOn": "",
                       "DefaultValue": "",
+                      "IsPAMEligible": true,
                       "Required": false,
                       "Description": "Login password for the F5 device."
                     },
@@ -320,6 +324,7 @@
                       "Type": "Secret",
                       "DependsOn": "",
                       "DefaultValue": "",
+                      "IsPAMEligible": true,
                       "Required": false,
                       "Description": "Login credential for the F5 device.  MUST be an Admin account."
                     },
@@ -329,6 +334,7 @@
                       "Type": "Secret",
                       "DependsOn": "",
                       "DefaultValue": "",
+                      "IsPAMEligible": true,
                       "Required": false,
                       "Description": "Login password for the F5 device."
                     },

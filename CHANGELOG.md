@@ -1,4 +1,4 @@
-v1.7.0
+v1.7.0 
 - Deprecate F5 Version Custom Field for all store types.
 - Make Store Password a "PAM eligible" field on the orchestrator
 - Remove session token at end of each job

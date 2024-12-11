@@ -26,11 +26,10 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         protected int PrimaryNodeRetryMax { get; set; }
         protected int PrimaryNodeRetryWaitSecs { get; set; }
         protected int _primaryNodeRetryCount = 0;
-        protected string F5Version { get; set; }
         protected bool IgnoreSSLWarning { get; set; }
         protected bool UseTokenAuth { get; set; }
 
-        public string ExtensionName => string.Empty;
+        public string ExtensionName => "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Management";
 
         public abstract JobResult ProcessJob(ManagementJobConfiguration config);
 
@@ -77,10 +76,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             {
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "The primary node is not required to be active");
             }
-
-            if (string.IsNullOrEmpty(properties.F5Version?.ToString())) { throw new Exception("Missing job property string: F5Version"); }
-            F5Version = properties.F5Version.ToString();
-            LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"F5 version '{F5Version}'");
 
             IgnoreSSLWarning = properties.IgnoreSSLWarning == null || string.IsNullOrEmpty(properties.IgnoreSSLWarning.Value) ? false : bool.Parse(properties.IgnoreSSLWarning.Value);
             UseTokenAuth = properties.UseTokenAuth == null || string.IsNullOrEmpty(properties.UseTokenAuth.Value) ? false : bool.Parse(properties.UseTokenAuth.Value);

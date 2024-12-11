@@ -1,3 +1,10 @@
+v1.7.0 
+- Deprecate F5 Version Custom Field for all store types.
+- Make Store Password a "PAM eligible" field on the orchestrator
+- Remove session token at end of each job
+- Convert documentation to use Doctool
+- Create separate .net6 and .net8 builds on release
+
 v1.6.0
 - Add Store Password (optional) to allow for setting key type to "Password" when adding/replacing a certificate.  This will encrypt the private key deployed on the F5 device with the password set as the Store Password.
 

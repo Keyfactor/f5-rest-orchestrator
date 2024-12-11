@@ -21,11 +21,10 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         protected InventoryJobConfiguration JobConfig { get; set; }
 
-        protected string F5Version { get; set; }
         protected bool IgnoreSSLWarning { get; set; }
         protected bool UseTokenAuth { get; set; }
 
-        public string ExtensionName => string.Empty;
+        public string ExtensionName => "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Inventory";
 
         public abstract JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate submitInventory);
 
@@ -33,10 +32,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             LogHandlerCommon.MethodEntry(logger, JobConfig.CertificateStoreDetails, "ParseJobProperties");
             dynamic properties = JsonConvert.DeserializeObject(JobConfig.CertificateStoreDetails.Properties.ToString());
-
-            if (string.IsNullOrEmpty(properties.F5Version?.ToString())) { throw new Exception("Missing job property string: F5Version"); }
-            F5Version = properties.F5Version.ToString();
-            LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"F5 version '{F5Version}'");
 
             IgnoreSSLWarning = properties.IgnoreSSLWarning == null || string.IsNullOrEmpty(properties.IgnoreSSLWarning.Value) ? false : bool.Parse(properties.IgnoreSSLWarning.Value);
             UseTokenAuth = properties.UseTokenAuth == null || string.IsNullOrEmpty(properties.UseTokenAuth.Value) ? false : bool.Parse(properties.UseTokenAuth.Value);

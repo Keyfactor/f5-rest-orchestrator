@@ -43,21 +43,22 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 
             try
             {
-                SetPAMSecrets(config.ServerUsername, config.ServerPassword, logger);
+                SetPAMSecrets(config.ServerUsername, config.ServerPassword, config.CertificateStoreDetails.StorePassword, logger);
                 base.ParseJobProperties();
                 base.PrimaryNodeActive();
 
                 F5Client f5 = new F5Client(config.CertificateStoreDetails, ServerUserName, ServerPassword, config.UseSSL, config.JobCertificate.PrivateKeyPassword, IgnoreSSLWarning, UseTokenAuth, config.LastInventory)
                 {
-                    PrimaryNode = base.PrimaryNode,
-                    F5Version = base.F5Version
+                    PrimaryNode = base.PrimaryNode
                 };
+
+                ValidateF5Release(logger, JobConfig.CertificateStoreDetails, f5);
 
                 switch (config.OperationType)
                 {
                     case CertStoreOperationType.Add:
                         LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, $"Add entry '{config.JobCertificate.Alias}' to '{config.CertificateStoreDetails.StorePath}'");
-                        PerformAddJob(f5, config.CertificateStoreDetails.StorePassword);
+                        PerformAddJob(f5, StorePassword);
                         break;
                     case CertStoreOperationType.Remove:
                         LogHandlerCommon.Trace(logger, config.CertificateStoreDetails, $"Remove entry '{config.JobCertificate.Alias}' from '{config.CertificateStoreDetails.StorePath}'");
@@ -67,6 +68,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                         // Shouldn't get here, but just in case
                         throw new Exception($"Management job expecting 'Add' or 'Remove' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
                 }
+
+                if (UseTokenAuth)
+                    f5.RemoveToken();
 
                 LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };

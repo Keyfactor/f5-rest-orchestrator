@@ -40,13 +40,18 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Bundle
             {
                 base.ParseJobProperties();
                 SetPAMSecrets(config.ServerUsername, config.ServerPassword, logger);
-                F5Client f5 = new F5Client(config.CertificateStoreDetails, ServerUserName, ServerPassword, config.UseSSL, null, IgnoreSSLWarning, UseTokenAuth, config.LastInventory) { F5Version = base.F5Version };
+                F5Client f5 = new F5Client(config.CertificateStoreDetails, ServerUserName, ServerPassword, config.UseSSL, null, IgnoreSSLWarning, UseTokenAuth, config.LastInventory);
+
+                ValidateF5Release(logger, JobConfig.CertificateStoreDetails, f5);
 
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Getting inventory for CA Bundle '{config.CertificateStoreDetails.StorePath}'");
                 inventory = f5.GetCABundleInventory();
 
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Submitting {inventory?.Count} inventory entries for CA Bundle '{config.CertificateStoreDetails.StorePath}'");
                 submitInventory.Invoke(inventory);
+
+                if (UseTokenAuth)
+                    f5.RemoveToken();
 
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };

@@ -28,6 +28,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         protected int _primaryNodeRetryCount = 0;
         protected bool IgnoreSSLWarning { get; set; }
         protected bool UseTokenAuth { get; set; }
+        protected bool RemoveChain { get; set; }
 
         public string ExtensionName => "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Management";
 
@@ -78,6 +79,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             }
 
             IgnoreSSLWarning = properties.IgnoreSSLWarning == null || string.IsNullOrEmpty(properties.IgnoreSSLWarning.Value) ? false : bool.Parse(properties.IgnoreSSLWarning.Value);
+            RemoveChain = properties.RemoveChain == null || string.IsNullOrEmpty(properties.RemoveChain.Value) ? false : bool.Parse(properties.RemoveChain.Value);
             UseTokenAuth = properties.UseTokenAuth == null || string.IsNullOrEmpty(properties.UseTokenAuth.Value) ? false : bool.Parse(properties.UseTokenAuth.Value);
             LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"Ignore SSL Warnings '{IgnoreSSLWarning.ToString()}'");
         }

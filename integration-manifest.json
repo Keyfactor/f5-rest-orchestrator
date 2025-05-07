@@ -42,91 +42,100 @@
                             "IsPAMEligible": true
                         }
                     },
-                    "Properties": [
-                        {
-                            "Name": "PrimaryNode",
-                            "DisplayName": "Primary Node",
-                            "Type": "String",
-                            "DependsOn": "PrimaryNodeOnlineRequired",
-                            "DefaultValue": "",
-                            "Required": true,
-                            "Description": "Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive."
-                        },
-                        {
-                            "Name": "PrimaryNodeCheckRetryWaitSecs",
-                            "DisplayName": "Primary Node Check Retry Wait Seconds",
-                            "Type": "String",
-                            "DependsOn": "PrimaryNodeOnlineRequired",
-                            "DefaultValue": "120",
-                            "Required": true,
-                            "Description": "Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive."
-                        },
-                        {
-                            "Name": "PrimaryNodeCheckRetryMax",
-                            "DisplayName": "Primary Node Check Retry Maximum",
-                            "Type": "String",
-                            "DependsOn": "PrimaryNodeOnlineRequired",
-                            "DefaultValue": "3",
-                            "Required": true,
-                            "Description": "Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing."
-                        },
-                        {
-                            "Name": "PrimaryNodeOnlineRequired",
-                            "DisplayName": "Primary Node Online Required",
-                            "Type": "Bool",
-                            "DependsOn": "",
-                            "DefaultValue": "",
-                            "Required": true,
-                            "Description": "Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed."
-                        },
-                        {
-                            "Name": "IgnoreSSLWarning",
-                            "DisplayName": "Ignore SSL Warning",
-                            "Type": "Bool",
-                            "DependsOn": "",
-                            "DefaultValue": "False",
-                            "Required": true,
-                            "Description": "Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs."
-                        },
-                        {
-                            "Name": "UseTokenAuth",
-                            "DisplayName": "Use Token Authentication",
-                            "Type": "Bool",
-                            "DependsOn": "",
-                            "DefaultValue": "false",
-                            "Required": true,
-                            "Description": "Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests."
-                        },
-                        {
-                            "Name": "ServerUsername",
-                            "DisplayName": "Server Username",
-                            "Type": "Secret",
-                            "DependsOn": "",
-                            "DefaultValue": "",
-                            "IsPAMEligible": true,
-                            "Required": false,
-                            "Description": "Login credential for the F5 device.  MUST be an Admin account."
-                        },
-                        {
-                            "Name": "ServerPassword",
-                            "DisplayName": "Server Password",
-                            "Type": "Secret",
-                            "DependsOn": "",
-                            "DefaultValue": "",
-                            "IsPAMEligible": true,
-                            "Required": false,
-                            "Description": "Login password for the F5 device."
-                        },
-                        {
-                            "Name": "ServerUseSsl",
-                            "DisplayName": "Use SSL",
-                            "Type": "Bool",
-                            "DependsOn": "",
-                            "DefaultValue": "true",
-                            "Required": true,
-                            "Description": "True if using https to access the F5 device. False if using http."
-                        }
-                    ],
+                  "Properties": [
+                    {
+                      "Name": "PrimaryNode",
+                      "DisplayName": "Primary Node",
+                      "Type": "String",
+                      "DependsOn": "PrimaryNodeOnlineRequired",
+                      "DefaultValue": "",
+                      "Required": true,
+                      "Description": "Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive."
+                    },
+                    {
+                      "Name": "PrimaryNodeCheckRetryWaitSecs",
+                      "DisplayName": "Primary Node Check Retry Wait Seconds",
+                      "Type": "String",
+                      "DependsOn": "PrimaryNodeOnlineRequired",
+                      "DefaultValue": "120",
+                      "Required": true,
+                      "Description": "Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive."
+                    },
+                    {
+                      "Name": "PrimaryNodeCheckRetryMax",
+                      "DisplayName": "Primary Node Check Retry Maximum",
+                      "Type": "String",
+                      "DependsOn": "PrimaryNodeOnlineRequired",
+                      "DefaultValue": "3",
+                      "Required": true,
+                      "Description": "Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing."
+                    },
+                    {
+                      "Name": "PrimaryNodeOnlineRequired",
+                      "DisplayName": "Primary Node Online Required",
+                      "Type": "Bool",
+                      "DependsOn": "",
+                      "DefaultValue": "",
+                      "Required": true,
+                      "Description": "Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed."
+                    },
+                    {
+                      "Name": "RemoveChain",
+                      "DisplayName": "Remove Chain on Add",
+                      "Type": "Bool",
+                      "DependsOn": "",
+                      "DefaultValue": "False",
+                      "Required": false,
+                      "Description": "Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device."
+                    },
+                    {
+                      "Name": "IgnoreSSLWarning",
+                      "DisplayName": "Ignore SSL Warning",
+                      "Type": "Bool",
+                      "DependsOn": "",
+                      "DefaultValue": "False",
+                      "Required": true,
+                      "Description": "Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs."
+                    },
+                    {
+                      "Name": "UseTokenAuth",
+                      "DisplayName": "Use Token Authentication",
+                      "Type": "Bool",
+                      "DependsOn": "",
+                      "DefaultValue": "false",
+                      "Required": true,
+                      "Description": "Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests."
+                    },
+                    {
+                      "Name": "ServerUsername",
+                      "DisplayName": "Server Username",
+                      "Type": "Secret",
+                      "DependsOn": "",
+                      "DefaultValue": "",
+                      "IsPAMEligible": true,
+                      "Required": false,
+                      "Description": "Login credential for the F5 device.  MUST be an Admin account."
+                    },
+                    {
+                      "Name": "ServerPassword",
+                      "DisplayName": "Server Password",
+                      "Type": "Secret",
+                      "DependsOn": "",
+                      "DefaultValue": "",
+                      "IsPAMEligible": true,
+                      "Required": false,
+                      "Description": "Login password for the F5 device."
+                    },
+                    {
+                      "Name": "ServerUseSsl",
+                      "DisplayName": "Use SSL",
+                      "Type": "Bool",
+                      "DependsOn": "",
+                      "DefaultValue": "true",
+                      "Required": true,
+                      "Description": "True if using https to access the F5 device. False if using http."
+                    }
+                  ],
                     "EntryParameters": []
                 },
                 {

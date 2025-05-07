@@ -55,7 +55,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 This integration is compatible with Keyfactor Universal Orchestrator version 10.1 and later.
 
 ## Support
-The F5 Universal Orchestrator extension is supported by Keyfactor for Keyfactor customers. If you have a support issue, please open a support ticket with your Keyfactor representative. If you have a support issue, please open a support ticket via the Keyfactor Support Portal at https://support.keyfactor.com. 
+The F5 Universal Orchestrator extension If you have a support issue, please open a support ticket by either contacting your Keyfactor representative or via the Keyfactor Support Portal at https://support.keyfactor.com. 
  
 > To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
 
@@ -76,13 +76,22 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 <details><summary>F5 SSL Profiles REST (F5-SL-REST)</summary>
 
 
-* **Create F5-SL-REST using kfutil**:
+### Using kfutil:
 
-    ```shell
-    # F5 SSL Profiles REST
-    kfutil store-types create F5-SL-REST
-    ```
+#### Using online definition from GitHub:
+This will reach out to GitHub and pull the latest store-type definition
+```shell
+# F5 SSL Profiles REST
+kfutil store-types create F5-SL-REST
+```
 
+#### Offline creation using integration-manifest file:
+If required, it is possible to create store types from the [integration-manifest.json](./integration-manifest.json) included in this repo.
+```shell
+kfutil store-types create --from-file integration-manifest.json
+```
+
+### Manually
 * **Create F5-SL-REST manually in the Command UI**:
     <details><summary>Create F5-SL-REST manually in the Command UI</summary>
 
@@ -120,6 +129,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 
     ![F5-SL-REST Advanced Tab](docsource/images/F5-SL-REST-advanced-store-type-dialog.png)
 
+    > For Keyfactor **Command versions 24.4 and later**, a Certificate Format dropdown is available with PFX and PEM options. Ensure that **PFX** is selected, as this determines the format of new and renewed certificates sent to the Orchestrator during a Management job. Currently, all Keyfactor-supported Orchestrator extensions support only PFX.
+
     #### Custom Fields Tab
     Custom fields operate at the certificate store level and are used to control how the orchestrator connects to the remote target server containing the certificate store to be managed. The following custom fields should be added to the store type:
 
@@ -141,19 +152,28 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 
 
 
-    </details>
+
 </details>
 
 <details><summary>F5 WS Profiles REST (F5-WS-REST)</summary>
 
 
-* **Create F5-WS-REST using kfutil**:
+### Using kfutil:
 
-    ```shell
-    # F5 WS Profiles REST
-    kfutil store-types create F5-WS-REST
-    ```
+#### Using online definition from GitHub:
+This will reach out to GitHub and pull the latest store-type definition
+```shell
+# F5 WS Profiles REST
+kfutil store-types create F5-WS-REST
+```
 
+#### Offline creation using integration-manifest file:
+If required, it is possible to create store types from the [integration-manifest.json](./integration-manifest.json) included in this repo.
+```shell
+kfutil store-types create --from-file integration-manifest.json
+```
+
+### Manually
 * **Create F5-WS-REST manually in the Command UI**:
     <details><summary>Create F5-WS-REST manually in the Command UI</summary>
 
@@ -191,6 +211,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 
     ![F5-WS-REST Advanced Tab](docsource/images/F5-WS-REST-advanced-store-type-dialog.png)
 
+    > For Keyfactor **Command versions 24.4 and later**, a Certificate Format dropdown is available with PFX and PEM options. Ensure that **PFX** is selected, as this determines the format of new and renewed certificates sent to the Orchestrator during a Management job. Currently, all Keyfactor-supported Orchestrator extensions support only PFX.
+
     #### Custom Fields Tab
     Custom fields operate at the certificate store level and are used to control how the orchestrator connects to the remote target server containing the certificate store to be managed. The following custom fields should be added to the store type:
 
@@ -212,19 +234,28 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 
 
 
-    </details>
+
 </details>
 
 <details><summary>F5 CA Profiles REST (F5-CA-REST)</summary>
 
 
-* **Create F5-CA-REST using kfutil**:
+### Using kfutil:
 
-    ```shell
-    # F5 CA Profiles REST
-    kfutil store-types create F5-CA-REST
-    ```
+#### Using online definition from GitHub:
+This will reach out to GitHub and pull the latest store-type definition
+```shell
+# F5 CA Profiles REST
+kfutil store-types create F5-CA-REST
+```
 
+#### Offline creation using integration-manifest file:
+If required, it is possible to create store types from the [integration-manifest.json](./integration-manifest.json) included in this repo.
+```shell
+kfutil store-types create --from-file integration-manifest.json
+```
+
+### Manually
 * **Create F5-CA-REST manually in the Command UI**:
     <details><summary>Create F5-CA-REST manually in the Command UI</summary>
 
@@ -262,6 +293,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 
     ![F5-CA-REST Advanced Tab](docsource/images/F5-CA-REST-advanced-store-type-dialog.png)
 
+    > For Keyfactor **Command versions 24.4 and later**, a Certificate Format dropdown is available with PFX and PEM options. Ensure that **PFX** is selected, as this determines the format of new and renewed certificates sent to the Orchestrator during a Management job. Currently, all Keyfactor-supported Orchestrator extensions support only PFX.
+
     #### Custom Fields Tab
     Custom fields operate at the certificate store level and are used to control how the orchestrator connects to the remote target server containing the certificate store to be managed. The following custom fields should be added to the store type:
 
@@ -283,7 +316,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 
 
 
-    </details>
+
 </details>
 
 
@@ -292,6 +325,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 1. **Download the latest F5 Universal Orchestrator extension from GitHub.** 
 
     Navigate to the [F5 Universal Orchestrator extension GitHub version page](https://github.com/Keyfactor/f5-rest-orchestrator/releases/latest). Refer to the compatibility matrix below to determine whether the `net6.0` or `net8.0` asset should be downloaded. Then, click the corresponding asset to download the zip archive.
+
     | Universal Orchestrator Version | Latest .NET version installed on the Universal Orchestrator server | `rollForward` condition in `Orchestrator.runtimeconfig.json` | `f5-rest-orchestrator` .NET version to download |
     | --------- | ----------- | ----------- | ----------- |
     | Older than `11.0.0` | | | `net6.0` |
@@ -328,7 +362,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
     To configure a PAM provider, [reference the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam) to select an extension, and follow the associated instructions to install it on the Universal Orchestrator (remote).
 
 
-> The above installation steps can be supplimented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/CustomExtensions.htm?Highlight=extensions).
+> The above installation steps can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/InstallingAgents/NetCoreOrchestrator/CustomExtensions.htm?Highlight=extensions).
 
 
 
@@ -338,6 +372,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
 
 <details><summary>F5 SSL Profiles REST (F5-SL-REST)</summary>
 
+
+### Store Creation
 
 * **Manually with the Command UI**
 
@@ -350,6 +386,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
     2. **Add a Certificate Store.**
 
         Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
+
         | Attribute | Description |
         | --------- | ----------- |
         | Category | Select "F5 SSL Profiles REST" or the customized certificate store name from the previous step. |
@@ -366,26 +403,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
         | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
         | ServerPassword | Login password for the F5 device. |
         | ServerUseSsl | True if using https to access the F5 device. False if using http. |
-        | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
-
-        
-
-        <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
-
-        If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
-        | Attribute | Description |
-        | --------- | ----------- |
-        | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
-        | ServerPassword | Login password for the F5 device. |
-        | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
-
-        Please refer to the **Universal Orchestrator (remote)** usage section ([PAM providers on the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam)) for your selected PAM provider for instructions on how to load attributes orchestrator-side.
-
-        > Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself. 
-        </details>
-        
-
     </details>
+
 
 * **Using kfutil**
     
@@ -399,6 +418,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
     2. **Populate the generated CSV file**
 
         Open the CSV file, and reference the table below to populate parameters for each **Attribute**.
+
         | Attribute | Description |
         | --------- | ----------- |
         | Category | Select "F5 SSL Profiles REST" or the customized certificate store name from the previous step. |
@@ -415,37 +435,38 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
         | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
         | ServerPassword | Login password for the F5 device. |
         | ServerUseSsl | True if using https to access the F5 device. False if using http. |
-        | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
-
-        
-
-        <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
-
-        If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
-        | Attribute | Description |
-        | --------- | ----------- |
-        | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
-        | ServerPassword | Login password for the F5 device. |
-        | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
-
-        > Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself. 
-        </details>
-        
-
-    3. **Import the CSV file to create the certificate stores** 
+    3. **Import the CSV file to create the certificate stores**
 
         ```shell
         kfutil stores import csv --store-type-name F5-SL-REST --file F5-SL-REST.csv
         ```
+
+* **PAM Provider Eligible Fields**
+    <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
+
+    If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
+
+    | Attribute | Description |
+    | --------- | ----------- |
+    | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
+    | ServerPassword | Login password for the F5 device. |
+    | StorePassword | Password to use when reading/writing to store |
+
+    Please refer to the **Universal Orchestrator (remote)** usage section ([PAM providers on the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam)) for your selected PAM provider for instructions on how to load attributes orchestrator-side.
+
+    > Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself.
     </details>
 
-> The content in this section can be supplimented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
+
+> The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
 
 
 </details>
 
 <details><summary>F5 WS Profiles REST (F5-WS-REST)</summary>
 
+
+### Store Creation
 
 * **Manually with the Command UI**
 
@@ -458,6 +479,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
     2. **Add a Certificate Store.**
 
         Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
+
         | Attribute | Description |
         | --------- | ----------- |
         | Category | Select "F5 WS Profiles REST" or the customized certificate store name from the previous step. |
@@ -474,26 +496,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
         | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
         | ServerPassword | Login password for the F5 device. |
         | ServerUseSsl | True if using https to access the F5 device. False if using http. |
-
-
-        
-
-        <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
-
-        If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
-        | Attribute | Description |
-        | --------- | ----------- |
-        | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
-        | ServerPassword | Login password for the F5 device. |
-
-
-        Please refer to the **Universal Orchestrator (remote)** usage section ([PAM providers on the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam)) for your selected PAM provider for instructions on how to load attributes orchestrator-side.
-
-        > Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself. 
-        </details>
-        
-
     </details>
+
 
 * **Using kfutil**
     
@@ -507,6 +511,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
     2. **Populate the generated CSV file**
 
         Open the CSV file, and reference the table below to populate parameters for each **Attribute**.
+
         | Attribute | Description |
         | --------- | ----------- |
         | Category | Select "F5 WS Profiles REST" or the customized certificate store name from the previous step. |
@@ -523,37 +528,37 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
         | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
         | ServerPassword | Login password for the F5 device. |
         | ServerUseSsl | True if using https to access the F5 device. False if using http. |
-
-
-        
-
-        <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
-
-        If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
-        | Attribute | Description |
-        | --------- | ----------- |
-        | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
-        | ServerPassword | Login password for the F5 device. |
-
-
-        > Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself. 
-        </details>
-        
-
-    3. **Import the CSV file to create the certificate stores** 
+    3. **Import the CSV file to create the certificate stores**
 
         ```shell
         kfutil stores import csv --store-type-name F5-WS-REST --file F5-WS-REST.csv
         ```
+
+* **PAM Provider Eligible Fields**
+    <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
+
+    If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
+
+    | Attribute | Description |
+    | --------- | ----------- |
+    | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
+    | ServerPassword | Login password for the F5 device. |
+
+    Please refer to the **Universal Orchestrator (remote)** usage section ([PAM providers on the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam)) for your selected PAM provider for instructions on how to load attributes orchestrator-side.
+
+    > Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself.
     </details>
 
-> The content in this section can be supplimented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
+
+> The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
 
 
 </details>
 
 <details><summary>F5 CA Profiles REST (F5-CA-REST)</summary>
 
+
+### Store Creation
 
 * **Manually with the Command UI**
 
@@ -566,6 +571,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
     2. **Add a Certificate Store.**
 
         Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
+
         | Attribute | Description |
         | --------- | ----------- |
         | Category | Select "F5 CA Profiles REST" or the customized certificate store name from the previous step. |
@@ -582,26 +588,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
         | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
         | ServerPassword | Login password for the F5 device. |
         | ServerUseSsl | True if using https to access the F5 device. False if using http. |
-
-
-        
-
-        <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
-
-        If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
-        | Attribute | Description |
-        | --------- | ----------- |
-        | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
-        | ServerPassword | Login password for the F5 device. |
-
-
-        Please refer to the **Universal Orchestrator (remote)** usage section ([PAM providers on the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam)) for your selected PAM provider for instructions on how to load attributes orchestrator-side.
-
-        > Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself. 
-        </details>
-        
-
     </details>
+
 
 * **Using kfutil**
     
@@ -615,6 +603,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
     2. **Populate the generated CSV file**
 
         Open the CSV file, and reference the table below to populate parameters for each **Attribute**.
+
         | Attribute | Description |
         | --------- | ----------- |
         | Category | Select "F5 CA Profiles REST" or the customized certificate store name from the previous step. |
@@ -631,31 +620,29 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
         | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
         | ServerPassword | Login password for the F5 device. |
         | ServerUseSsl | True if using https to access the F5 device. False if using http. |
-
-
-        
-
-        <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
-
-        If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
-        | Attribute | Description |
-        | --------- | ----------- |
-        | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
-        | ServerPassword | Login password for the F5 device. |
-
-
-        > Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself. 
-        </details>
-        
-
-    3. **Import the CSV file to create the certificate stores** 
+    3. **Import the CSV file to create the certificate stores**
 
         ```shell
         kfutil stores import csv --store-type-name F5-CA-REST --file F5-CA-REST.csv
         ```
+
+* **PAM Provider Eligible Fields**
+    <details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
+
+    If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
+
+    | Attribute | Description |
+    | --------- | ----------- |
+    | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
+    | ServerPassword | Login password for the F5 device. |
+
+    Please refer to the **Universal Orchestrator (remote)** usage section ([PAM providers on the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam)) for your selected PAM provider for instructions on how to load attributes orchestrator-side.
+
+    > Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself.
     </details>
 
-> The content in this section can be supplimented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
+
+> The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
 
 
 </details>

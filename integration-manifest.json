@@ -104,7 +104,7 @@
                       "DependsOn": "",
                       "DefaultValue": "false",
                       "Required": true,
-                      "Description": "Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests."
+                      "Description": "Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests."
                     },
                     {
                       "Name": "ServerUsername",

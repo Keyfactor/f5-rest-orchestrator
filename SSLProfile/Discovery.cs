@@ -54,6 +54,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             }
             catch (Exception ex)
             {
+                LogHandlerCommon.Error(logger, certificateStore, ExceptionHandler.FlattenExceptionMessages(ex, $"Error performing Discovery."));
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Failure, JobHistoryId = config.JobHistoryId, FailureMessage = ExceptionHandler.FlattenExceptionMessages(ex, "Unable to complete the discovery operation.") };
             }
             finally

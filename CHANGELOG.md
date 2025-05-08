@@ -1,6 +1,7 @@
 v1.8.0
 - Add new custom field - Remove Chain on Add - to allow the removal of the certificate chain before adding/replacing a certificate on the F5 device.  Default = false.
 - Apply store password when replacing a certificate as well as adding (extension to change made in v1.6.0)
+- Added additional error logging
 
 v1.7.0 
 - Deprecate F5 Version Custom Field for all store types.

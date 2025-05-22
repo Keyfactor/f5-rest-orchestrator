@@ -61,6 +61,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
             }
             catch (Exception ex)
             {
+                LogHandlerCommon.Error(logger, config.CertificateStoreDetails, ExceptionHandler.FlattenExceptionMessages(ex, $"Error performing Inventory."));
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Failure, JobHistoryId = config.JobHistoryId, FailureMessage = ExceptionHandler.FlattenExceptionMessages(ex, "Unable to complete the inventory operation.") };
             }
             finally

@@ -31,23 +31,15 @@
 
 ## Overview
 
-The F5 Orchestrator supports three different types of certificates stores with the capabilities for each below:
-
-- CA Bundles
-  - Discovery
-  - Inventory*
-  - Management (Add and Remove)
-- Web Server Device Certificates
-  - Inventory*
-  - Management (Add, but replacement/renewal of existing certificate only) 
-- SSL Certificates
-  - Discovery
-  - Inventory*
-  - Management (Add and Remove)  
-
-*Special note on private keys: One of the pieces of information that Keyfactor collects during an Inventory job is whether or not the certificate stored in F5 has a private key.  The private key is NEVER actually retrieved by Keyfactor, but Keyfactor does track whether one exists.  F5 does not provide an API to determine this, so by convention, all CA Bundle certificates are deemed to not have private keys, while Web Server and SSL certificates are deemed to have them.  Any Management jobs adding (new or renewal) a certificate will renew without the private key for CA Bundle stores and with the private key for Web Server or SSL stores.
+The f5-rest-orchestrator orchestrator extension manages various types of certificates on a F5 Big IP device (version 15 or later).  TLS certificates, CA bundles, and the certificate protecting the administrative website can all be managed with this integration within the scope described in the sections below.  One important note, this integration DOES NOT handle high availability (HA) failover between primary and secondary nodes.  If syncing between primary and secondary nodes is desired, this must either be handled within your F5 Big IP instance itself, or you can set up a Keyfactor Command certificate store for each node (primary and secondary) and manage each separately.
 
 The F5 Universal Orchestrator extension implements 3 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types. Descriptions of each are provided below.
+
+- [F5 SSL Profiles REST](#F5-SL-REST)
+
+- [F5 WS Profiles REST](#F5-WS-REST)
+
+- [F5 CA Profiles REST](#F5-CA-REST)
 
 
 ## Compatibility
@@ -76,6 +68,9 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 ### F5-SL-REST
 
 <details><summary>Click to expand details</summary>
+
+
+The F5-SL-REST certificate store type manages F5 Big IP TLS certificates.  Renewals of bound certificates is supported, but adding new bindings for new or replacement certificates is not.
 
 
 
@@ -186,6 +181,9 @@ the Keyfactor Command Portal
 <details><summary>Click to expand details</summary>
 
 
+The F5-WS-REST certificate store type manages the TLS certificate bound to the F5 administration website.  While replacing the existing website certificate is supported, adding a new certificate if one is not already present is not due to F5 limitations.
+
+
 
 
 
@@ -291,6 +289,9 @@ the Keyfactor Command Portal
 ### F5-CA-REST
 
 <details><summary>Click to expand details</summary>
+
+
+The F5-CA-REST certificate store type manages F5 Big IP CA certificate bundles.  Only custom CA bundles are supported by this integration.  The default ""ca-bundle"" CA bundle under the "Common" partition is **not** supported, as F5's REST API endpoints will not return certificates from this bundle.
 
 
 
@@ -667,7 +668,7 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | Category | Select "F5 CA Profiles REST" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The server name or IP Address for the F5 device. |
-   | Store Path | Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is "Common", it must be entered as "Common" and not "common", |
+   | Store Path | Enter the name of the partition followed by the name of the bundle separated by a / (i.e. Common/BundleName). This value is case sensitive, so if the partition name is "Common/BundleName", it must be entered as "Common/BundleName" and not "common/bundlename", |
    | Orchestrator | Select an approved orchestrator capable of managing `F5-CA-REST` certificates. Specifically, one with the `F5-CA-REST` capability. |
    | PrimaryNode | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. |
    | PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
@@ -701,7 +702,7 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | Category | Select "F5 CA Profiles REST" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The server name or IP Address for the F5 device. |
-   | Store Path | Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is "Common", it must be entered as "Common" and not "common", |
+   | Store Path | Enter the name of the partition followed by the name of the bundle separated by a / (i.e. Common/BundleName). This value is case sensitive, so if the partition name is "Common/BundleName", it must be entered as "Common/BundleName" and not "common/bundlename", |
    | Orchestrator | Select an approved orchestrator capable of managing `F5-CA-REST` certificates. Specifically, one with the `F5-CA-REST` capability. |
    | Properties.PrimaryNode | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. |
    | Properties.PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |

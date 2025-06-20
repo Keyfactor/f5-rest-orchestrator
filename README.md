@@ -75,9 +75,6 @@ The F5-SL-REST certificate store type manages F5 Big IP TLS certificates.  Renew
 
 
 
-
-
-
 #### Supported Operations
 
 | Operation    | Is Supported                                                                                                           |
@@ -186,9 +183,6 @@ The F5-WS-REST certificate store type manages the TLS certificate bound to the F
 
 
 
-
-
-
 #### Supported Operations
 
 | Operation    | Is Supported                                                                                                           |
@@ -292,9 +286,6 @@ the Keyfactor Command Portal
 
 
 The F5-CA-REST certificate store type manages F5 Big IP CA certificate bundles.  Only custom CA bundles are supported by this integration.  The default ""ca-bundle"" CA bundle under the "Common" partition is **not** supported, as F5's REST API endpoints will not return certificates from this bundle.
-
-
-
 
 
 

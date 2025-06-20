@@ -69,14 +69,16 @@ An administrator account must be set up in F5 to be used with this orchestrator 
 
 ## Certificate Store Types
 
-To use the F5 Universal Orchestrator extension, you **must** create the Certificate Store Types required for your usecase. This only needs to happen _once_ per Keyfactor Command instance.
+To use the F5 Universal Orchestrator extension, you **must** create the Certificate Store Types required for your use-case. This only needs to happen _once_ per Keyfactor Command instance.
 
 The F5 Universal Orchestrator extension implements 3 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types.
 
 ### F5-SL-REST
 
-
 <details><summary>Click to expand details</summary>
+
+
+
 
 
 
@@ -94,7 +96,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 #### Store Type Creation
 
 ##### Using kfutil:
-`kfutil` is a custom CLI for the Keyfactor Command API and can be used to created certificate store types.
+`kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
 For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
    <details><summary>Click to expand F5-SL-REST kfutil details</summary>
 
@@ -176,14 +178,15 @@ the Keyfactor Command Portal
 
    ![F5-SL-REST Custom Fields Tab](docsource/images/F5-SL-REST-custom-fields-store-type-dialog.png)
 
-
    </details>
 </details>
 
 ### F5-WS-REST
 
-
 <details><summary>Click to expand details</summary>
+
+
+
 
 
 
@@ -201,7 +204,7 @@ the Keyfactor Command Portal
 #### Store Type Creation
 
 ##### Using kfutil:
-`kfutil` is a custom CLI for the Keyfactor Command API and can be used to created certificate store types.
+`kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
 For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
    <details><summary>Click to expand F5-WS-REST kfutil details</summary>
 
@@ -282,14 +285,15 @@ the Keyfactor Command Portal
 
    ![F5-WS-REST Custom Fields Tab](docsource/images/F5-WS-REST-custom-fields-store-type-dialog.png)
 
-
    </details>
 </details>
 
 ### F5-CA-REST
 
-
 <details><summary>Click to expand details</summary>
+
+
+
 
 
 
@@ -307,7 +311,7 @@ the Keyfactor Command Portal
 #### Store Type Creation
 
 ##### Using kfutil:
-`kfutil` is a custom CLI for the Keyfactor Command API and can be used to created certificate store types.
+`kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
 For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
    <details><summary>Click to expand F5-CA-REST kfutil details</summary>
 
@@ -387,7 +391,6 @@ the Keyfactor Command Portal
    The Custom Fields tab should look like this:
 
    ![F5-CA-REST Custom Fields Tab](docsource/images/F5-CA-REST-custom-fields-store-type-dialog.png)
-
 
    </details>
 </details>
@@ -539,10 +542,7 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 </details>
 
 
-
 > The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
-
-
 
 
 </details>
@@ -640,10 +640,7 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 </details>
 
 
-
 > The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
-
-
 
 
 </details>
@@ -741,10 +738,7 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 </details>
 
 
-
 > The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
-
-
 
 
 </details>

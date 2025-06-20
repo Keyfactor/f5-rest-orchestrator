@@ -31,7 +31,7 @@
 
 ## Overview
 
-The f5-rest-orchestrator orchestrator extension manages various types of certificates on a F5 Big IP device (version 15 or later).  TLS certificates, CA bundles, and the certificate protecting the administrative website can all be managed with this integration within the scope described in the sections below.  One important note, this integration DOES NOT handle high availability (HA) failover between primary and secondary nodes.  If syncing between primary and secondary nodes is desired, this must either be handled within your F5 Big IP instance itself, or you can set up a Keyfactor Command certificate store for each node (primary and secondary) and manage each separately.
+The f5-rest-orchestrator orchestrator extension manages various types of certificates on a F5 Big IP device (version 15 or later).  TLS certificates, CA bundles, and the TLS certificate bound to the administrative website can all be managed with this integration within the scope described in the sections below.  One important note, this integration DOES NOT manage high availability (HA) failover between primary and secondary nodes.  If syncing between primary and secondary nodes is desired, this must either be handled within your F5 Big IP instance itself, or you can set up a Keyfactor Command certificate store for each node (primary and secondary) and manage each separately.
 
 The F5 Universal Orchestrator extension implements 3 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types. Descriptions of each are provided below.
 
@@ -285,7 +285,7 @@ the Keyfactor Command Portal
 <details><summary>Click to expand details</summary>
 
 
-The F5-CA-REST certificate store type manages F5 Big IP CA certificate bundles.  Only custom CA bundles are supported by this integration.  The default ""ca-bundle"" CA bundle under the "Common" partition is **not** supported, as F5's REST API endpoints will not return certificates from this bundle.
+The F5-CA-REST certificate store type manages F5 Big IP CA certificate bundles.  Only custom CA bundles are supported by this integration.  The default bundle "ca-bundle" under the "Common" partition is **not** supported, as F5's REST API endpoints will not return certificates from this bundle.
 
 
 

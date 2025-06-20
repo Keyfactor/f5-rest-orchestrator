@@ -1,21 +1,6 @@
 ## Overview
 
-The F5 Orchestrator supports three different types of certificates stores with the capabilities for each below:
-
-- CA Bundles
-  - Discovery
-  - Inventory*
-  - Management (Add and Remove)
-- Web Server Device Certificates
-  - Inventory*
-  - Management (Add, but replacement/renewal of existing certificate only) 
-- SSL Certificates
-  - Discovery
-  - Inventory*
-  - Management (Add and Remove)  
-
-*Special note on private keys: One of the pieces of information that Keyfactor collects during an Inventory job is whether or not the certificate stored in F5 has a private key.  The private key is NEVER actually retrieved by Keyfactor, but Keyfactor does track whether one exists.  F5 does not provide an API to determine this, so by convention, all CA Bundle certificates are deemed to not have private keys, while Web Server and SSL certificates are deemed to have them.  Any Management jobs adding (new or renewal) a certificate will renew without the private key for CA Bundle stores and with the private key for Web Server or SSL stores.
-
+The f5-rest-orchestrator orchestrator extension manages various types of certificates on a F5 Big IP device (version 15 or later).  TLS certificates, CA bundles, and the certificate protecting the administrative website can all be managed with this integration within the scope described in the sections below.  One important note, this integration DOES NOT handle high availability (HA) failover between primary and secondary nodes.  If syncing between primary and secondary nodes is desired, this must either be handled within your F5 Big IP instance itself, or you can set up a Keyfactor Command certificate store for each node (primary and secondary) and manage each separately.
 
 ## Requirements
 

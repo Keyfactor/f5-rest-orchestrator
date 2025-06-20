@@ -1,3 +1,6 @@
+v1.8.1
+- Documentation changes including highlighting lack of HA support as well as a correction to the proper StorePath value for F5-CA-REST stores.
+
 v1.8.0
 - Add new custom field - Remove Chain on Add - to allow the removal of the certificate chain before adding/replacing a certificate on the F5 device.  Default = false.
 - Apply store password when replacing a certificate as well as adding (extension to change made in v1.6.0)

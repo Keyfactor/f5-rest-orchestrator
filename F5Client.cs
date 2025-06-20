@@ -91,7 +91,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "AddEntry");
             LogHandlerCommon.Trace(logger, CertificateStore, $"Processing certificate for partition '{partition}' and name '{name}'");
+            LogHandlerCommon.Trace(logger, CertificateStore, $"*** CERT CONTENTS: *** {b64Certificate}");
             byte[] entryContents = Convert.FromBase64String(b64Certificate);
+            LogHandlerCommon.Trace(logger, CertificateStore, $"*** AFTER CERT CONTENTS: ***");
             string password = PFXPassword;
             CertificateConverter converter = CertificateConverterFactory.FromDER(entryContents, password);
             X509Certificate2 certificate = converter.ToX509Certificate2(password);

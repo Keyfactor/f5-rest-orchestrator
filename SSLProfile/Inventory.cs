@@ -45,7 +45,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                 ValidateF5Release(logger, JobConfig.CertificateStoreDetails, f5);
 
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Getting inventory from '{config.CertificateStoreDetails.StorePath}'");
-                inventory = f5.GetSSLProfiles(20);
+                inventory = f5.GetCertificateEntries(20);
 
                 LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Submitting {inventory?.Count} inventory entries for '{config.CertificateStoreDetails.StorePath}'");
                 submitInventory.Invoke(inventory);

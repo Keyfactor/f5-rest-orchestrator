@@ -24,6 +24,8 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Drawing.Printing;
 using System.Diagnostics.CodeAnalysis;
+using static Keyfactor.Orchestrators.Common.OrchestratorConstants;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
@@ -651,6 +653,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             List<F5SSLCertificate> certificates = new List<F5SSLCertificate>();
             List<CurrentInventoryItem> inventory = new List<CurrentInventoryItem>();
 
+            LogHandlerCommon.Debug(logger, CertificateStore, $"Getting SSL Profiles from '{CertificateStore.StorePath}'");
+            List<F5SSLProfile> sslProfiles = GetSSLProfiles(pageSize);
+
             if (pagedCertificates.totalItems == 0 || pagedCertificates.items?.Length == 0)
             {
                 LogHandlerCommon.Trace(logger, CertificateStore, $"No SSL certificates found in partition '{partition}'");
@@ -688,7 +693,15 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                         LogHandlerCommon.Trace(logger, CertificateStore, $"Skipping '{certificates[i].name}' because it is managed by F5");
                         continue;
                     }
-                    inventory.Add(GetInventoryItem(partition, certificates[i].name, true));
+                    CurrentInventoryItem inventoryItem = GetInventoryItem(partition, certificates[i].name, true);
+                    Dictionary<string, object> parameters = new Dictionary<string, object>();
+
+                    string certName = $"/{partition}/{inventoryItem.Alias}";
+                    string sslProfileNames = string.Join(",", sslProfiles.Where(p => p.cert == certName).Select(p => p.name));
+                    if (!string.IsNullOrEmpty(sslProfileNames))
+                        inventoryItem.Parameters.Add("SSLProfiles", sslProfileNames);
+
+                    inventory.Add(inventoryItem);
                 }
                 catch (Exception ex)
                 {

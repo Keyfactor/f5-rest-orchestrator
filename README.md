@@ -170,6 +170,16 @@ the Keyfactor Command Portal
 
    ![F5-SL-REST Custom Fields Tab](docsource/images/F5-SL-REST-custom-fields-store-type-dialog.png)
 
+   ##### Entry Parameters Tab
+
+   | Name | Display Name | Description | Type | Default Value | Entry has a private key | Adding an entry | Removing an entry | Reenrolling an entry |
+   | ---- | ------------ | ---- | ------------- | ----------------------- | ---------------- | ----------------- | ------------------- | ----------- |
+   | SSLProfiles | SSL Profiles | One to many comma delmited F5 SSL Profile names the certificate is bound to | String |  | 🔲 Unchecked | 🔲 Unchecked | 🔲 Unchecked | 🔲 Unchecked |
+
+   The Entry Parameters tab should look like this:
+
+   ![F5-SL-REST Entry Parameters Tab](docsource/images/F5-SL-REST-entry-parameters-store-type-dialog.png)
+
    </details>
 </details>
 

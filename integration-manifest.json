@@ -136,7 +136,23 @@
                       "Description": "True if using https to access the F5 device. False if using http."
                     }
                   ],
-                    "EntryParameters": []
+                  "EntryParameters": [
+                    {
+                      "Name": "SSLProfiles",
+                      "DisplayName": "SSL Profiles",
+                      "Type": "String",
+                      "RequiredWhen": {
+                        "HasPrivateKey": false,
+                        "OnAdd": false,
+                        "OnRemove": false,
+                        "OnReenrollment": false
+                      },
+                      "DependsOn": "",
+                      "DefaultValue": "",
+                      "Options": "",
+                      "Description": "One to many comma delmited F5 SSL Profile names the certificate is bound to"
+                    }
+                  ]
                 },
                 {
                     "Name": "F5 WS Profiles REST",
@@ -254,7 +270,7 @@
                     "Capability": "F5-CA-REST",
                     "ServerRequired": true,
                     "ClientMachineDescription": "The server name or IP Address for the F5 device.",
-                    "StorePathDescription": "Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is \"Common\", it must be entered as \"Common\" and not \"common\",",
+                    "StorePathDescription": "Enter the name of the partition followed by the name of the bundle separated by a / (i.e. Common/BundleName). This value is case sensitive, so if the partition name is \"Common/BundleName\", it must be entered as \"Common/BundleName\" and not \"common/bundlename\",",
                     "SupportedOperations": {
                         "Add": true,
                         "Create": false,

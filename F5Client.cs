@@ -24,6 +24,8 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Drawing.Printing;
 using System.Diagnostics.CodeAnalysis;
+using static Keyfactor.Orchestrators.Common.OrchestratorConstants;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
@@ -91,7 +93,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "AddEntry");
             LogHandlerCommon.Trace(logger, CertificateStore, $"Processing certificate for partition '{partition}' and name '{name}'");
+            LogHandlerCommon.Trace(logger, CertificateStore, $"*** CERT CONTENTS: *** {b64Certificate}");
             byte[] entryContents = Convert.FromBase64String(b64Certificate);
+            LogHandlerCommon.Trace(logger, CertificateStore, $"*** AFTER CERT CONTENTS: ***");
             string password = PFXPassword;
             CertificateConverter converter = CertificateConverterFactory.FromDER(entryContents, password);
             X509Certificate2 certificate = converter.ToX509Certificate2(password);
@@ -348,6 +352,35 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             CertificateCollectionConverter c = CertificateCollectionConverterFactory.FromPEM(certificateEntryAfterRemovalOfDelim);
 
             return c.ToX509Certificate2Collection();
+        }
+
+        public List<F5SSLProfile> GetSSLProfiles(int pageSize)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetSSLProfiles");
+            string partition = CertificateStore.StorePath;
+            string query = $"/mgmt/tm/ltm/profile/client-ssl?$top={pageSize}&$skip=0";
+            F5PagedSSLProfiles pagedProfiles = REST.Get<F5PagedSSLProfiles>(query);
+            List<F5SSLProfile> profiles = new List<F5SSLProfile>();
+
+            if (pagedProfiles.totalItems == 0 || pagedProfiles.items?.Length == 0)
+            {
+                return profiles;
+            }
+
+            for (int i = pagedProfiles.pageIndex; i <= pagedProfiles.totalPages; i++)
+            {
+                profiles.AddRange(pagedProfiles.items);
+
+                // The current paged profile will contain a link to the next set, unless the end has been reached
+                if (string.IsNullOrEmpty(pagedProfiles.nextLink)) { break; }
+
+                // Get the next page of profiles
+                query = pagedProfiles.nextLink.Replace("https://localhost", "");
+                pagedProfiles = REST.Get<F5PagedSSLProfiles>(query);
+            }
+
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "GetCertificateEntries");
+            return profiles;
         }
 
         private void SetItemStatus(CurrentInventoryItem agentInventoryItem)
@@ -609,67 +642,79 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         // WebServer
         #endregion
 
-        #region SSL Profiles
+        #region SSL Certificates
 
-        public List<CurrentInventoryItem> GetSSLProfiles(int pageSize)
+        public List<CurrentInventoryItem> GetCertificateEntries(int pageSize)
         {
-            LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetSSLProfiles");
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetCertificateEntries");
             string partition = CertificateStore.StorePath;
             string query = $"/mgmt/tm/sys/file/ssl-cert?$filter=partition+eq+{partition}&$select=name,keyType,isBundle&$top={pageSize}&$skip=0";
-            F5PagedSSLProfiles pagedProfiles = REST.Get<F5PagedSSLProfiles>(query);
-            List<F5SSLProfile> profiles = new List<F5SSLProfile>();
+            F5PagedSSLCertificates pagedCertificates = REST.Get<F5PagedSSLCertificates>(query);
+            List<F5SSLCertificate> certificates = new List<F5SSLCertificate>();
             List<CurrentInventoryItem> inventory = new List<CurrentInventoryItem>();
 
-            if (pagedProfiles.totalItems == 0 || pagedProfiles.items?.Length == 0)
+            LogHandlerCommon.Debug(logger, CertificateStore, $"Getting SSL Profiles from '{CertificateStore.StorePath}'");
+            List<F5SSLProfile> sslProfiles = GetSSLProfiles(pageSize);
+
+            if (pagedCertificates.totalItems == 0 || pagedCertificates.items?.Length == 0)
             {
-                LogHandlerCommon.Trace(logger, CertificateStore, $"No SSL profiles found in partition '{partition}'");
-                LogHandlerCommon.MethodExit(logger, CertificateStore, "GetSSLProfiles");
+                LogHandlerCommon.Trace(logger, CertificateStore, $"No SSL certificates found in partition '{partition}'");
+                LogHandlerCommon.MethodExit(logger, CertificateStore, "GetCertificateEntries");
                 return inventory;
             }
             else
             {
-                LogHandlerCommon.Trace(logger, CertificateStore, $"Compiling {pagedProfiles.totalPages} pages containing {pagedProfiles.totalItems} total inventory entries");
+                LogHandlerCommon.Trace(logger, CertificateStore, $"Compiling {pagedCertificates.totalPages} pages containing {pagedCertificates.totalItems} total inventory entries");
             }
 
-            // Collected all of the profile entry names
-            for (int i = pagedProfiles.pageIndex; i <= pagedProfiles.totalPages; i++)
+            // Collected all of the certificate entry names
+            for (int i = pagedCertificates.pageIndex; i <= pagedCertificates.totalPages; i++)
             {
-                profiles.AddRange(pagedProfiles.items);
+                certificates.AddRange(pagedCertificates.items);
 
-                // The current paged profile will contain a link to the next set, unless the end has been reached
-                if (string.IsNullOrEmpty(pagedProfiles.nextLink)) { break; }
+                // The current paged certificate list will contain a link to the next set, unless the end has been reached
+                if (string.IsNullOrEmpty(pagedCertificates.nextLink)) { break; }
 
-                // Get the next page of profiles
-                query = pagedProfiles.nextLink.Replace("https://localhost", "");
-                pagedProfiles = REST.Get<F5PagedSSLProfiles>(query);
+                // Get the next page of certificates
+                query = pagedCertificates.nextLink.Replace("https://localhost", "");
+                pagedCertificates = REST.Get<F5PagedSSLCertificates>(query);
             }
 
             // Compile the entries into inventory items
-            for (int i = 0; i < profiles.Count; i++)
+            for (int i = 0; i < certificates.Count; i++)
             {
                 try
                 {
-                    LogHandlerCommon.Trace(logger, CertificateStore, $"Processing alias {profiles[i].name}");
+                    LogHandlerCommon.Trace(logger, CertificateStore, $"Processing alias {certificates[i].name}");
                     // Exclude 'ca-bundle.crt' as that can only be managed by F5
-                    if (profiles[i].name.Equals("ca-bundle.crt", StringComparison.OrdinalIgnoreCase)
-                        || profiles[i].name.Equals("f5-ca-bundle.crt", StringComparison.OrdinalIgnoreCase))
+                    if (certificates[i].name.Equals("ca-bundle.crt", StringComparison.OrdinalIgnoreCase)
+                        || certificates[i].name.Equals("f5-ca-bundle.crt", StringComparison.OrdinalIgnoreCase))
                     {
-                        LogHandlerCommon.Trace(logger, CertificateStore, $"Skipping '{profiles[i].name}' because it is managed by F5");
+                        LogHandlerCommon.Trace(logger, CertificateStore, $"Skipping '{certificates[i].name}' because it is managed by F5");
                         continue;
                     }
-                    inventory.Add(GetInventoryItem(partition, profiles[i].name, true));
+                    CurrentInventoryItem inventoryItem = GetInventoryItem(partition, certificates[i].name, true);
+                    Dictionary<string, object> parameters = new Dictionary<string, object>();
+
+                    string certName = $"/{partition}/{inventoryItem.Alias}";
+                    string sslProfileNames = string.Join(",", sslProfiles.Where(p => p.cert == certName).Select(p => p.name));
+                    if (!string.IsNullOrEmpty(sslProfileNames))
+                        parameters.Add("SSLProfiles", sslProfileNames);
+                    inventoryItem.Parameters = parameters;
+
+                    inventory.Add(inventoryItem);
                 }
                 catch (Exception ex)
                 {
-                    LogHandlerCommon.Error(logger, CertificateStore, ExceptionHandler.FlattenExceptionMessages(ex, $"Unable to process inventory item {profiles[i].name}."));
+                    LogHandlerCommon.Error(logger, CertificateStore, ExceptionHandler.FlattenExceptionMessages(ex, $"Unable to process inventory item {certificates[i].name}."));
                 }
             }
 
-            LogHandlerCommon.MethodExit(logger, CertificateStore, "GetSSLProfiles");
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "GetCertificateEntries");
             return inventory;
         }
 
-        // SSL Profiles
+        // SSL Certificates
         #endregion
 
         #region Auth & Version

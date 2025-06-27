@@ -62,6 +62,18 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string[] includeBundle { get; set; }
     }
 
+    internal class F5PagedSSLCertificates : F5PagedResult
+    {
+        public F5SSLCertificate[] items { get; set; }
+    }
+
+    internal class F5SSLCertificate
+    {
+        public string name { get; set; }
+        public bool isBundle { get; set; }
+        public string keyType { get; set; }
+    }
+
     internal class F5PagedSSLProfiles : F5PagedResult
     {
         public F5SSLProfile[] items { get; set; }
@@ -70,8 +82,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
     internal class F5SSLProfile
     {
         public string name { get; set; }
-        public bool isBundle { get; set; }
-        public string keyType { get; set; }
+        public string cert { get; set; }
     }
 
     internal class F5Key

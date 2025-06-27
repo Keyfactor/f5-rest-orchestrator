@@ -699,7 +699,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     string certName = $"/{partition}/{inventoryItem.Alias}";
                     string sslProfileNames = string.Join(",", sslProfiles.Where(p => p.cert == certName).Select(p => p.name));
                     if (!string.IsNullOrEmpty(sslProfileNames))
-                        inventoryItem.Parameters.Add("SSLProfiles", sslProfileNames);
+                        parameters.Add("SSLProfiles", sslProfileNames);
+                    inventoryItem.Parameters = parameters;
 
                     inventory.Add(inventoryItem);
                 }

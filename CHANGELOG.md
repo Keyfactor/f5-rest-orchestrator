@@ -1,3 +1,6 @@
+v1.9.0
+- Added new SSLProfiles READ ONLY entry parameter that will contain a comma delimited list of SSL Profiles a certificate is bound to on the F5 device. 
+
 v1.8.1
 - Documentation changes including highlighting lack of HA support as well as a correction to the proper StorePath value for F5-CA-REST stores.
 

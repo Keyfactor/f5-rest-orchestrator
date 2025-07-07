@@ -635,7 +635,7 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 > The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
 
 
-</details>
+</details> 
 
 <details><summary>F5 CA Profiles REST (F5-CA-REST)</summary>
 

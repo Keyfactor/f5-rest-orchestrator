@@ -455,12 +455,13 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description |
-   | --------- | ----------- |
+   | Attribute | Description                                             |
+   | --------- |---------------------------------------------------------|
    | Category | Select "F5 SSL Profiles REST" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The server name or IP Address for the F5 device. |
    | Store Path | Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is "Common", it must be entered as "Common" and not "common", |
+   | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
    | Orchestrator | Select an approved orchestrator capable of managing `F5-SL-REST` certificates. Specifically, one with the `F5-SL-REST` capability. |
    | PrimaryNode | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. |
    | PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
@@ -496,6 +497,7 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The server name or IP Address for the F5 device. |
    | Store Path | Enter the name of the partition on the F5 device you wish to manage. This value is case sensitive, so if the partition name is "Common", it must be entered as "Common" and not "common", |
+   | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
    | Orchestrator | Select an approved orchestrator capable of managing `F5-SL-REST` certificates. Specifically, one with the `F5-SL-REST` capability. |
    | Properties.PrimaryNode | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. |
    | Properties.PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
@@ -526,7 +528,7 @@ If a PAM provider was installed _on the Universal Orchestrator_ in the [Installa
    | --------- | ----------- |
    | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
    | ServerPassword | Login password for the F5 device. |
-   | StorePassword | Password to use when reading/writing to store |
+   | StorePassword | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
 
 Please refer to the **Universal Orchestrator (remote)** usage section ([PAM providers on the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam)) for your selected PAM provider for instructions on how to load attributes orchestrator-side.
 > Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself.
@@ -556,8 +558,8 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description |
-   | --------- | ----------- |
+   | Attribute | Description                                             |
+   | --------- |---------------------------------------------------------|
    | Category | Select "F5 WS Profiles REST" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The server name or IP Address for the F5 device. |
@@ -635,7 +637,7 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 > The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
 
 
-</details> 
+</details>
 
 <details><summary>F5 CA Profiles REST (F5-CA-REST)</summary>
 
@@ -654,8 +656,8 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
     Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
 
-   | Attribute | Description |
-   | --------- | ----------- |
+   | Attribute | Description                                             |
+   | --------- |---------------------------------------------------------|
    | Category | Select "F5 CA Profiles REST" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The server name or IP Address for the F5 device. |

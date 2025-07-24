@@ -1,3 +1,3 @@
 ## Overview
 
-The F5-SL-REST certificate store type manages F5 Big IP TLS certificates.  Renewals of bound certificates is supported, but adding new bindings for new or replacement certificates is not. 
+The F5-SL-REST certificate store type manages F5 Big IP TLS certificates.  Renewal of bound certificates is supported, but adding new bindings for new or replacement certificates is not. This store type **does** track the SSL Profiles a certificate is bound to by way of the SSL Profiles entry parameter.  Inventory jobs will return a comma delimited list of SSL Profile names that each certificate is bound to and return this in the SSLProfiles entry parameter.

@@ -136,7 +136,23 @@
                       "Description": "True if using https to access the F5 device. False if using http."
                     }
                   ],
-                    "EntryParameters": []
+                  "EntryParameters": [
+                    {
+                      "Name": "SSLProfiles",
+                      "DisplayName": "SSL Profiles",
+                      "Type": "String",
+                      "RequiredWhen": {
+                        "HasPrivateKey": false,
+                        "OnAdd": false,
+                        "OnRemove": false,
+                        "OnReenrollment": false
+                      },
+                      "DependsOn": "",
+                      "DefaultValue": "",
+                      "Options": "",
+                      "Description": "One to many comma delimited F5 SSL Profile names the certificate is bound to"
+                    }
+                  ]
                 },
                 {
                     "Name": "F5 WS Profiles REST",

@@ -1,3 +1,6 @@
+v1.9.1
+- Add ability to inventory PEM files with Bag Attributes at the beginning of each certificate
+
 v1.9.0
 - Added new SSLProfiles READ ONLY entry parameter that will contain a comma delimited list of SSL Profiles a certificate is bound to on the F5 device. 
 

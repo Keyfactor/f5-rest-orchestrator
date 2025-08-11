@@ -334,6 +334,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 //PEM(w / headers)-- > L or I
                 case "L":
                 case "I":
+                case "Q":
                     LogHandlerCommon.Trace(logger, CertificateStore, "Certificate is PEM with headers");
                     crtBytes = System.Convert.FromBase64String(crt);
                     certificateEntry = System.Text.ASCIIEncoding.ASCII.GetString(crtBytes);

@@ -26,6 +26,7 @@ using System.Drawing.Printing;
 using System.Diagnostics.CodeAnalysis;
 using static Keyfactor.Orchestrators.Common.OrchestratorConstants;
 using static Org.BouncyCastle.Math.EC.ECCurve;
+using System.Reflection.Metadata;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
@@ -203,6 +204,22 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "CertificateExists");
             return exists;
+        }
+
+        public void BindCertificate(string alias, string sslProfile)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "BindCertificate");
+
+            try
+            {
+                F5Binding binding = new F5Binding { cert = $"{alias}.crt", key = $"{alias}.key" };
+                REST.Patch<F5Binding>($"/mgmt/tm/ltm/profile/client-ssl/{sslProfile}", binding);
+            }
+
+            finally
+            {
+                LogHandlerCommon.MethodExit(logger, CertificateStore, "BindCertificate");
+            }
         }
 
         private void AddCertificate(byte[] entryContents, string partition, string name)

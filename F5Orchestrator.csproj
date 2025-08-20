@@ -8,10 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Keyfactor.Logging" Version="1.1.2" />
     <PackageReference Include="Keyfactor.Orchestrators.IOrchestratorJobExtensions" Version="1.0.0" />
-    <PackageReference Include="Keyfactor.PKI" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Keyfactor.PKI" Version="5.0.0" Condition="'$(TargetFramework)' == 'net6.0'" />
+    <PackageReference Include="Keyfactor.PKI" Version="8.1.1" Condition="'$(TargetFramework)' == 'net8.0'" />
+    <PackageReference Include="Keyfactor.Logging" Version="1.1.2" Condition="'$(TargetFramework)' == 'net6.0'" />
+    <PackageReference Include="Keyfactor.Logging" Version="1.2.0" Condition="'$(TargetFramework)' == 'net8.0'" />
 
     <None Update="manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

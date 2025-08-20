@@ -193,7 +193,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             {
                 try
                 {
-
+                    f5.BindCertificate(alias, sslProfile);
                 }
                 catch (Exception ex)
                 {

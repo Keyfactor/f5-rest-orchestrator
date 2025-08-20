@@ -28,9 +28,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         public abstract JobResult ProcessJob(InventoryJobConfiguration config, SubmitInventoryUpdate submitInventory);
 
-        protected void ParseJobProperties()
+        protected void ParseStoreProperties()
         {
-            LogHandlerCommon.MethodEntry(logger, JobConfig.CertificateStoreDetails, "ParseJobProperties");
+            LogHandlerCommon.MethodEntry(logger, JobConfig.CertificateStoreDetails, "ParseStoreProperties");
             dynamic properties = JsonConvert.DeserializeObject(JobConfig.CertificateStoreDetails.Properties.ToString());
 
             IgnoreSSLWarning = properties.IgnoreSSLWarning == null || string.IsNullOrEmpty(properties.IgnoreSSLWarning.Value) ? false : bool.Parse(properties.IgnoreSSLWarning.Value);

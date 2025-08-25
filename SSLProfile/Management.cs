@@ -198,7 +198,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                 catch (Exception ex)
                 {
                     hasError = true;
-                    errorMessages += ExceptionHandler.FlattenExceptionMessages(ex, "$Error binding {sslProfile}: ");
+                    errorMessages += ExceptionHandler.FlattenExceptionMessages(ex, $"Error binding {sslProfile}: ");
                 }
             }
 

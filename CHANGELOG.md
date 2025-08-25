@@ -1,6 +1,7 @@
 v1.10.0
 - Modify SSLProfiles entry parameter (F5-SL-REST store type only) to allow adding one-to-many SSL Profile bindings when adding NEW certificates (ignored for renewals/replacements)
 - Update dlls with vulnerability alerts
+- Handle inventorying certificates with bag attributes
 
 v1.9.0
 - Added new SSLProfiles READ ONLY entry parameter that will contain a comma delimited list of SSL Profiles a certificate is bound to on the F5 device. (F5-SL-REST store type only)

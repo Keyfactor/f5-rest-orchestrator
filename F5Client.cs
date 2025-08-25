@@ -26,6 +26,7 @@ using System.Drawing.Printing;
 using System.Diagnostics.CodeAnalysis;
 using static Keyfactor.Orchestrators.Common.OrchestratorConstants;
 using static Org.BouncyCastle.Math.EC.ECCurve;
+using System.Reflection.Metadata;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
@@ -205,6 +206,22 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             return exists;
         }
 
+        public void BindCertificate(string alias, string sslProfile)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "BindCertificate");
+
+            try
+            {
+                F5Binding binding = new F5Binding { cert = $"{alias}", key = $"{alias}", chain = $"{alias}" };
+                REST.Patch<F5Binding>($"/mgmt/tm/ltm/profile/client-ssl/{sslProfile}", binding);
+            }
+
+            finally
+            {
+                LogHandlerCommon.MethodExit(logger, CertificateStore, "BindCertificate");
+            }
+        }
+
         private void AddCertificate(byte[] entryContents, string partition, string name)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "AddCertificate");
@@ -334,6 +351,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 //PEM(w / headers)-- > L or I
                 case "L":
                 case "I":
+                case "Q":
                     LogHandlerCommon.Trace(logger, CertificateStore, "Certificate is PEM with headers");
                     crtBytes = System.Convert.FromBase64String(crt);
                     certificateEntry = System.Text.ASCIIEncoding.ASCII.GetString(crtBytes);

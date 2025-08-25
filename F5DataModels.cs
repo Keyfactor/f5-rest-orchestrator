@@ -140,6 +140,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
     {
         public string cert { get; set; }
         public string key { get; set; }
+        public string chain { get; set; }
     }
 
     public class F5Transaction

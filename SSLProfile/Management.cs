@@ -49,7 +49,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             try
             {
                 SetPAMSecrets(config.ServerUsername, config.ServerPassword, config.CertificateStoreDetails.StorePassword, logger);
-                string sslProfiles = JobConfig.JobProperties.ContainsKey("SSLProfiles") ? JobConfig.JobProperties["SSLProfiles"].ToString() : string.Empty;
+                string sslProfiles = JobConfig.JobProperties.ContainsKey("SSLProfiles") && JobConfig.JobProperties["SSLProfiles"]  != null ? JobConfig.JobProperties["SSLProfiles"].ToString() : string.Empty;
                 base.ParseStoreProperties();
                 base.PrimaryNodeActive();
 

@@ -212,7 +212,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             try
             {
-                F5Binding binding = new F5Binding { cert = $"{alias}.crt", key = $"{alias}.key" };
+                F5Binding binding = new F5Binding { cert = $"{alias}", key = $"{alias}" };
                 REST.Patch<F5Binding>($"/mgmt/tm/ltm/profile/client-ssl/{sslProfile}", binding);
             }
 

@@ -34,14 +34,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         public abstract JobResult ProcessJob(ManagementJobConfiguration config);
 
-        protected void ParseJobProperties()
+        protected void ParseStoreProperties()
         {
             if (logger == null)
             {
                 logger = Keyfactor.Logging.LogHandler.GetClassLogger(this.GetType());
             }
 
-            LogHandlerCommon.MethodEntry(logger, JobConfig.CertificateStoreDetails, "ParseJobProperties");
+            LogHandlerCommon.MethodEntry(logger, JobConfig.CertificateStoreDetails, "ParseStoreProperties");
             dynamic properties = JsonConvert.DeserializeObject(JobConfig.CertificateStoreDetails.Properties.ToString());
             PrimaryNodeOnlineRequired = false;
             PrimaryNode = string.Empty;
@@ -71,7 +71,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 int.TryParse(properties.PrimaryNodeCheckRetryWaitSecs.ToString(), out primaryNodeRetryWaitSecs);
                 PrimaryNodeRetryWaitSecs = primaryNodeRetryWaitSecs;
                 LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"Primary node retry wait seconds '{PrimaryNodeRetryWaitSecs}'");
-                LogHandlerCommon.MethodExit(logger, JobConfig.CertificateStoreDetails, "ParseJobProperties");
+                LogHandlerCommon.MethodExit(logger, JobConfig.CertificateStoreDetails, "ParseStoreProperties");
             }
             else
             {

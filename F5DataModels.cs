@@ -136,6 +136,13 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string[] includeBundle { get; set; }
     }
 
+    internal class F5Binding
+    {
+        public string cert { get; set; }
+        public string key { get; set; }
+        public string chain { get; set; }
+    }
+
     public class F5Transaction
     {
         public string transid { get; set; }

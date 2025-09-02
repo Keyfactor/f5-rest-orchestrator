@@ -174,7 +174,7 @@ the Keyfactor Command Portal
 
    | Name | Display Name | Description | Type | Default Value | Entry has a private key | Adding an entry | Removing an entry | Reenrolling an entry |
    | ---- | ------------ | ---- | ------------- | ----------------------- | ---------------- | ----------------- | ------------------- | ----------- |
-   | SSLProfiles | SSL Profiles | One to many comma delimited F5 SSL Profile names the certificate is bound to | String |  | 🔲 Unchecked | 🔲 Unchecked | 🔲 Unchecked | 🔲 Unchecked |
+   | SSLProfiles | SSL Profiles | One to many comma delimited F5 SSL Profiles to bind the certificate to (new certificates ONLY) | String |  | 🔲 Unchecked | 🔲 Unchecked | 🔲 Unchecked | 🔲 Unchecked |
 
    The Entry Parameters tab should look like this:
 

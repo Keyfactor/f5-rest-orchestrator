@@ -150,7 +150,7 @@
                       "DependsOn": "",
                       "DefaultValue": "",
                       "Options": "",
-                      "Description": "One to many comma delimited F5 SSL Profile names the certificate is bound to"
+                      "Description": "One to many comma delimited F5 SSL Profiles to bind the certificate to (new certificates ONLY)"
                     }
                   ]
                 },

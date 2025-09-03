@@ -44,7 +44,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer
             try
             {
                 SetPAMSecrets(config.ServerUsername, config.ServerPassword, logger);
-                base.ParseJobProperties();
+                base.ParseStoreProperties();
                 base.PrimaryNodeActive();
 
                 F5Client f5 = new F5Client(JobConfig.CertificateStoreDetails, ServerUserName, ServerPassword, JobConfig.UseSSL, JobConfig.JobCertificate.PrivateKeyPassword, IgnoreSSLWarning, UseTokenAuth, JobConfig.LastInventory)

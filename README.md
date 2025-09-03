@@ -31,7 +31,7 @@
 
 ## Overview
 
-The f5-rest-orchestrator orchestrator extension manages various types of certificates on a F5 Big IP device (version 15 or later).  TLS certificates, CA bundles, and the TLS certificate bound to the administrative website can all be managed with this integration within the scope described in the sections below.  One important note, this integration DOES NOT manage high availability (HA) failover between primary and secondary nodes.  If syncing between primary and secondary nodes is desired, this must either be handled within your F5 Big IP instance itself, or you can set up a Keyfactor Command certificate store for each node (primary and secondary) and manage each separately.
+The f5-rest-orchestrator orchestrator extension manages various types of certificates on a F5 Big IP device (version 14 or later).  TLS certificates, CA bundles, and the TLS certificate bound to the administrative website can all be managed with this integration within the scope described in the sections below.  One important note, this integration DOES NOT manage high availability (HA) failover between primary and secondary nodes.  If syncing between primary and secondary nodes is desired, this must either be handled within your F5 Big IP instance itself, or you can set up a Keyfactor Command certificate store for each node (primary and secondary) and manage each separately.
 
 The F5 Universal Orchestrator extension implements 3 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types. Descriptions of each are provided below.
 
@@ -47,9 +47,9 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types. De
 This integration is compatible with Keyfactor Universal Orchestrator version 10.1 and later.
 
 ## Support
-The F5 Universal Orchestrator extension If you have a support issue, please open a support ticket by either contacting your Keyfactor representative or via the Keyfactor Support Portal at https://support.keyfactor.com.
+The F5 Universal Orchestrator extension is supported by Keyfactor. If you require support for any issues or have feature request, please open a support ticket by either contacting your Keyfactor representative or via the Keyfactor Support Portal at https://support.keyfactor.com.
 
-> To report a problem or suggest a new feature, use the **[Issues](../../issues)** tab. If you want to contribute actual bug fixes or proposed enhancements, use the **[Pull requests](../../pulls)** tab.
+> If you want to contribute bug fixes or additional enhancements, use the **[Pull requests](../../pulls)** tab.
 
 ## Requirements & Prerequisites
 
@@ -174,7 +174,7 @@ the Keyfactor Command Portal
 
    | Name | Display Name | Description | Type | Default Value | Entry has a private key | Adding an entry | Removing an entry | Reenrolling an entry |
    | ---- | ------------ | ---- | ------------- | ----------------------- | ---------------- | ----------------- | ------------------- | ----------- |
-   | SSLProfiles | SSL Profiles | One to many comma delimited F5 SSL Profile names the certificate is bound to | String |  | 🔲 Unchecked | 🔲 Unchecked | 🔲 Unchecked | 🔲 Unchecked |
+   | SSLProfiles | SSL Profiles | One to many comma delimited F5 SSL Profiles to bind the certificate to (new certificates ONLY) | String |  | 🔲 Unchecked | 🔲 Unchecked | 🔲 Unchecked | 🔲 Unchecked |
 
    The Entry Parameters tab should look like this:
 

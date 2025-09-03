@@ -16,6 +16,7 @@ using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using System.Text;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 {
@@ -48,7 +49,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             try
             {
                 SetPAMSecrets(config.ServerUsername, config.ServerPassword, config.CertificateStoreDetails.StorePassword, logger);
-                base.ParseJobProperties();
+                string sslProfiles = JobConfig.JobProperties.ContainsKey("SSLProfiles") && JobConfig.JobProperties["SSLProfiles"]  != null ? JobConfig.JobProperties["SSLProfiles"].ToString() : string.Empty;
+                base.ParseStoreProperties();
                 base.PrimaryNodeActive();
 
                 F5Client f5 = new F5Client(config.CertificateStoreDetails, ServerUserName, ServerPassword, config.UseSSL, config.JobCertificate.PrivateKeyPassword, IgnoreSSLWarning, UseTokenAuth, config.LastInventory)
@@ -62,7 +64,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                 {
                     case CertStoreOperationType.Add:
                         LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, $"Add entry '{config.JobCertificate.Alias}' to '{config.CertificateStoreDetails.StorePath}'");
-                        PerformAddJob(f5, StorePassword, RemoveChain);
+                        bool certificateExists = PerformAddJob(f5, StorePassword, RemoveChain);
+                        if (!certificateExists && !string.IsNullOrEmpty(sslProfiles))
+                            BindCertificateToSSLProfiles(f5, config.JobCertificate.Alias, sslProfiles);
                         break;
                     case CertStoreOperationType.Remove:
                         LogHandlerCommon.Trace(logger, config.CertificateStoreDetails, $"Remove entry '{config.JobCertificate.Alias}' from '{config.CertificateStoreDetails.StorePath}'");
@@ -79,6 +83,11 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                 LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
             }
+            catch (BindException ex)
+            {
+                LogHandlerCommon.Error(logger, config.CertificateStoreDetails, ExceptionHandler.FlattenExceptionMessages(ex, $"Warning performing SSL profile binding: "));
+                return new JobResult { Result = OrchestratorJobStatusJobResult.Warning, JobHistoryId = config.JobHistoryId, FailureMessage = ExceptionHandler.FlattenExceptionMessages(ex, "Certificate successfully added, but one or more SSL profiles could not be bound. ") };
+            }
             catch (Exception ex)
             {
                 LogHandlerCommon.Error(logger, config.CertificateStoreDetails, ExceptionHandler.FlattenExceptionMessages(ex, $"Error performing Management {config.OperationType.ToString()}"));
@@ -90,15 +99,16 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             }
         }
 
-        private void PerformAddJob(F5Client f5, string certificatePassword, bool removeChain)
+        private bool PerformAddJob(F5Client f5, string certificatePassword, bool removeChain)
         {
             LogHandlerCommon.MethodEntry(logger, JobConfig.CertificateStoreDetails, "PerformAddJob");
             string name = JobConfig.JobCertificate.Alias;
             string partition = f5.GetPartitionFromStorePath();
 
             string certContents = !string.IsNullOrEmpty(JobConfig.JobCertificate.PrivateKeyPassword) && removeChain ? RemoveCertificateChainFromPfx() : JobConfig.JobCertificate.Contents;
+            bool certificateExists = f5.CertificateExists(partition, name);
 
-            if (f5.CertificateExists(partition, name))
+            if (certificateExists)
             {
                 if (!JobConfig.Overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
 
@@ -111,6 +121,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                 f5.AddEntry(partition, name, certContents, certificatePassword);
             }
             LogHandlerCommon.MethodExit(logger, JobConfig.CertificateStoreDetails, "PerformAddJob");
+
+            return certificateExists;
         }
 
         private void PerformRemovalJob(F5Client f5)
@@ -170,6 +182,35 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             }
 
             return rtnValue;
+        }
+
+        private void BindCertificateToSSLProfiles(F5Client f5, string alias, string sslProfiles)
+        {
+            bool hasError = false;
+            string errorMessages = string.Empty;
+
+            foreach (string sslProfile in sslProfiles.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                try
+                {
+                    f5.BindCertificate(alias, sslProfile);
+                }
+                catch (Exception ex)
+                {
+                    hasError = true;
+                    errorMessages += ExceptionHandler.FlattenExceptionMessages(ex, $"Error binding {sslProfile}: ");
+                }
+            }
+
+            if (hasError)
+            {
+                throw new BindException(errorMessages);
+            }
+        }
+
+        public class BindException : Exception
+        {
+            public BindException(string message) : base(message) { }
         }
     }
 }

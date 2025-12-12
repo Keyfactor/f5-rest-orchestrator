@@ -170,6 +170,85 @@ the Keyfactor Command Portal
 
    ![F5-SL-REST Custom Fields Tab](docsource/images/F5-SL-REST-custom-fields-store-type-dialog.png)
 
+
+   ###### Primary Node
+   Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive.
+
+   ![F5-SL-REST Custom Field - PrimaryNode](docsource/images/F5-SL-REST-custom-field-PrimaryNode-dialog.png)
+
+
+
+   ###### Primary Node Check Retry Wait Seconds
+   Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive.
+
+   ![F5-SL-REST Custom Field - PrimaryNodeCheckRetryWaitSecs](docsource/images/F5-SL-REST-custom-field-PrimaryNodeCheckRetryWaitSecs-dialog.png)
+
+
+
+   ###### Primary Node Check Retry Maximum
+   Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing.
+
+   ![F5-SL-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-SL-REST-custom-field-PrimaryNodeCheckRetryMax-dialog.png)
+
+
+
+   ###### Primary Node Online Required
+   Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed.
+
+   ![F5-SL-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-SL-REST-custom-field-PrimaryNodeOnlineRequired-dialog.png)
+
+
+
+   ###### Remove Chain on Add
+   Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device.
+
+   ![F5-SL-REST Custom Field - RemoveChain](docsource/images/F5-SL-REST-custom-field-RemoveChain-dialog.png)
+
+
+
+   ###### Ignore SSL Warning
+   Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs.
+
+   ![F5-SL-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-SL-REST-custom-field-IgnoreSSLWarning-dialog.png)
+
+
+
+   ###### Use Token Authentication
+   Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests.
+
+   ![F5-SL-REST Custom Field - UseTokenAuth](docsource/images/F5-SL-REST-custom-field-UseTokenAuth-dialog.png)
+
+
+
+   ###### Server Username
+   Login credential for the F5 device.  MUST be an Admin account.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Server Password
+   Login password for the F5 device.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Use SSL
+   True if using https to access the F5 device. False if using http.
+
+   ![F5-SL-REST Custom Field - ServerUseSsl](docsource/images/F5-SL-REST-custom-field-ServerUseSsl-dialog.png)
+
+
+
+
+
    ##### Entry Parameters Tab
 
    | Name | Display Name | Description | Type | Default Value | Entry has a private key | Adding an entry | Removing an entry | Reenrolling an entry |
@@ -179,6 +258,14 @@ the Keyfactor Command Portal
    The Entry Parameters tab should look like this:
 
    ![F5-SL-REST Entry Parameters Tab](docsource/images/F5-SL-REST-entry-parameters-store-type-dialog.png)
+
+
+   ##### SSL Profiles
+   One to many comma delimited F5 SSL Profiles to bind the certificate to (new certificates ONLY)
+
+   ![F5-SL-REST Entry Parameter - SSLProfiles](docsource/images/F5-SL-REST-entry-parameters-store-type-dialog-SSLProfiles.png)
+
+
 
    </details>
 </details>
@@ -287,6 +374,78 @@ the Keyfactor Command Portal
 
    ![F5-WS-REST Custom Fields Tab](docsource/images/F5-WS-REST-custom-fields-store-type-dialog.png)
 
+
+   ###### Primary Node
+   Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive.
+
+   ![F5-WS-REST Custom Field - PrimaryNode](docsource/images/F5-WS-REST-custom-field-PrimaryNode-dialog.png)
+
+
+
+   ###### Primary Node Check Retry Wait Seconds
+   Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive.
+
+   ![F5-WS-REST Custom Field - PrimaryNodeCheckRetryWaitSecs](docsource/images/F5-WS-REST-custom-field-PrimaryNodeCheckRetryWaitSecs-dialog.png)
+
+
+
+   ###### Primary Node Check Retry Maximum
+   Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing.
+
+   ![F5-WS-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-WS-REST-custom-field-PrimaryNodeCheckRetryMax-dialog.png)
+
+
+
+   ###### Primary Node Online Required
+   Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed.
+
+   ![F5-WS-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-WS-REST-custom-field-PrimaryNodeOnlineRequired-dialog.png)
+
+
+
+   ###### Ignore SSL Warning
+   Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs.
+
+   ![F5-WS-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-WS-REST-custom-field-IgnoreSSLWarning-dialog.png)
+
+
+
+   ###### Use Token Authentication
+   Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests.
+
+   ![F5-WS-REST Custom Field - UseTokenAuth](docsource/images/F5-WS-REST-custom-field-UseTokenAuth-dialog.png)
+
+
+
+   ###### Server Username
+   Login credential for the F5 device.  MUST be an Admin account.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Server Password
+   Login password for the F5 device.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Use SSL
+   True if using https to access the F5 device. False if using http.
+
+   ![F5-WS-REST Custom Field - ServerUseSsl](docsource/images/F5-WS-REST-custom-field-ServerUseSsl-dialog.png)
+
+
+
+
+
    </details>
 </details>
 
@@ -394,6 +553,78 @@ the Keyfactor Command Portal
 
    ![F5-CA-REST Custom Fields Tab](docsource/images/F5-CA-REST-custom-fields-store-type-dialog.png)
 
+
+   ###### Primary Node
+   Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive.
+
+   ![F5-CA-REST Custom Field - PrimaryNode](docsource/images/F5-CA-REST-custom-field-PrimaryNode-dialog.png)
+
+
+
+   ###### Primary Node Check Retry Wait Seconds
+   Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive.
+
+   ![F5-CA-REST Custom Field - PrimaryNodeCheckRetryWaitSecs](docsource/images/F5-CA-REST-custom-field-PrimaryNodeCheckRetryWaitSecs-dialog.png)
+
+
+
+   ###### Primary Node Check Retry Maximum
+   Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing.
+
+   ![F5-CA-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-CA-REST-custom-field-PrimaryNodeCheckRetryMax-dialog.png)
+
+
+
+   ###### Primary Node Online Required
+   Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed.
+
+   ![F5-CA-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-CA-REST-custom-field-PrimaryNodeOnlineRequired-dialog.png)
+
+
+
+   ###### Ignore SSL Warning
+   Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs.
+
+   ![F5-CA-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-CA-REST-custom-field-IgnoreSSLWarning-dialog.png)
+
+
+
+   ###### Use Token Authentication
+   Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests.
+
+   ![F5-CA-REST Custom Field - UseTokenAuth](docsource/images/F5-CA-REST-custom-field-UseTokenAuth-dialog.png)
+
+
+
+   ###### Server Username
+   Login credential for the F5 device.  MUST be an Admin account.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Server Password
+   Login password for the F5 device.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+
+
+   ###### Use SSL
+   True if using https to access the F5 device. False if using http.
+
+   ![F5-CA-REST Custom Field - ServerUseSsl](docsource/images/F5-CA-REST-custom-field-ServerUseSsl-dialog.png)
+
+
+
+
+
    </details>
 </details>
 
@@ -402,15 +633,14 @@ the Keyfactor Command Portal
 
 1. **Download the latest F5 Universal Orchestrator extension from GitHub.**
 
-    Navigate to the [F5 Universal Orchestrator extension GitHub version page](https://github.com/Keyfactor/f5-rest-orchestrator/releases/latest). Refer to the compatibility matrix below to determine whether the `net6.0` or `net8.0` asset should be downloaded. Then, click the corresponding asset to download the zip archive.
+    Navigate to the [F5 Universal Orchestrator extension GitHub version page](https://github.com/Keyfactor/f5-rest-orchestrator/releases/latest). Refer to the compatibility matrix below to determine the asset should be downloaded. Then, click the corresponding asset to download the zip archive.
 
    | Universal Orchestrator Version | Latest .NET version installed on the Universal Orchestrator server | `rollForward` condition in `Orchestrator.runtimeconfig.json` | `f5-rest-orchestrator` .NET version to download |
    | --------- | ----------- | ----------- | ----------- |
    | Older than `11.0.0` | | | `net6.0` |
    | Between `11.0.0` and `11.5.1` (inclusive) | `net6.0` | | `net6.0` |
-   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `Disable` | `net6.0` |
-   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` |
-   | `11.6` _and_ newer | `net8.0` | | `net8.0` |
+   | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `Disable` | `net6.0` || Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` |
+   | `11.6` _and_ newer | `net8.0` | | `net8.0` | 
 
     Unzip the archive containing extension assemblies to a known location.
 

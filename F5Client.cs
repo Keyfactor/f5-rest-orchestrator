@@ -606,7 +606,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 Convert.ToBase64String(pkBytes, Base64FormattingOptions.InsertLineBreaks));
             keyPemBuilder.AppendLine("-----END PRIVATE KEY-----");
 
-            string timestamp = DateTime.Now.ToString("MM-dd-yy:H:mm:ss");
+            string timestamp = DateTime.Now.ToString("MM-dd-yy-H-mm-ss");
 
             LogHandlerCommon.Trace(logger, CertificateStore, "Uploading web server certificate");
             byte[] certbytes = Encoding.ASCII.GetBytes(certPemBuilder.ToString());

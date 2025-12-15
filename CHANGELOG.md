@@ -1,3 +1,6 @@
+v1.10.1
+- Bug Fix: Uploading replacement web server certificate file name for F5-WS-REST contains invalid ":" character. 
+
 v1.10.0
 - Modify SSLProfiles entry parameter (F5-SL-REST store type only) to allow adding one-to-many SSL Profile bindings when adding NEW certificates (ignored for renewals/replacements)
 - Update dlls with vulnerability alerts

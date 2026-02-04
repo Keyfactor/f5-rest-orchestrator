@@ -1,3 +1,6 @@
+v1.10.2
+- Bug Fix: Error when adding/replacing CA bundle certificates
+
 v1.10.1
 - Bug Fix: Uploading replacement web server certificate file name for F5-WS-REST contains invalid ":" character. 
 

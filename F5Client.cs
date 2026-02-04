@@ -917,7 +917,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             {
                 bundleIncludes.Add(crt);
                 F5BundleInclude bundleInclude = new F5BundleInclude { includeBundle = bundleIncludes.ToArray() };
-                REST.Patch<F5BundleInclude>($"/mgmt/tm/sys/crypto/ca-bundle-manager/{bundle.Replace('/', '~')}", bundleInclude);
+                REST.Patch<F5BundleInclude>($"/mgmt/tm/sys/crypto/ca-bundle-manager/~{bundle.Replace('/', '~')}", bundleInclude);
             }
             LogHandlerCommon.MethodExit(logger, CertificateStore, "AddBundleEntry");
         }

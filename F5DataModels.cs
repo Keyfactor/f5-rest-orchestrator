@@ -180,6 +180,16 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string selfLink { get; set; }
     }
 
+    public class SyncRequest
+    {
+        public SyncRequest(string deviceGroupName)
+        {
+            utilCmdArgs = $"config-sync to-group {deviceGroupName} force-full-load-push";
+        }
+        public string command { get; } = "run";
+        public string utilCmdArgs { get; } 
+    }
+
     // F5 data models
     #endregion
 }

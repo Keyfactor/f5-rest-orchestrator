@@ -162,6 +162,8 @@ the Keyfactor Command Portal
    | RemoveChain | Remove Chain on Add | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. | Bool | False | 🔲 Unchecked |
    | IgnoreSSLWarning | Ignore SSL Warning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. | Bool | False | ✅ Checked |
    | UseTokenAuth | Use Token Authentication | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. | Bool | false | ✅ Checked |
+   | SyncDevice | Sync To Device Group | Set this to True if you wish to sync this node to a pre-configured F5 device group. | Bool | false | ✅ Checked |
+   | SyncDeviceGroup | Device Group | Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True). | String | DeviceGroup | ✅ Checked |
    | ServerUsername | Server Username | Login credential for the F5 device.  MUST be an Admin account. | Secret |  | 🔲 Unchecked |
    | ServerPassword | Server Password | Login password for the F5 device. | Secret |  | 🔲 Unchecked |
    | ServerUseSsl | Use SSL | True if using https to access the F5 device. False if using http. | Bool | true | ✅ Checked |
@@ -224,6 +226,22 @@ the Keyfactor Command Portal
 
    ![F5-SL-REST Custom Field - UseTokenAuth](docsource/images/F5-SL-REST-custom-field-UseTokenAuth-dialog.png)
    ![F5-SL-REST Custom Field - UseTokenAuth](docsource/images/F5-SL-REST-custom-field-UseTokenAuth-validation-options-dialog.png)
+
+
+
+   ###### Sync To Device Group
+   Set this to True if you wish to sync this node to a pre-configured F5 device group.
+
+   ![F5-SL-REST Custom Field - SyncDevice](docsource/images/F5-SL-REST-custom-field-SyncDevice-dialog.png)
+   ![F5-SL-REST Custom Field - SyncDevice](docsource/images/F5-SL-REST-custom-field-SyncDevice-validation-options-dialog.png)
+
+
+
+   ###### Device Group
+   Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True).
+
+   ![F5-SL-REST Custom Field - SyncDeviceGroup](docsource/images/F5-SL-REST-custom-field-SyncDeviceGroup-dialog.png)
+   ![F5-SL-REST Custom Field - SyncDeviceGroup](docsource/images/F5-SL-REST-custom-field-SyncDeviceGroup-validation-options-dialog.png)
 
 
 
@@ -733,6 +751,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
    | RemoveChain | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. |
    | IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
    | UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
+   | SyncDevice | Set this to True if you wish to sync this node to a pre-configured F5 device group. |
+   | SyncDeviceGroup | Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True). |
    | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
    | ServerPassword | Login password for the F5 device. |
    | ServerUseSsl | True if using https to access the F5 device. False if using http. |
@@ -769,6 +789,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
    | Properties.RemoveChain | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. |
    | Properties.IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
    | Properties.UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
+   | Properties.SyncDevice | Set this to True if you wish to sync this node to a pre-configured F5 device group. |
+   | Properties.SyncDeviceGroup | Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True). |
    | Properties.ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
    | Properties.ServerPassword | Login password for the F5 device. |
    | Properties.ServerUseSsl | True if using https to access the F5 device. False if using http. |

@@ -156,6 +156,22 @@ create_store_type "F5-SL-REST" '{
       "Required": true
     },
     {
+      "Name": "SyncDevice",
+      "DisplayName": "Sync To Device Group",
+      "Type": "Bool",
+      "DependsOn": "",
+      "DefaultValue": "false",
+      "Required": true
+    },
+    {
+      "Name": "SyncDeviceGroup",
+      "DisplayName": "Device Group",
+      "Type": "String",
+      "DependsOn": "SyncDevice",
+      "DefaultValue": "DeviceGroup",
+      "Required": true
+    },
+    {
       "Name": "ServerUseSsl",
       "DisplayName": "Use SSL",
       "Type": "Bool",

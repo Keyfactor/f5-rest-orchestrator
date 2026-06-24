@@ -778,14 +778,12 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             }
         }
 
-        internal string SyncDevice(string deviceGroup)
+        internal void SyncDevice(string deviceGroup)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "SyncDevice");
             SyncRequest request = new SyncRequest(deviceGroup);
             REST.Post<Object>($"/mgmt/tm/cm", JsonConvert.SerializeObject(request));
             LogHandlerCommon.MethodExit(logger, CertificateStore, "SyncDevice");
-
-            return loginResponse.token.token;
         }
         #endregion
 

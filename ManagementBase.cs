@@ -85,7 +85,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             UseTokenAuth = properties.UseTokenAuth == null || string.IsNullOrEmpty(properties.UseTokenAuth.Value) ? false : bool.Parse(properties.UseTokenAuth.Value);
             SyncDevice = properties.SyncDevice == null || string.IsNullOrEmpty(properties.SyncDevice.Value) ? false : bool.Parse(properties.SyncDevice.Value);
             if (SyncDevice)
-                SyncDeviceGroup = properties.SyncDeviceGroup == null || string.IsNullOrEmpty(properties.SyncDeviceGroup) ? string.Empty : properties.SyncDeviceGroup.Value.ToString();
+                SyncDeviceGroup = properties.SyncDeviceGroup == null || string.IsNullOrEmpty(properties.SyncDeviceGroup.Value) ? string.Empty : properties.SyncDeviceGroup.Value.ToString();
 
             LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"Ignore SSL Warnings '{IgnoreSSLWarning.ToString()}'");
         }

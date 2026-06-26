@@ -14,7 +14,6 @@ using System;
 using Keyfactor.Orchestrators.Extensions.Interfaces;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
-using System.Text;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -86,6 +85,11 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 
                 LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
+            }
+            catch (SyncException ex)
+            {
+                LogHandlerCommon.Error(logger, config.CertificateStoreDetails, ExceptionHandler.FlattenExceptionMessages(ex, $"Warning performing device group sync to {SyncDeviceGroup}: "));
+                return new JobResult { Result = OrchestratorJobStatusJobResult.Warning, JobHistoryId = config.JobHistoryId, FailureMessage = ExceptionHandler.FlattenExceptionMessages(ex, "Certificate successfully added, but syncing to {SyncDeviceGroup} failed. ") };
             }
             catch (BindException ex)
             {
@@ -210,11 +214,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             {
                 throw new BindException(errorMessages);
             }
-        }
-
-        public class BindException : Exception
-        {
-            public BindException(string message) : base(message) { }
         }
     }
 }

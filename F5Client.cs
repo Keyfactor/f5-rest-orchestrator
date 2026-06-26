@@ -782,8 +782,19 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "SyncDevice");
             SyncRequest request = new SyncRequest(deviceGroup);
-            REST.Post<Object>($"/mgmt/tm/cm", JsonConvert.SerializeObject(request));
-            LogHandlerCommon.MethodExit(logger, CertificateStore, "SyncDevice");
+
+            try
+            {
+                REST.Post<Object>($"/mgmt/tm/cm", JsonConvert.SerializeObject(request));
+            }
+            catch (Exception e)
+            {
+                throw new SyncException(ExceptionHandler.FlattenExceptionMessages(e, string.Empty));
+            }
+            finally
+            {
+                LogHandlerCommon.MethodExit(logger, CertificateStore, "SyncDevice");
+            }
         }
         #endregion
 

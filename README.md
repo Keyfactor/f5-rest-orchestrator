@@ -168,54 +168,63 @@ the Keyfactor Command Portal
    Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive.
 
    ![F5-SL-REST Custom Field - PrimaryNode](docsource/images/F5-SL-REST-custom-field-PrimaryNode-dialog.svg)
+   ![F5-SL-REST Custom Field - PrimaryNode](docsource/images/F5-SL-REST-custom-field-PrimaryNode-validation-options-dialog.svg)
 
 
    ###### Primary Node Check Retry Wait Seconds
    Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive.
 
    ![F5-SL-REST Custom Field - PrimaryNodeCheckRetryWaitSecs](docsource/images/F5-SL-REST-custom-field-PrimaryNodeCheckRetryWaitSecs-dialog.svg)
+   ![F5-SL-REST Custom Field - PrimaryNodeCheckRetryWaitSecs](docsource/images/F5-SL-REST-custom-field-PrimaryNodeCheckRetryWaitSecs-validation-options-dialog.svg)
 
 
    ###### Primary Node Check Retry Maximum
    Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing.
 
    ![F5-SL-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-SL-REST-custom-field-PrimaryNodeCheckRetryMax-dialog.svg)
+   ![F5-SL-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-SL-REST-custom-field-PrimaryNodeCheckRetryMax-validation-options-dialog.svg)
 
 
    ###### Primary Node Online Required
    Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed.
 
    ![F5-SL-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-SL-REST-custom-field-PrimaryNodeOnlineRequired-dialog.svg)
+   ![F5-SL-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-SL-REST-custom-field-PrimaryNodeOnlineRequired-validation-options-dialog.svg)
 
 
    ###### Remove Chain on Add
    Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device.
 
    ![F5-SL-REST Custom Field - RemoveChain](docsource/images/F5-SL-REST-custom-field-RemoveChain-dialog.svg)
+   ![F5-SL-REST Custom Field - RemoveChain](docsource/images/F5-SL-REST-custom-field-RemoveChain-validation-options-dialog.svg)
 
 
    ###### Ignore SSL Warning
    Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs.
 
    ![F5-SL-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-SL-REST-custom-field-IgnoreSSLWarning-dialog.svg)
+   ![F5-SL-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-SL-REST-custom-field-IgnoreSSLWarning-validation-options-dialog.svg)
 
 
    ###### Use Token Authentication
    Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests.
 
    ![F5-SL-REST Custom Field - UseTokenAuth](docsource/images/F5-SL-REST-custom-field-UseTokenAuth-dialog.svg)
+   ![F5-SL-REST Custom Field - UseTokenAuth](docsource/images/F5-SL-REST-custom-field-UseTokenAuth-validation-options-dialog.svg)
 
 
    ###### Sync To Device Group
    Set this to True if you wish to sync this node to a pre-configured F5 device group.
 
    ![F5-SL-REST Custom Field - SyncDevice](docsource/images/F5-SL-REST-custom-field-SyncDevice-dialog.svg)
+   ![F5-SL-REST Custom Field - SyncDevice](docsource/images/F5-SL-REST-custom-field-SyncDevice-validation-options-dialog.svg)
 
 
    ###### Device Group
    Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True).
 
    ![F5-SL-REST Custom Field - SyncDeviceGroup](docsource/images/F5-SL-REST-custom-field-SyncDeviceGroup-dialog.svg)
+   ![F5-SL-REST Custom Field - SyncDeviceGroup](docsource/images/F5-SL-REST-custom-field-SyncDeviceGroup-validation-options-dialog.svg)
 
 
    ###### Server Username
@@ -238,6 +247,7 @@ the Keyfactor Command Portal
    True if using https to access the F5 device. False if using http.
 
    ![F5-SL-REST Custom Field - ServerUseSsl](docsource/images/F5-SL-REST-custom-field-ServerUseSsl-dialog.svg)
+   ![F5-SL-REST Custom Field - ServerUseSsl](docsource/images/F5-SL-REST-custom-field-ServerUseSsl-validation-options-dialog.svg)
 
 
    ##### Entry Parameters Tab
@@ -253,6 +263,7 @@ the Keyfactor Command Portal
    One to many comma delimited F5 SSL Profiles to bind the certificate to (new certificates ONLY)
 
    ![F5-SL-REST Entry Parameter - SSLProfiles](docsource/images/F5-SL-REST-entry-parameters-store-type-dialog-SSLProfiles.svg)
+   ![F5-SL-REST Entry Parameter - SSLProfiles](docsource/images/F5-SL-REST-entry-parameters-store-type-dialog-SSLProfiles-validation-options.svg)
 
 
    </details>
@@ -363,36 +374,42 @@ the Keyfactor Command Portal
    Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive.
 
    ![F5-WS-REST Custom Field - PrimaryNode](docsource/images/F5-WS-REST-custom-field-PrimaryNode-dialog.svg)
+   ![F5-WS-REST Custom Field - PrimaryNode](docsource/images/F5-WS-REST-custom-field-PrimaryNode-validation-options-dialog.svg)
 
 
    ###### Primary Node Check Retry Wait Seconds
    Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive.
 
    ![F5-WS-REST Custom Field - PrimaryNodeCheckRetryWaitSecs](docsource/images/F5-WS-REST-custom-field-PrimaryNodeCheckRetryWaitSecs-dialog.svg)
+   ![F5-WS-REST Custom Field - PrimaryNodeCheckRetryWaitSecs](docsource/images/F5-WS-REST-custom-field-PrimaryNodeCheckRetryWaitSecs-validation-options-dialog.svg)
 
 
    ###### Primary Node Check Retry Maximum
    Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing.
 
    ![F5-WS-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-WS-REST-custom-field-PrimaryNodeCheckRetryMax-dialog.svg)
+   ![F5-WS-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-WS-REST-custom-field-PrimaryNodeCheckRetryMax-validation-options-dialog.svg)
 
 
    ###### Primary Node Online Required
    Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed.
 
    ![F5-WS-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-WS-REST-custom-field-PrimaryNodeOnlineRequired-dialog.svg)
+   ![F5-WS-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-WS-REST-custom-field-PrimaryNodeOnlineRequired-validation-options-dialog.svg)
 
 
    ###### Ignore SSL Warning
    Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs.
 
    ![F5-WS-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-WS-REST-custom-field-IgnoreSSLWarning-dialog.svg)
+   ![F5-WS-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-WS-REST-custom-field-IgnoreSSLWarning-validation-options-dialog.svg)
 
 
    ###### Use Token Authentication
    Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests.
 
    ![F5-WS-REST Custom Field - UseTokenAuth](docsource/images/F5-WS-REST-custom-field-UseTokenAuth-dialog.svg)
+   ![F5-WS-REST Custom Field - UseTokenAuth](docsource/images/F5-WS-REST-custom-field-UseTokenAuth-validation-options-dialog.svg)
 
 
    ###### Server Username
@@ -415,6 +432,7 @@ the Keyfactor Command Portal
    True if using https to access the F5 device. False if using http.
 
    ![F5-WS-REST Custom Field - ServerUseSsl](docsource/images/F5-WS-REST-custom-field-ServerUseSsl-dialog.svg)
+   ![F5-WS-REST Custom Field - ServerUseSsl](docsource/images/F5-WS-REST-custom-field-ServerUseSsl-validation-options-dialog.svg)
 
 
    </details>
@@ -525,36 +543,42 @@ the Keyfactor Command Portal
    Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive.
 
    ![F5-CA-REST Custom Field - PrimaryNode](docsource/images/F5-CA-REST-custom-field-PrimaryNode-dialog.svg)
+   ![F5-CA-REST Custom Field - PrimaryNode](docsource/images/F5-CA-REST-custom-field-PrimaryNode-validation-options-dialog.svg)
 
 
    ###### Primary Node Check Retry Wait Seconds
    Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive.
 
    ![F5-CA-REST Custom Field - PrimaryNodeCheckRetryWaitSecs](docsource/images/F5-CA-REST-custom-field-PrimaryNodeCheckRetryWaitSecs-dialog.svg)
+   ![F5-CA-REST Custom Field - PrimaryNodeCheckRetryWaitSecs](docsource/images/F5-CA-REST-custom-field-PrimaryNodeCheckRetryWaitSecs-validation-options-dialog.svg)
 
 
    ###### Primary Node Check Retry Maximum
    Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing.
 
    ![F5-CA-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-CA-REST-custom-field-PrimaryNodeCheckRetryMax-dialog.svg)
+   ![F5-CA-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-CA-REST-custom-field-PrimaryNodeCheckRetryMax-validation-options-dialog.svg)
 
 
    ###### Primary Node Online Required
    Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed.
 
    ![F5-CA-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-CA-REST-custom-field-PrimaryNodeOnlineRequired-dialog.svg)
+   ![F5-CA-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-CA-REST-custom-field-PrimaryNodeOnlineRequired-validation-options-dialog.svg)
 
 
    ###### Ignore SSL Warning
    Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs.
 
    ![F5-CA-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-CA-REST-custom-field-IgnoreSSLWarning-dialog.svg)
+   ![F5-CA-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-CA-REST-custom-field-IgnoreSSLWarning-validation-options-dialog.svg)
 
 
    ###### Use Token Authentication
    Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests.
 
    ![F5-CA-REST Custom Field - UseTokenAuth](docsource/images/F5-CA-REST-custom-field-UseTokenAuth-dialog.svg)
+   ![F5-CA-REST Custom Field - UseTokenAuth](docsource/images/F5-CA-REST-custom-field-UseTokenAuth-validation-options-dialog.svg)
 
 
    ###### Server Username
@@ -577,6 +601,7 @@ the Keyfactor Command Portal
    True if using https to access the F5 device. False if using http.
 
    ![F5-CA-REST Custom Field - ServerUseSsl](docsource/images/F5-CA-REST-custom-field-ServerUseSsl-dialog.svg)
+   ![F5-CA-REST Custom Field - ServerUseSsl](docsource/images/F5-CA-REST-custom-field-ServerUseSsl-validation-options-dialog.svg)
 
 
    </details>

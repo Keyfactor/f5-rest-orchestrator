@@ -14,7 +14,6 @@ using System;
 using Keyfactor.Orchestrators.Extensions.Interfaces;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
-using System.Text;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -67,10 +66,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                         bool certificateExists = PerformAddJob(f5, StorePassword, RemoveChain);
                         if (!certificateExists && !string.IsNullOrEmpty(sslProfiles))
                             BindCertificateToSSLProfiles(f5, config.JobCertificate.Alias, sslProfiles);
+                        if (SyncDevice)
+                            f5.SyncDevice(SyncDeviceGroup);
                         break;
                     case CertStoreOperationType.Remove:
                         LogHandlerCommon.Trace(logger, config.CertificateStoreDetails, $"Remove entry '{config.JobCertificate.Alias}' from '{config.CertificateStoreDetails.StorePath}'");
                         PerformRemovalJob(f5);
+                        if (SyncDevice)
+                            f5.SyncDevice(SyncDeviceGroup);
                         break;
                     default:
                         // Shouldn't get here, but just in case
@@ -82,6 +85,11 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
 
                 LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
+            }
+            catch (SyncException ex)
+            {
+                LogHandlerCommon.Error(logger, config.CertificateStoreDetails, ExceptionHandler.FlattenExceptionMessages(ex, $"Warning performing device group sync to {SyncDeviceGroup}: "));
+                return new JobResult { Result = OrchestratorJobStatusJobResult.Warning, JobHistoryId = config.JobHistoryId, FailureMessage = ExceptionHandler.FlattenExceptionMessages(ex, "Certificate successfully added, but syncing to {SyncDeviceGroup} failed. ") };
             }
             catch (BindException ex)
             {
@@ -206,11 +214,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             {
                 throw new BindException(errorMessages);
             }
-        }
-
-        public class BindException : Exception
-        {
-            public BindException(string message) : base(message) { }
         }
     }
 }

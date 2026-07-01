@@ -34,6 +34,15 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             return message;
         }
     }
+    public class BindException : Exception
+    {
+        public BindException(string message) : base(message) { }
+    }
+
+    public class SyncException : Exception
+    {
+        public SyncException(string message) : base(message) { }
+    }
 
     internal class F5RESTException : Exception
     {

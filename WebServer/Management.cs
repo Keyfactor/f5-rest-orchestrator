@@ -7,10 +7,9 @@
 // OR CONDITIONS OF ANY KIND, either express or implied. See the License for  
 // thespecific language governing permissions and limitations under the       
 // License. 
-﻿using Keyfactor.Logging;
+using Keyfactor.Logging;
 using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.Orchestrators.Common.Enums;
-using Microsoft.Extensions.Logging;
 using System;
 using Keyfactor.Orchestrators.Extensions.Interfaces;
 

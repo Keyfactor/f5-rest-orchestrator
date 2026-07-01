@@ -777,6 +777,25 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 throw new Exception(errMesage);
             }
         }
+
+        internal void SyncDevice(string deviceGroup)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "SyncDevice");
+            SyncRequest request = new SyncRequest(deviceGroup);
+
+            try
+            {
+                REST.Post<Object>($"/mgmt/tm/cm", JsonConvert.SerializeObject(request));
+            }
+            catch (Exception e)
+            {
+                throw new SyncException(ExceptionHandler.FlattenExceptionMessages(e, string.Empty));
+            }
+            finally
+            {
+                LogHandlerCommon.MethodExit(logger, CertificateStore, "SyncDevice");
+            }
+        }
         #endregion
 
         #region Bundles

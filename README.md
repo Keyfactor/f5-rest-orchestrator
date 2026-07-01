@@ -964,7 +964,7 @@ Once the Discovery job has completed, a list of F5 certificate store locations s
 
 
 ## Syncing To Device Group
-The "Sync To Device Group" feature, introduced in version 2.0 of this orchestrator extension, enables synchronization of the F5 Big-IP node managed by the Keyfactor Command certificate store with a secondary node that is part of the F5 device group specified in the associated "Device Group" certificate store setting.
+The "Sync To Device Group" feature, introduced in version 2.0 of this orchestrator extension for the F5-SL-REST store type (ssl certificate management), enables synchronization of the F5 Big-IP node managed by the Keyfactor Command certificate store with a secondary node that is part of the F5 device group specified in the associated "Device Group" certificate store setting.
 
 Before this synchronization feature can be used, the F5 Big-IP device group must be configured to support syncing. Complete the following prerequisite tasks to set up the device group:
 

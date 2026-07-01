@@ -964,9 +964,9 @@ Once the Discovery job has completed, a list of F5 certificate store locations s
 
 
 ## Syncing To Device Group
+The "Sync To Device Group" feature, introduced in version 2.0 of this orchestrator extension, enables synchronization of the F5 Big-IP node managed by the Keyfactor Command certificate store with a secondary node that is part of the F5 device group specified in the associated "Device Group" certificate store setting.
 
-The "Sync To Device Group" feature added in version 2.0 of the this orchestrator extension allows for syncing the F5 Big IP node being managed by the Keyfactor Command certificate store to a secondary node defined in the F5 device group referenced in the 
-related "Device Group" certificate store setting.  The F5 Big IP prerequisite tasks that need to be performed to set up the device group that will support syncing are as follows:
+Before this synchronization feature can be used, the F5 Big-IP device group must be configured to support syncing. Complete the following prerequisite tasks to set up the device group:
 
 ### 1. Network Foundation (both devices)
 Each device needs a **Self IP** — a non-management IP address on a shared data-plane network that both devices can reach. This is the address BIG-IP uses for sync traffic. Both Self IPs must be on the same subnet so they can communicate with each other.

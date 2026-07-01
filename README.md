@@ -943,7 +943,7 @@ For SSL Certificate (F5-SL-REST) and CA Bundle (F5-CA-REST) store types, discove
 First, in Keyfactor Command navigate to Certificate Locations =\> Certificate Stores. Select the Discover tab and then the Schedule button. Complete the dialog and click Done to schedule.
 ![](images/image14.png)
 
-- **Category** - Required. The F5 store type you wish to find stores for.
+- **Category** - Required. The F5 store type you wish to find stores for. 
 
 - **Orchestrator** - Select the orchestrator you wish to use to manage this store
 

@@ -154,8 +154,8 @@ the Keyfactor Command Portal
    | RemoveChain | Remove Chain on Add | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. | Bool | False | 🔲 Unchecked |
    | IgnoreSSLWarning | Ignore SSL Warning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. | Bool | False | ✅ Checked |
    | UseTokenAuth | Use Token Authentication | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. | Bool | false | ✅ Checked |
-   | SyncDevice | Sync To Device Group | Set this to True if you wish to sync this node to a pre-configured F5 device group. | Bool | false | ✅ Checked |
-   | SyncDeviceGroup | Device Group | Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True). | String | DeviceGroup | ✅ Checked |
+   | SyncDevice | Sync To Device Group | Set this to True if you wish to sync this node to a pre-configured F5 device group.  See [Syncing to Device Group](syncing-to-device-group) for more information on this feature. | Bool | false | ✅ Checked |
+   | SyncDeviceGroup | Device Group | Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True).  See [Syncing to Device Group](syncing-to-device-group) for more information on this feature. | String | DeviceGroup | ✅ Checked |
    | ServerUsername | Server Username | Login credential for the F5 device.  MUST be an Admin account. | Secret |  | 🔲 Unchecked |
    | ServerPassword | Server Password | Login password for the F5 device. | Secret |  | 🔲 Unchecked |
    | ServerUseSsl | Use SSL | True if using https to access the F5 device. False if using http. | Bool | true | ✅ Checked |
@@ -214,14 +214,14 @@ the Keyfactor Command Portal
 
 
    ###### Sync To Device Group
-   Set this to True if you wish to sync this node to a pre-configured F5 device group.
+   Set this to True if you wish to sync this node to a pre-configured F5 device group.  See [Syncing to Device Group](syncing-to-device-group) for more information on this feature.
 
    ![F5-SL-REST Custom Field - SyncDevice](docsource/images/F5-SL-REST-custom-field-SyncDevice-dialog.svg)
    ![F5-SL-REST Custom Field - SyncDevice](docsource/images/F5-SL-REST-custom-field-SyncDevice-validation-options-dialog.svg)
 
 
    ###### Device Group
-   Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True).
+   Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True).  See [Syncing to Device Group](syncing-to-device-group) for more information on this feature.
 
    ![F5-SL-REST Custom Field - SyncDeviceGroup](docsource/images/F5-SL-REST-custom-field-SyncDeviceGroup-dialog.svg)
    ![F5-SL-REST Custom Field - SyncDeviceGroup](docsource/images/F5-SL-REST-custom-field-SyncDeviceGroup-validation-options-dialog.svg)
@@ -682,8 +682,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
    | RemoveChain | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. |
    | IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
    | UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
-   | SyncDevice | Set this to True if you wish to sync this node to a pre-configured F5 device group. |
-   | SyncDeviceGroup | Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True). |
+   | SyncDevice | Set this to True if you wish to sync this node to a pre-configured F5 device group.  See [Syncing to Device Group](syncing-to-device-group) for more information on this feature. |
+   | SyncDeviceGroup | Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True).  See [Syncing to Device Group](syncing-to-device-group) for more information on this feature. |
    | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
    | ServerPassword | Login password for the F5 device. |
    | ServerUseSsl | True if using https to access the F5 device. False if using http. |
@@ -718,8 +718,8 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
    | Properties.RemoveChain | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. |
    | Properties.IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
    | Properties.UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
-   | Properties.SyncDevice | Set this to True if you wish to sync this node to a pre-configured F5 device group. |
-   | Properties.SyncDeviceGroup | Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True). |
+   | Properties.SyncDevice | Set this to True if you wish to sync this node to a pre-configured F5 device group.  See [Syncing to Device Group](syncing-to-device-group) for more information on this feature. |
+   | Properties.SyncDeviceGroup | Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True).  See [Syncing to Device Group](syncing-to-device-group) for more information on this feature. |
    | Properties.ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
    | Properties.ServerPassword | Login password for the F5 device. |
    | Properties.ServerUseSsl | True if using https to access the F5 device. False if using http. |
@@ -962,6 +962,39 @@ First, in Keyfactor Command navigate to Certificate Locations =\> Certificate St
 
 Once the Discovery job has completed, a list of F5 certificate store locations should show in the Certificate Stores Discovery tab in Keyfactor Command. Right click on a store and select Approve to bring up a dialog that will ask for the remaining necessary certificate store parameters described in Step 2a.  Complete those and click Save, and the Certificate Store should now show up in the list of stores in the Certificate Stores tab.
 
+
+## Syncing To Device Group
+
+The "Sync To Device Group" feature added in version 2.0 of the this orchestrator extension allows for syncing the F5 Big IP node being managed by the Keyfactor Command certificate store to a secondary node defined in the F5 device group referenced in the 
+related "Device Group" certificate store setting.  The F5 Big IP prerequisite tasks that need to be performed to set up the device group that will support syncing are as follows:
+
+### 1. Network Foundation (both devices)
+Each device needs a **Self IP** — a non-management IP address on a shared data-plane network that both devices can reach. This is the address BIG-IP uses for sync traffic. Both Self IPs must be on the same subnet so they can communicate with each other.
+
+### 2. ConfigSync Address (both devices)
+Each device must be told which of its Self IPs to use for synchronization traffic. This is set independently on each device and must point to the Self IP created in step 1 — not the management IP.
+
+### 3. Device Trust (primary only)
+Before devices can sync, they must establish a cryptographic trust relationship. This is initiated from the primary device by providing the peer's IP address and credentials. Once established, both devices recognize each other as trusted peers. This is a one-time setup and automatically applies to both devices simultaneously.
+
+### 4. Device Group (primary only)
+Once trust is established, a device group is created on the primary and both devices are added as members. The device group defines:
+- **Type** — Sync-Failover (syncs config and enables failover) or Sync-Only (config sync without failover)
+- **Members** — which devices participate
+- **Sync behavior** — automatic or manual
+
+The device group automatically appears on the secondary once created on the primary.
+
+### Dependencies Summary
+
+```
+Self IPs (both)
+    └── ConfigSync Address (both)
+            └── Device Trust (primary → auto both)
+                    └── Device Group (primary → auto both)
+```
+
+Each layer depends on the one above it being in place before it can be configured.
 
 ## License
 

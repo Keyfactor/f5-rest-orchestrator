@@ -110,7 +110,7 @@ curl -s -X POST "https://${KEYFACTOR_HOSTNAME}/${KEYFACTOR_API_PATH}/Certificate
       "DependsOn": "",
       "DefaultValue": "false",
       "Required": true,
-      "Description": "Set this to True if you wish to sync this node to a pre-configured F5 device group."
+      "Description": "Set this to True if you wish to sync this node to a pre-configured F5 device group.  See [Syncing to Device Group](syncing-to-device-group) for more information on this feature."
     },
     {
       "Name": "SyncDeviceGroup",
@@ -119,7 +119,7 @@ curl -s -X POST "https://${KEYFACTOR_HOSTNAME}/${KEYFACTOR_API_PATH}/Certificate
       "DependsOn": "SyncDevice",
       "DefaultValue": "DeviceGroup",
       "Required": true,
-      "Description": "Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True)."
+      "Description": "Enter the name of the pre-configured F5 device group you wish to sync to (valid if SyncDevice = True).  See [Syncing to Device Group](syncing-to-device-group) for more information on this feature."
     },
     {
       "Name": "ServerUsername",

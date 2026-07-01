@@ -1,7 +1,5 @@
 v2.0.0
 - Add option to sync node to device group pre-set up in F5 device for F5-SL-REST store type.
-- Add option to restart httpd service for F5-WS-REST store type.
-- Handle adding certificates with meta data comments.
 
 v1.10.2
 - Bug Fix: Error when adding/replacing CA bundle certificates

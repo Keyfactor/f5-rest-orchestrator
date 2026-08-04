@@ -82,7 +82,12 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
     internal class F5SSLProfile
     {
         public string name { get; set; }
+        public string partition { get; set; }
+        public string fullPath { get; set; }
         public string cert { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("defaultsFrom")]
+        public string defaultsFrom { get; set; }
     }
 
     internal class F5Key
@@ -143,6 +148,15 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string chain { get; set; }
     }
 
+    internal class F5ProfileCreate
+    {
+        public string name { get; set; }
+        public string partition { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("defaultsFrom", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string defaultsFrom { get; set; }
+    }
+
     public class F5Transaction
     {
         public string transid { get; set; }
@@ -178,6 +192,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
     public class F5Version
     {
         public string selfLink { get; set; }
+    }
+
+    internal class F5ProfileStorePath
+    {
+        public string Partition { get; set; }
+        public string ProfileName { get; set; }
+        public string ProfileType { get; set; }
+        public string InheritedProfile { get; set; }
     }
 
     public class SyncRequest

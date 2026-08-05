@@ -930,7 +930,7 @@ TODO Certificate Store Configuration is an optional section. If this section doe
    | Category | Select "F5 Profiles REST" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The server name or IP Address for the F5 device. |
-   | Store Path | Enter the store path in the form 'Partition/ProfileName/ProfileType/InheritedProfile', delimited by the forward slash (/) character. Partition and Profile Name are case sensitive. ProfileType must be either "Client" or "Server". InheritedProfile is optional; if omitted, F5 default logic will be used. |
+   | Store Path | Enter the store path in the form 'Partition\ProfileName\ProfileType\InheritedProfile', delimited by the backslash (\) character. Partition and Profile Name are case sensitive. ProfileType must be either "Client" or "Server". InheritedProfile is optional; if omitted, F5 default logic will be used. |
    | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
    | Orchestrator | Select an approved orchestrator capable of managing `F5-PF-REST` certificates. Specifically, one with the `F5-PF-REST` capability. |
    | RemoveChain | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. |
@@ -960,7 +960,7 @@ TODO Certificate Store Configuration is an optional section. If this section doe
    | Category | Select "F5 Profiles REST" or the customized certificate store name from the previous step. |
    | Container | Optional container to associate certificate store with. |
    | Client Machine | The server name or IP Address for the F5 device. |
-   | Store Path | Enter the store path in the form 'Partition/ProfileName/ProfileType/InheritedProfile', delimited by the forward slash (/) character. Partition and Profile Name are case sensitive. ProfileType must be either "Client" or "Server". InheritedProfile is optional; if omitted, F5 default logic will be used. |
+   | Store Path | Enter the store path in the form 'Partition\ProfileName\ProfileType\InheritedProfile', delimited by the backslash (\) character. Partition and Profile Name are case sensitive. ProfileType must be either "Client" or "Server". InheritedProfile is optional; if omitted, F5 default logic will be used. |
    | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
    | Orchestrator | Select an approved orchestrator capable of managing `F5-PF-REST` certificates. Specifically, one with the `F5-PF-REST` capability. |
    | Properties.RemoveChain | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. |

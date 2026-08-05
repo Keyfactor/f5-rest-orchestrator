@@ -567,7 +567,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 Partition = pathParts[0],
                 ProfileName = pathParts[1],
                 ProfileType = pathParts[2],
-                InheritedProfile = pathParts.Length == 4 ? pathParts[3] : string.Empty
+                InheritedProfile = pathParts.Length == 4 ? pathParts[3].Replace($"/","~") : string.Empty
             };
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "ParseProfileStorePath");
@@ -783,7 +783,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             try
             {
-                string query = $"/mgmt/tm/ltm/profile/{profileEndpoint}/~{partition}~{profileName}";
+                string query = $"/mgmt/tm/ltm/profile/{profileEndpoint}/~{profileName}";
                 F5SSLProfile profile = REST.Get<F5SSLProfile>(query);
                 exists = (profile != null);
             }
@@ -807,7 +807,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             string defaultsFrom = null;
             if (!string.IsNullOrEmpty(inheritedProfile) && ProfileExists(partition, profileEndpoint, inheritedProfile))
             {
-                defaultsFrom = $"/{partition}/{inheritedProfile}";
+                defaultsFrom = $"/~{inheritedProfile}";
             }
 
             F5ProfileCreate profile = new F5ProfileCreate

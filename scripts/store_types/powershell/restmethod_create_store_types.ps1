@@ -173,6 +173,97 @@ $Body = @'
 
 Invoke-RestMethod -Uri "https://$KeyfactorHostname/$KeyfactorApiPath/CertificateStoreTypes" -Method POST -Headers $Headers -Body $Body
 
+Write-Host "Creating store type: F5-PF-REST"
+$Body = @'
+{
+  "Name": "F5 Profiles REST",
+  "ShortName": "F5-PF-REST",
+  "Capability": "F5-PF-REST",
+  "ServerRequired": true,
+  "BlueprintAllowed": true,
+  "CustomAliasAllowed": "Required",
+  "PowerShell": false,
+  "PrivateKeyAllowed": "Required",
+  "SupportedOperations": {
+    "Add": true,
+    "Create": true,
+    "Discovery": true,
+    "Enrollment": false,
+    "Remove": true
+  },
+  "PasswordOptions": {
+    "Style": "Default",
+    "EntrySupported": false,
+    "StoreRequired": true,
+    "StorePassword": {
+      "Description": "Check \"No Password\" if you wish the private key of any added certificate to be set to Key Security Type \"Normal\". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of \"Password\".",
+      "IsPAMEligible": true
+    }
+  },
+  "Properties": [
+    {
+      "Name": "RemoveChain",
+      "DisplayName": "Remove Chain on Add",
+      "Type": "Bool",
+      "DependsOn": "",
+      "DefaultValue": "False",
+      "Required": false,
+      "Description": "Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device."
+    },
+    {
+      "Name": "IgnoreSSLWarning",
+      "DisplayName": "Ignore SSL Warning",
+      "Type": "Bool",
+      "DependsOn": "",
+      "DefaultValue": "False",
+      "Required": true,
+      "Description": "Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs."
+    },
+    {
+      "Name": "UseTokenAuth",
+      "DisplayName": "Use Token Authentication",
+      "Type": "Bool",
+      "DependsOn": "",
+      "DefaultValue": "false",
+      "Required": true,
+      "Description": "Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests."
+    },
+    {
+      "Name": "ServerUsername",
+      "DisplayName": "Server Username",
+      "Type": "Secret",
+      "DependsOn": "",
+      "DefaultValue": "",
+      "IsPAMEligible": true,
+      "Required": false,
+      "Description": "Login credential for the F5 device.  MUST be an Admin account."
+    },
+    {
+      "Name": "ServerPassword",
+      "DisplayName": "Server Password",
+      "Type": "Secret",
+      "DependsOn": "",
+      "DefaultValue": "",
+      "IsPAMEligible": true,
+      "Required": false,
+      "Description": "Login password for the F5 device."
+    },
+    {
+      "Name": "ServerUseSsl",
+      "DisplayName": "Use SSL",
+      "Type": "Bool",
+      "DependsOn": "",
+      "DefaultValue": "true",
+      "Required": true,
+      "Description": "True if using https to access the F5 device. False if using http."
+    }
+  ],
+  "EntryParameters": []
+}
+'@
+
+Invoke-RestMethod -Uri "https://$KeyfactorHostname/$KeyfactorApiPath/CertificateStoreTypes" -Method POST -Headers $Headers -Body $Body
+
 Write-Host "Creating store type: F5-WS-REST"
 $Body = @'
 {

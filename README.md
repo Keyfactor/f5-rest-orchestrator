@@ -33,8 +33,9 @@
 
 The f5-rest-orchestrator orchestrator extension manages various types of certificates on a F5 Big IP device (version 14 or later).  TLS certificates, CA bundles, and the TLS certificate bound to the administrative website can all be managed with this integration within the scope described in the sections below.  One important note, this integration DOES NOT manage high availability (HA) failover between primary and secondary nodes.  If syncing between primary and secondary nodes is desired, this must either be handled within your F5 Big IP instance itself, or you can set up a Keyfactor Command certificate store for each node (primary and secondary) and manage each separately.
 
-The F5 Universal Orchestrator extension implements 3 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types. Descriptions of each are provided below.
+The F5 Universal Orchestrator extension implements 4 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types. Descriptions of each are provided below.
 - [F5 SSL Profiles REST](#F5-SL-REST)
+- [F5 Profiles REST](#F5-PF-REST)
 - [F5 WS Profiles REST](#F5-WS-REST)
 - [F5 CA Profiles REST](#F5-CA-REST)
 
@@ -58,7 +59,7 @@ An administrator account must be set up in F5 to be used with this orchestrator 
 
 To use the F5 Universal Orchestrator extension, you **must** create the Certificate Store Types required for your use-case. This only needs to happen _once_ per Keyfactor Command instance.
 
-The F5 Universal Orchestrator extension implements 3 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types.
+The F5 Universal Orchestrator extension implements 4 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types.
 
 ### F5-SL-REST
 
@@ -264,6 +265,157 @@ the Keyfactor Command Portal
 
    ![F5-SL-REST Entry Parameter - SSLProfiles](docsource/images/F5-SL-REST-entry-parameters-store-type-dialog-SSLProfiles.svg)
    ![F5-SL-REST Entry Parameter - SSLProfiles](docsource/images/F5-SL-REST-entry-parameters-store-type-dialog-SSLProfiles-validation-options.svg)
+
+
+   </details>
+</details>
+
+### F5-PF-REST
+
+<details><summary>Click to expand details</summary>
+
+TODO Overview is a required section
+
+TODO Global Store Type Section is an optional section. If this section doesn't seem necessary, please delete it.
+
+#### F5 Profiles REST Requirements
+
+TODO Requirements is an optional section. If this section doesn't seem necessary, please delete it.
+
+#### Supported Operations
+
+| Operation    | Is Supported |
+|--------------|--------------|
+| Add          | ✅ Checked |
+| Remove       | ✅ Checked |
+| Discovery    | ✅ Checked |
+| Reenrollment | 🔲 Unchecked |
+| Create       | ✅ Checked |
+
+#### Store Type Creation
+
+##### Using kfutil:
+`kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
+For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
+
+   <details><summary>Click to expand F5-PF-REST kfutil details</summary>
+
+   ##### Using online definition from GitHub:
+   This will reach out to GitHub and pull the latest store-type definition
+   ```shell
+   # F5 Profiles REST
+   kfutil store-types create F5-PF-REST
+   ```
+
+   ##### Offline creation using integration-manifest file:
+   If required, it is possible to create store types from the [integration-manifest.json](./integration-manifest.json) included in this repo.
+   You would first download the [integration-manifest.json](./integration-manifest.json) and then run the following command
+   in your offline environment.
+   ```shell
+   kfutil store-types create --from-file integration-manifest.json
+   ```
+   </details>
+
+#### Manual Creation
+Below are instructions on how to create the F5-PF-REST store type manually in
+the Keyfactor Command Portal
+
+   <details><summary>Click to expand manual F5-PF-REST details</summary>
+
+   Create a store type called `F5-PF-REST` with the attributes in the tables below:
+
+   ##### Basic Tab
+   | Attribute | Value | Description |
+   | --------- | ----- | ----- |
+   | Name | F5 Profiles REST | Display name for the store type (may be customized) |
+   | Short Name | F5-PF-REST | Short display name for the store type |
+   | Capability | F5-PF-REST | Store type name orchestrator will register with. Check the box to allow entry of value |
+   | Supports Add | ✅ Checked | Indicates that the Store Type supports Management Add |
+   | Supports Remove | ✅ Checked | Indicates that the Store Type supports Management Remove |
+   | Supports Discovery | ✅ Checked | Indicates that the Store Type supports Discovery |
+   | Supports Reenrollment | 🔲 Unchecked | Indicates that the Store Type supports Reenrollment |
+   | Supports Create | ✅ Checked | Indicates that the Store Type supports store creation |
+   | Needs Server | ✅ Checked | Determines if a target server name is required when creating store |
+   | Blueprint Allowed | ✅ Checked | Determines if store type may be included in an Orchestrator blueprint |
+   | Uses PowerShell | 🔲 Unchecked | Determines if underlying implementation is PowerShell |
+   | Requires Store Password | ✅ Checked | Enables users to optionally specify a store password when defining a Certificate Store. |
+   | Supports Entry Password | 🔲 Unchecked | Determines if an individual entry within a store can have a password. |
+
+   The Basic tab should look like this:
+
+   ![F5-PF-REST Basic Tab](docsource/images/F5-PF-REST-basic-store-type-dialog.svg)
+
+   ##### Advanced Tab
+   | Attribute | Value | Description |
+   | --------- | ----- | ----- |
+   | Supports Custom Alias | Required | Determines if an individual entry within a store can have a custom Alias. |
+   | Private Key Handling | Required | This determines if Keyfactor can send the private key associated with a certificate to the store. |
+   | PFX Password Style | Default | 'Default' - PFX password is randomly generated, 'Custom' - PFX password may be specified when the enrollment job is created (Requires the Allow Custom Password application setting to be enabled.) |
+
+   The Advanced tab should look like this:
+
+   ![F5-PF-REST Advanced Tab](docsource/images/F5-PF-REST-advanced-store-type-dialog.svg)
+
+   > For Keyfactor **Command versions 24.4 and later**, a Certificate Format dropdown is available with PFX and PEM options. Ensure that **PFX** is selected, as this determines the format of new and renewed certificates sent to the Orchestrator during a Management job. Currently, all Keyfactor-supported Orchestrator extensions support only PFX.
+
+   ##### Custom Fields Tab
+   Custom fields operate at the certificate store level and are used to control how the orchestrator connects to the remote target server containing the certificate store to be managed. The following custom fields should be added to the store type:
+
+   | Name | Display Name | Description | Type | Default Value/Options | Required |
+   | ---- | ------------ | ---- | --------------------- | -------- | ----------- |
+   | RemoveChain | Remove Chain on Add | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. | Bool | False | 🔲 Unchecked |
+   | IgnoreSSLWarning | Ignore SSL Warning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. | Bool | False | ✅ Checked |
+   | UseTokenAuth | Use Token Authentication | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. | Bool | false | ✅ Checked |
+   | ServerUsername | Server Username | Login credential for the F5 device.  MUST be an Admin account. | Secret |  | 🔲 Unchecked |
+   | ServerPassword | Server Password | Login password for the F5 device. | Secret |  | 🔲 Unchecked |
+   | ServerUseSsl | Use SSL | True if using https to access the F5 device. False if using http. | Bool | true | ✅ Checked |
+
+   The Custom Fields tab should look like this:
+
+   ![F5-PF-REST Custom Fields Tab](docsource/images/F5-PF-REST-custom-fields-store-type-dialog.svg)
+
+   ###### Remove Chain on Add
+   Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device.
+
+   ![F5-PF-REST Custom Field - RemoveChain](docsource/images/F5-PF-REST-custom-field-RemoveChain-dialog.svg)
+   ![F5-PF-REST Custom Field - RemoveChain](docsource/images/F5-PF-REST-custom-field-RemoveChain-validation-options-dialog.svg)
+
+
+   ###### Ignore SSL Warning
+   Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs.
+
+   ![F5-PF-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-PF-REST-custom-field-IgnoreSSLWarning-dialog.svg)
+   ![F5-PF-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-PF-REST-custom-field-IgnoreSSLWarning-validation-options-dialog.svg)
+
+
+   ###### Use Token Authentication
+   Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests.
+
+   ![F5-PF-REST Custom Field - UseTokenAuth](docsource/images/F5-PF-REST-custom-field-UseTokenAuth-dialog.svg)
+   ![F5-PF-REST Custom Field - UseTokenAuth](docsource/images/F5-PF-REST-custom-field-UseTokenAuth-validation-options-dialog.svg)
+
+
+   ###### Server Username
+   Login credential for the F5 device.  MUST be an Admin account.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+   ###### Server Password
+   Login password for the F5 device.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+   ###### Use SSL
+   True if using https to access the F5 device. False if using http.
+
+   ![F5-PF-REST Custom Field - ServerUseSsl](docsource/images/F5-PF-REST-custom-field-ServerUseSsl-dialog.svg)
+   ![F5-PF-REST Custom Field - ServerUseSsl](docsource/images/F5-PF-REST-custom-field-ServerUseSsl-validation-options-dialog.svg)
 
 
    </details>
@@ -650,7 +802,7 @@ the Keyfactor Command Portal
 
 ## Defining Certificate Stores
 
-The F5 Universal Orchestrator extension implements 3 Certificate Store Types, each of which implements different functionality. Refer to the individual instructions below for each Certificate Store Type that you deemed necessary for your use case from the installation section.
+The F5 Universal Orchestrator extension implements 4 Certificate Store Types, each of which implements different functionality. Refer to the individual instructions below for each Certificate Store Type that you deemed necessary for your use case from the installation section.
 
 <details><summary>F5 SSL Profiles REST (F5-SL-REST)</summary>
 
@@ -729,6 +881,99 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
 
     ```shell
     kfutil stores import csv --store-type-name F5-SL-REST --file F5-SL-REST.csv
+    ```
+
+</details>
+
+#### PAM Provider Eligible Fields
+<details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
+
+If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
+
+   | Attribute | Description |
+   | --------- | ----------- |
+   | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
+   | ServerPassword | Login password for the F5 device. |
+   | StorePassword | Password to use when reading/writing to store |
+
+Please refer to the **Universal Orchestrator (remote)** usage section ([PAM providers on the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam)) for your selected PAM provider for instructions on how to load attributes orchestrator-side.
+> Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself.
+
+</details>
+
+> The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
+
+</details>
+
+<details><summary>F5 Profiles REST (F5-PF-REST)</summary>
+
+TODO Global Store Type Section is an optional section. If this section doesn't seem necessary, please delete it.
+
+TODO Certificate Store Configuration is an optional section. If this section doesn't seem necessary, please delete it.
+
+### Store Creation
+
+#### Manually with the Command UI
+
+<details><summary>Click to expand details</summary>
+
+1. **Navigate to the _Certificate Stores_ page in Keyfactor Command.**
+
+    Log into Keyfactor Command, toggle the _Locations_ dropdown, and click _Certificate Stores_.
+
+2. **Add a Certificate Store.**
+
+    Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
+
+   | Attribute | Description |
+   | --------- | ----------- |
+   | Category | Select "F5 Profiles REST" or the customized certificate store name from the previous step. |
+   | Container | Optional container to associate certificate store with. |
+   | Client Machine | The server name or IP Address for the F5 device. |
+   | Store Path | Enter the store path in the form 'Partition\ProfileName\ProfileType\InheritedProfile', delimited by the backslash (\) character. Partition and Profile Name are case sensitive. ProfileType must be either "Client" or "Server". InheritedProfile is optional; if omitted, F5 default logic will be used. |
+   | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
+   | Orchestrator | Select an approved orchestrator capable of managing `F5-PF-REST` certificates. Specifically, one with the `F5-PF-REST` capability. |
+   | RemoveChain | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. |
+   | IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
+   | UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
+   | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
+   | ServerPassword | Login password for the F5 device. |
+   | ServerUseSsl | True if using https to access the F5 device. False if using http. |
+
+</details>
+
+#### Using kfutil CLI
+
+<details><summary>Click to expand details</summary>
+
+1. **Generate a CSV template for the F5-PF-REST certificate store**
+
+    ```shell
+    kfutil stores import generate-template --store-type-name F5-PF-REST --outpath F5-PF-REST.csv
+    ```
+2. **Populate the generated CSV file**
+
+    Open the CSV file, and reference the table below to populate parameters for each **Attribute**.
+
+   | Attribute | Description |
+   | --------- | ----------- |
+   | Category | Select "F5 Profiles REST" or the customized certificate store name from the previous step. |
+   | Container | Optional container to associate certificate store with. |
+   | Client Machine | The server name or IP Address for the F5 device. |
+   | Store Path | Enter the store path in the form 'Partition\ProfileName\ProfileType\InheritedProfile', delimited by the backslash (\) character. Partition and Profile Name are case sensitive. ProfileType must be either "Client" or "Server". InheritedProfile is optional; if omitted, F5 default logic will be used. |
+   | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
+   | Orchestrator | Select an approved orchestrator capable of managing `F5-PF-REST` certificates. Specifically, one with the `F5-PF-REST` capability. |
+   | Properties.RemoveChain | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. |
+   | Properties.IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
+   | Properties.UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
+   | Properties.ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
+   | Properties.ServerPassword | Login password for the F5 device. |
+   | Properties.ServerUseSsl | True if using https to access the F5 device. False if using http. |
+
+3. **Import the CSV file to create the certificate stores**
+
+    ```shell
+    kfutil stores import csv --store-type-name F5-PF-REST --file F5-PF-REST.csv
     ```
 
 </details>
@@ -962,6 +1207,11 @@ First, in Keyfactor Command navigate to Certificate Locations =\> Certificate St
 - **Directories to ignore/Extensions/File name patterns to match/Follow SymLinks/Include PKCS12 Files** - Not used.  Leave blank.
 
 Once the Discovery job has completed, a list of F5 certificate store locations should show in the Certificate Stores Discovery tab in Keyfactor Command. Right click on a store and select Approve to bring up a dialog that will ask for the remaining necessary certificate store parameters described in Step 2a.  Complete those and click Save, and the Certificate Store should now show up in the list of stores in the Certificate Stores tab.
+
+### F5 Profiles REST Discovery Job
+
+TODO Global Store Type Section is an optional section. If this section doesn't seem necessary, please delete it.
+TODO Discovery Job Configuration is an optional section. If this section doesn't seem necessary, please delete it.
 
 
 ## Syncing To Device Group

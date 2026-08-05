@@ -202,15 +202,6 @@ curl -s -X POST "https://${KEYFACTOR_HOSTNAME}/${KEYFACTOR_API_PATH}/Certificate
   },
   "Properties": [
     {
-      "Name": "RemoveChain",
-      "DisplayName": "Remove Chain on Add",
-      "Type": "Bool",
-      "DependsOn": "",
-      "DefaultValue": "False",
-      "Required": false,
-      "Description": "Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device."
-    },
-    {
       "Name": "IgnoreSSLWarning",
       "DisplayName": "Ignore SSL Warning",
       "Type": "Bool",

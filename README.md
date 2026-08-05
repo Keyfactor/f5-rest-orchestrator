@@ -363,7 +363,6 @@ the Keyfactor Command Portal
 
    | Name | Display Name | Description | Type | Default Value/Options | Required |
    | ---- | ------------ | ---- | --------------------- | -------- | ----------- |
-   | RemoveChain | Remove Chain on Add | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. | Bool | False | 🔲 Unchecked |
    | IgnoreSSLWarning | Ignore SSL Warning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. | Bool | False | ✅ Checked |
    | UseTokenAuth | Use Token Authentication | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. | Bool | false | ✅ Checked |
    | ServerUsername | Server Username | Login credential for the F5 device.  MUST be an Admin account. | Secret |  | 🔲 Unchecked |
@@ -373,13 +372,6 @@ the Keyfactor Command Portal
    The Custom Fields tab should look like this:
 
    ![F5-PF-REST Custom Fields Tab](docsource/images/F5-PF-REST-custom-fields-store-type-dialog.svg)
-
-   ###### Remove Chain on Add
-   Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device.
-
-   ![F5-PF-REST Custom Field - RemoveChain](docsource/images/F5-PF-REST-custom-field-RemoveChain-dialog.svg)
-   ![F5-PF-REST Custom Field - RemoveChain](docsource/images/F5-PF-REST-custom-field-RemoveChain-validation-options-dialog.svg)
-
 
    ###### Ignore SSL Warning
    Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs.
@@ -933,7 +925,6 @@ TODO Certificate Store Configuration is an optional section. If this section doe
    | Store Path | Enter the store path in the form 'Partition\ProfileName\ProfileType\InheritedProfile', delimited by the backslash (\) character. Partition and Profile Name are case sensitive. ProfileType must be either "Client" or "Server". InheritedProfile is optional; if omitted, F5 default logic will be used. |
    | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
    | Orchestrator | Select an approved orchestrator capable of managing `F5-PF-REST` certificates. Specifically, one with the `F5-PF-REST` capability. |
-   | RemoveChain | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. |
    | IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
    | UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
    | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
@@ -963,7 +954,6 @@ TODO Certificate Store Configuration is an optional section. If this section doe
    | Store Path | Enter the store path in the form 'Partition\ProfileName\ProfileType\InheritedProfile', delimited by the backslash (\) character. Partition and Profile Name are case sensitive. ProfileType must be either "Client" or "Server". InheritedProfile is optional; if omitted, F5 default logic will be used. |
    | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
    | Orchestrator | Select an approved orchestrator capable of managing `F5-PF-REST` certificates. Specifically, one with the `F5-PF-REST` capability. |
-   | Properties.RemoveChain | Optional setting.  Set this to true if you would like to remove the certificate chain before adding or replacing a certificate on your F5 device. |
    | Properties.IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
    | Properties.UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
    | Properties.ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |

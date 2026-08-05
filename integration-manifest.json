@@ -182,7 +182,7 @@
                     "PowerShell": false,
                     "PrivateKeyAllowed": "Required",
                     "ClientMachineDescription": "The server name or IP Address for the F5 device.",
-                    "StorePathDescription": "Enter the store path in the form 'Partition\\ProfileName\\ProfileType\\InheritedProfile', delimited by the backslash (\\) character. Partition and Profile Name are case sensitive. ProfileType must be either \"Client\" or \"Server\". InheritedProfile is optional; if omitted, F5 default logic will be used.",
+                    "StorePathDescription": "Enter the store path in the form 'Partition/ProfileName/ProfileType/InheritedProfile', delimited by the forward slash (/) character. Partition and Profile Name are case sensitive. ProfileType must be either \"Client\" or \"Server\". InheritedProfile is optional; if omitted, F5 default logic will be used.",
                     "SupportedOperations": {
                         "Add": true,
                         "Create": true,

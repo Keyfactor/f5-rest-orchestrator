@@ -552,14 +552,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             return pathParts[0];
         }
 
-        // Parses a Profile store path in the form 'Partition\ProfileName\ProfileType[\InheritedProfile]'
+        // Parses a Profile store path in the form 'Partition/ProfileName/ProfileType[/InheritedProfile]'
         public F5ProfileStorePath ParseProfileStorePath()
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "ParseProfileStorePath");
-            string[] pathParts = CertificateStore.StorePath.Split('\\');
+            string[] pathParts = CertificateStore.StorePath.Split('/');
             if (pathParts.Length < 3 || pathParts.Length > 4)
             {
-                throw new Exception($"The store path '{CertificateStore.StorePath}' is invalid. Expecting 'Partition\\ProfileName\\ProfileType' or 'Partition\\ProfileName\\ProfileType\\InheritedProfile'.");
+                throw new Exception($"The store path '{CertificateStore.StorePath}' is invalid. Expecting 'Partition/ProfileName/ProfileType' or 'Partition/ProfileName/ProfileType/InheritedProfile'.");
             }
 
             F5ProfileStorePath profileStorePath = new F5ProfileStorePath

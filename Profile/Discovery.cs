@@ -70,8 +70,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
                             }
 
                             string location = string.IsNullOrEmpty(inheritedProfile)
-                                ? $"{partition}\\{profile.name}\\{profileType}"
-                                : $"{partition}\\{profile.name}\\{profileType}\\{inheritedProfile}";
+                                ? $"{partition}/{profile.name}/{profileType}"
+                                : $"{partition}/{profile.name}/{profileType}/{inheritedProfile}";
                             locations.Add(location);
                         }
                     }

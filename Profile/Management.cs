@@ -14,9 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Keyfactor.Orchestrators.Extensions.Interfaces;
-using Org.BouncyCastle.Pkcs;
-using Org.BouncyCastle.Security;
-using System.IO;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
 {
@@ -76,7 +73,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
                         break;
                     case CertStoreOperationType.Add:
                         LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, $"Add entry '{config.JobCertificate.Alias}' to '{config.CertificateStoreDetails.StorePath}'");
-                        PerformAddJob(f5, partition, StorePassword, RemoveChain);
+                        PerformAddJob(f5, partition, StorePassword);
                         break;
                     case CertStoreOperationType.Remove:
                         LogHandlerCommon.Trace(logger, config.CertificateStoreDetails, $"Remove entry '{config.JobCertificate.Alias}' from '{config.CertificateStoreDetails.StorePath}'");
@@ -127,12 +124,12 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
             return null;
         }
 
-        private void PerformAddJob(F5Client f5, string partition, string certificatePassword, bool removeChain)
+        private void PerformAddJob(F5Client f5, string partition, string certificatePassword)
         {
             LogHandlerCommon.MethodEntry(logger, JobConfig.CertificateStoreDetails, "PerformAddJob");
             string name = JobConfig.JobCertificate.Alias;
 
-            string certContents = !string.IsNullOrEmpty(JobConfig.JobCertificate.PrivateKeyPassword) && removeChain ? RemoveCertificateChainFromPfx() : JobConfig.JobCertificate.Contents;
+            string certContents = JobConfig.JobCertificate.Contents;
             bool certificateExists = f5.CertificateExists(partition, name);
 
             if (certificateExists)
@@ -191,47 +188,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
 
             LogHandlerCommon.MethodExit(logger, JobConfig.CertificateStoreDetails, "PerformRemovalJob");
             return warningResult;
-        }
-
-        private string RemoveCertificateChainFromPfx()
-        {
-            string rtnValue = string.Empty;
-            char[] password = JobConfig.JobCertificate.PrivateKeyPassword.ToCharArray();
-
-            Pkcs12StoreBuilder storeBuilder = new Pkcs12StoreBuilder();
-            Pkcs12Store store = storeBuilder.Build();
-            store.Load(new MemoryStream(Convert.FromBase64String(JobConfig.JobCertificate.Contents)), password);
-
-            // Find the key entry (private key and its associated certificate)
-            string alias = null;
-            foreach (string currentAlias in store.Aliases)
-            {
-                if (store.IsKeyEntry(currentAlias))
-                {
-                    alias = currentAlias;
-                    break;
-                }
-            }
-
-            if (alias == null)
-                throw new Exception("No private key entry found in PFX.");
-
-            // Extract the private key and its associated certificate
-            AsymmetricKeyEntry keyEntry = store.GetKey(alias);
-            X509CertificateEntry certEntry = store.GetCertificate(alias);
-
-            // Create a new PKCS#12 store with only the main certificate and private key
-            Pkcs12Store newStore = storeBuilder.Build();
-            newStore.SetKeyEntry(alias, keyEntry, new[] { certEntry });
-
-            // Save the new PFX to a byte array
-            using (MemoryStream ms = new MemoryStream())
-            {
-                newStore.Save(ms, password, new SecureRandom());
-                rtnValue = Convert.ToBase64String(ms.ToArray());
-            }
-
-            return rtnValue;
         }
     }
 }

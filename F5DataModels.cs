@@ -194,11 +194,17 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string selfLink { get; set; }
     }
 
-    internal class F5ProfileStorePath
+    public class F5ProfileStorePath
     {
+        public enum ProfileTypeEnum
+        {
+            Client,
+            Server
+        }
+
         public string Partition { get; set; }
         public string ProfileName { get; set; }
-        public string ProfileType { get; set; }
+        public ProfileTypeEnum ProfileType { get; set; }
         public string InheritedProfile { get; set; }
     }
 

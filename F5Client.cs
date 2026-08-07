@@ -7,26 +7,27 @@
 // OR CONDITIONS OF ANY KIND, either express or implied. See the License for  
 // thespecific language governing permissions and limitations under the       
 // License. 
-﻿using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.Orchestrators.Common.Enums;
-using Keyfactor.PKI.X509;
+﻿using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.PKI.PEM;
+using Keyfactor.PKI.X509;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing.Printing;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
-
-using Newtonsoft.Json;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Drawing.Printing;
-using System.Diagnostics.CodeAnalysis;
+using static Keyfactor.Extensions.Orchestrator.F5Orchestrator.F5ProfileStorePath;
 using static Keyfactor.Orchestrators.Common.OrchestratorConstants;
 using static Org.BouncyCastle.Math.EC.ECCurve;
-using System.Reflection.Metadata;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
@@ -562,12 +563,18 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 throw new Exception($"The store path '{CertificateStore.StorePath}' is invalid. Expecting 'Partition\\ProfileName\\ProfileType' or 'Partition\\ProfileName\\ProfileType\\InheritedProfile'.");
             }
 
+            if (!Enum.TryParse<ProfileTypeEnum>(pathParts[2], ignoreCase: true, out var profileType) || 
+                !Enum.IsDefined(typeof(ProfileTypeEnum), profileType))
+            {
+                throw new Exception($"Invalid value for profile type: {pathParts[2]}");
+            }
+
             F5ProfileStorePath profileStorePath = new F5ProfileStorePath
             {
                 Partition = pathParts[0],
                 ProfileName = pathParts[1],
-                ProfileType = pathParts[2],
-                InheritedProfile = pathParts.Length == 4 ? pathParts[3].Replace($"/","~") : string.Empty
+                ProfileType = profileType,
+                InheritedProfile = pathParts.Length == 4 ? pathParts[3] : string.Empty
             };
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "ParseProfileStorePath");
@@ -771,9 +778,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         private const string CLIENT_SSL_ENDPOINT = "client-ssl";
         private const string SERVER_SSL_ENDPOINT = "server-ssl";
 
-        public static string GetProfileEndpoint(string profileType)
+        public static string GetProfileEndpoint(ProfileTypeEnum profileType)
         {
-            return profileType.Equals("Server", StringComparison.OrdinalIgnoreCase) ? SERVER_SSL_ENDPOINT : CLIENT_SSL_ENDPOINT;
+            return profileType == ProfileTypeEnum.Server ? SERVER_SSL_ENDPOINT : CLIENT_SSL_ENDPOINT;
         }
 
         public bool ProfileExists(string partition, string profileEndpoint, string profileName)
@@ -783,7 +790,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             try
             {
-                string query = $"/mgmt/tm/ltm/profile/{profileEndpoint}/~{profileName}";
+                string query = $"/mgmt/tm/ltm/profile/{profileEndpoint}/~{profileName.Replace($"/","~")}";
                 F5SSLProfile profile = REST.Get<F5SSLProfile>(query);
                 exists = (profile != null);
             }
@@ -807,7 +814,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             string defaultsFrom = null;
             if (!string.IsNullOrEmpty(inheritedProfile) && ProfileExists(partition, profileEndpoint, inheritedProfile))
             {
-                defaultsFrom = $"/~{inheritedProfile}";
+                defaultsFrom = $"/{inheritedProfile}";
             }
 
             F5ProfileCreate profile = new F5ProfileCreate

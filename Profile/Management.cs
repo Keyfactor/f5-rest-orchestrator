@@ -20,7 +20,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
     public class Management : ManagementBase
     {
         protected string ProfileName { get; set; }
-        protected string ProfileType { get; set; }
+        protected F5ProfileStorePath.ProfileTypeEnum ProfileType { get; set; }
         protected string ProfileEndpoint { get; set; }
         protected string InheritedProfile { get; set; }
 

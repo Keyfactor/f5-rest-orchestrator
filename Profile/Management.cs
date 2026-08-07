@@ -118,6 +118,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Warning, JobHistoryId = JobConfig.JobHistoryId, FailureMessage = message };
             }
 
+            if (!string.IsNullOrEmpty(InheritedProfile) && !f5.ProfileExists(partition, ProfileEndpoint, InheritedProfile))
+            {
+                string message = $"The inherited profile '{InheritedProfile}' does not exist in partition '{partition}' - no action was taken.";
+                LogHandlerCommon.Error(logger, JobConfig.CertificateStoreDetails, message);
+                LogHandlerCommon.MethodExit(logger, JobConfig.CertificateStoreDetails, "PerformCreateJob");
+                return new JobResult { Result = OrchestratorJobStatusJobResult.Failure, JobHistoryId = JobConfig.JobHistoryId, FailureMessage = message };
+            }
+
             f5.CreateProfile(partition, ProfileEndpoint, ProfileName, InheritedProfile);
 
             LogHandlerCommon.MethodExit(logger, JobConfig.CertificateStoreDetails, "PerformCreateJob");

@@ -811,11 +811,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "CreateProfile");
 
-            string defaultsFrom = null;
-            if (!string.IsNullOrEmpty(inheritedProfile) && ProfileExists(partition, profileEndpoint, inheritedProfile))
-            {
-                defaultsFrom = $"/{inheritedProfile}";
-            }
+            string defaultsFrom = string.IsNullOrEmpty(inheritedProfile) ? null : $"/{inheritedProfile}";
 
             F5ProfileCreate profile = new F5ProfileCreate
             {

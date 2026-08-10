@@ -208,13 +208,13 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             return exists;
         }
 
-        public void BindCertificate(string alias, string sslProfile)
+        public void BindCertificate(string alias, string sslProfile, string certificatePassword)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "BindCertificate");
 
             try
             {
-                F5Binding binding = new F5Binding { cert = $"{alias}", key = $"{alias}", chain = $"{alias}" };
+                F5Binding binding = new F5Binding { cert = $"{alias}", key = $"{alias}", chain = $"{alias}", passphrase = $"{certificatePassword}" };
                 REST.Patch<F5Binding>($"/mgmt/tm/ltm/profile/client-ssl/{sslProfile}", binding);
             }
 
@@ -876,11 +876,11 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         }
 
         // Bind a certificate/key (and matching chain) already installed in the given partition to the named profile
-        public void BindCertificateToProfile(string partition, string profileEndpoint, string profileName, string alias)
+        public void BindCertificateToProfile(string partition, string profileEndpoint, string profileName, string alias, string certificatePassword)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "BindCertificateToProfile");
 
-            F5Binding binding = new F5Binding { cert = alias, key = alias, chain = alias };
+            F5Binding binding = new F5Binding { cert = alias, key = alias, chain = alias, passphrase = certificatePassword };
             REST.Patch<F5Binding>($"/mgmt/tm/ltm/profile/{profileEndpoint}/~{partition}~{profileName}", binding);
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "BindCertificateToProfile");

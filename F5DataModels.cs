@@ -146,6 +146,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string cert { get; set; }
         public string key { get; set; }
         public string chain { get; set; }
+        public string passphrase { get; set; }
     }
 
     internal class F5ProfileCreate

@@ -62,16 +62,20 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
 
                         foreach (F5SSLProfile profile in profiles)
                         {
-                            string inheritedProfile = string.Empty;
-                            if (!string.IsNullOrEmpty(profile.defaultsFrom))
+                            if (profile.defaultsFrom.Substring(0,1) == $"/")
                             {
-                                string[] inheritedParts = profile.defaultsFrom.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                                inheritedProfile = inheritedParts[inheritedParts.Length - 1];
+                                profile.defaultsFrom = profile.defaultsFrom.Substring(1);
                             }
+                            //string inheritedProfile = string.Empty;
+                            //if (!string.IsNullOrEmpty(profile.defaultsFrom))
+                            //{
+                            //    string[] inheritedParts = profile.defaultsFrom.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                            //    inheritedProfile = inheritedParts[inheritedParts.Length - 1];
+                            //}
 
-                            string location = string.IsNullOrEmpty(inheritedProfile)
+                            string location = string.IsNullOrEmpty(profile.defaultsFrom)
                                 ? $"{partition}\\{profile.name}\\{profileType}"
-                                : $"{partition}\\{profile.name}\\{profileType}\\{inheritedProfile}";
+                                : $"{partition}\\{profile.name}\\{profileType}\\{profile.defaultsFrom}";
                             locations.Add(location);
                         }
                     }

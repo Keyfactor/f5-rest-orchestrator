@@ -160,7 +160,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
             }
 
             LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Binding '{name}' to profile '{ProfileName}'");
-            f5.BindCertificateToProfile(partition, ProfileEndpoint, ProfileName, name, certificatePassword);
+            f5.BindCertificateToProfile(partition, ProfileEndpoint, ProfileName, name, certificatePassword, certificateExists);
 
             LogHandlerCommon.MethodExit(logger, JobConfig.CertificateStoreDetails, "PerformAddJob");
         }

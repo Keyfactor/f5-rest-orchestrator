@@ -876,12 +876,15 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         }
 
         // Bind a certificate/key (and matching chain) already installed in the given partition to the named profile
-        public void BindCertificateToProfile(string partition, string profileEndpoint, string profileName, string alias, string certificatePassword)
+        public void BindCertificateToProfile(string partition, string profileEndpoint, string profileName, string alias, string certificatePassword, bool certificateExists)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "BindCertificateToProfile");
 
             F5Binding binding = new F5Binding { cert = alias, key = alias, chain = alias, passphrase = certificatePassword };
-            REST.Patch<F5Binding>($"/mgmt/tm/ltm/profile/{profileEndpoint}/~{partition}~{profileName}", binding);
+            if (certificateExists) 
+                REST.Patch<F5Binding>($"/mgmt/tm/ltm/profile/{profileEndpoint}/~{partition}~{profileName}", binding);
+            else
+                REST.Post<F5Binding>($"/mgmt/tm/ltm/profile/{profileEndpoint}/~{partition}~{profileName}", JsonConvert.SerializeObject(binding));
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "BindCertificateToProfile");
         }

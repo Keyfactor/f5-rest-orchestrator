@@ -336,6 +336,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 utilCmdArgs = $"-c 'cat {path} | base64'"
             });
 
+            if (crt.Length < 80 || crt.Contains("no such file", StringComparison.OrdinalIgnoreCase))
+                return new X509Certificate2Collection();
+
             byte[] crtBytes;
             switch (crt.Substring(0, 1))
             {
@@ -881,10 +884,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "BindCertificateToProfile");
 
             F5Binding binding = new F5Binding { cert = alias, key = alias, chain = alias, passphrase = certificatePassword };
-            if (certificateExists) 
-                REST.Patch<F5Binding>($"/mgmt/tm/ltm/profile/{profileEndpoint}/~{partition}~{profileName}", binding);
-            else
-                REST.Post<F5Binding>($"/mgmt/tm/ltm/profile/{profileEndpoint}/~{partition}~{profileName}", JsonConvert.SerializeObject(binding));
+            REST.Patch<F5Binding>($"/mgmt/tm/ltm/profile/{profileEndpoint}/~{partition}~{profileName}", binding);
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "BindCertificateToProfile");
         }
@@ -896,7 +896,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             List<CurrentInventoryItem> inventory = new List<CurrentInventoryItem>();
 
             string alias = GetBoundCertificateAlias(partition, profileEndpoint, profileName);
-            if (string.IsNullOrEmpty(alias) || alias.Equals("default.crt", StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrEmpty(alias) || alias.Equals("none", StringComparison.OrdinalIgnoreCase))
             {
                 LogHandlerCommon.Trace(logger, CertificateStore, $"Profile '{profileName}' in partition '{partition}' has no certificate bound");
                 LogHandlerCommon.MethodExit(logger, CertificateStore, "GetProfileCertificateInventory");

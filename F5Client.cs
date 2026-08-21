@@ -560,7 +560,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public F5ProfileStorePath ParseProfileStorePath()
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "ParseProfileStorePath");
-            string[] pathParts = CertificateStore.StorePath.Split('\\');
+            string[] pathParts = CertificateStore.StorePath.Split('/');
             if (pathParts.Length < 3 || pathParts.Length > 4)
             {
                 throw new Exception($"The store path '{CertificateStore.StorePath}' is invalid. Expecting 'Partition\\ProfileName\\ProfileType' or 'Partition\\ProfileName\\ProfileType\\InheritedProfile'.");

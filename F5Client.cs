@@ -577,7 +577,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 Partition = pathParts[0],
                 ProfileName = pathParts[1],
                 ProfileType = profileType,
-                InheritedProfile = pathParts.Length == 4 ? pathParts[3] : string.Empty
             };
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "ParseProfileStorePath");

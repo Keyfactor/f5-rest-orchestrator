@@ -22,7 +22,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
         protected string ProfileName { get; set; }
         protected F5ProfileStorePath.ProfileTypeEnum ProfileType { get; set; }
         protected string ProfileEndpoint { get; set; }
-        protected string InheritedProfile { get; set; }
 
         public Management(IPAMSecretResolver resolver)
         {
@@ -62,7 +61,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
                 ProfileName = profileStorePath.ProfileName;
                 ProfileType = profileStorePath.ProfileType;
                 ProfileEndpoint = F5Client.GetProfileEndpoint(ProfileType);
-                InheritedProfile = profileStorePath.InheritedProfile;
                 JobResult warningResult = null;
 
                 switch (config.OperationType)

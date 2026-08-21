@@ -206,7 +206,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string Partition { get; set; }
         public string ProfileName { get; set; }
         public ProfileTypeEnum ProfileType { get; set; }
-        public string InheritedProfile { get; set; }
     }
 
     public class SyncRequest

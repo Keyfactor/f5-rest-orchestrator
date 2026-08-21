@@ -220,6 +220,15 @@ curl -s -X POST "https://${KEYFACTOR_HOSTNAME}/${KEYFACTOR_API_PATH}/Certificate
       "Description": "Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests."
     },
     {
+      "Name": "InheritedProfile",
+      "DisplayName": "Profile to Inherit",
+      "Type": "String",
+      "DependsOn": "",
+      "DefaultValue": "",
+      "Required": false,
+      "Description": "The optional fully qualified name of the profile you want this profile to inherit settings from in {Partition}/{ProfileName} format.  If left blank, the default profile for the profile type will be used."
+    },
+    {
       "Name": "ServerUsername",
       "DisplayName": "Server Username",
       "Type": "Secret",

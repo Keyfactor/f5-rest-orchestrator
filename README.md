@@ -365,6 +365,7 @@ the Keyfactor Command Portal
    | ---- | ------------ | ---- | --------------------- | -------- | ----------- |
    | IgnoreSSLWarning | Ignore SSL Warning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. | Bool | False | ✅ Checked |
    | UseTokenAuth | Use Token Authentication | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. | Bool | false | ✅ Checked |
+   | InheritedProfile | Profile to Inherit | The optional fully qualified name of the profile you want this profile to inherit settings from in {Partition}/{ProfileName} format.  If left blank, the default profile for the profile type will be used. | String |  | 🔲 Unchecked |
    | ServerUsername | Server Username | Login credential for the F5 device.  MUST be an Admin account. | Secret |  | 🔲 Unchecked |
    | ServerPassword | Server Password | Login password for the F5 device. | Secret |  | 🔲 Unchecked |
    | ServerUseSsl | Use SSL | True if using https to access the F5 device. False if using http. | Bool | true | ✅ Checked |
@@ -385,6 +386,13 @@ the Keyfactor Command Portal
 
    ![F5-PF-REST Custom Field - UseTokenAuth](docsource/images/F5-PF-REST-custom-field-UseTokenAuth-dialog.svg)
    ![F5-PF-REST Custom Field - UseTokenAuth](docsource/images/F5-PF-REST-custom-field-UseTokenAuth-validation-options-dialog.svg)
+
+
+   ###### Profile to Inherit
+   The optional fully qualified name of the profile you want this profile to inherit settings from in {Partition}/{ProfileName} format.  If left blank, the default profile for the profile type will be used.
+
+   ![F5-PF-REST Custom Field - InheritedProfile](docsource/images/F5-PF-REST-custom-field-InheritedProfile-dialog.svg)
+   ![F5-PF-REST Custom Field - InheritedProfile](docsource/images/F5-PF-REST-custom-field-InheritedProfile-validation-options-dialog.svg)
 
 
    ###### Server Username
@@ -927,6 +935,7 @@ TODO Certificate Store Configuration is an optional section. If this section doe
    | Orchestrator | Select an approved orchestrator capable of managing `F5-PF-REST` certificates. Specifically, one with the `F5-PF-REST` capability. |
    | IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
    | UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
+   | InheritedProfile | The optional fully qualified name of the profile you want this profile to inherit settings from in {Partition}/{ProfileName} format.  If left blank, the default profile for the profile type will be used. |
    | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
    | ServerPassword | Login password for the F5 device. |
    | ServerUseSsl | True if using https to access the F5 device. False if using http. |
@@ -956,6 +965,7 @@ TODO Certificate Store Configuration is an optional section. If this section doe
    | Orchestrator | Select an approved orchestrator capable of managing `F5-PF-REST` certificates. Specifically, one with the `F5-PF-REST` capability. |
    | Properties.IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
    | Properties.UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
+   | Properties.InheritedProfile | The optional fully qualified name of the profile you want this profile to inherit settings from in {Partition}/{ProfileName} format.  If left blank, the default profile for the profile type will be used. |
    | Properties.ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
    | Properties.ServerPassword | Login password for the F5 device. |
    | Properties.ServerUseSsl | True if using https to access the F5 device. False if using http. |

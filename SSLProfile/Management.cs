@@ -65,7 +65,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
                         LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, $"Add entry '{config.JobCertificate.Alias}' to '{config.CertificateStoreDetails.StorePath}'");
                         bool certificateExists = PerformAddJob(f5, StorePassword, RemoveChain);
                         if (!certificateExists && !string.IsNullOrEmpty(sslProfiles))
-                            BindCertificateToSSLProfiles(f5, config.JobCertificate.Alias, sslProfiles);
+                            BindCertificateToSSLProfiles(f5, config.JobCertificate.Alias, sslProfiles, StorePassword);
                         if (SyncDevice)
                             f5.SyncDevice(SyncDeviceGroup);
                         break;
@@ -192,7 +192,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             return rtnValue;
         }
 
-        private void BindCertificateToSSLProfiles(F5Client f5, string alias, string sslProfiles)
+        private void BindCertificateToSSLProfiles(F5Client f5, string alias, string sslProfiles, string certificatePassword)
         {
             bool hasError = false;
             string errorMessages = string.Empty;
@@ -201,7 +201,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             {
                 try
                 {
-                    f5.BindCertificate(alias, sslProfile);
+                    f5.BindCertificate(alias, sslProfile, certificatePassword);
                 }
                 catch (Exception ex)
                 {

@@ -561,22 +561,22 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "ParseProfileStorePath");
             string[] pathParts = CertificateStore.StorePath.Split('/');
-            if (pathParts.Length < 3 || pathParts.Length > 4)
+            if (pathParts.Length != 3)
             {
-                throw new Exception($"The store path '{CertificateStore.StorePath}' is invalid. Expecting 'Partition\\ProfileName\\ProfileType' or 'Partition\\ProfileName\\ProfileType\\InheritedProfile'.");
+                throw new Exception($"The store path '{CertificateStore.StorePath}' is invalid. Expecting 'Partition\\ProfileType\\ProfileName'");
             }
 
-            if (!Enum.TryParse<ProfileTypeEnum>(pathParts[2], ignoreCase: true, out var profileType) || 
+            if (!Enum.TryParse<ProfileTypeEnum>(pathParts[1], ignoreCase: true, out var profileType) || 
                 !Enum.IsDefined(typeof(ProfileTypeEnum), profileType))
             {
-                throw new Exception($"Invalid value for profile type: {pathParts[2]}");
+                throw new Exception($"Invalid value for profile type: {pathParts[1]}");
             }
 
             F5ProfileStorePath profileStorePath = new F5ProfileStorePath
             {
                 Partition = pathParts[0],
-                ProfileName = pathParts[1],
                 ProfileType = profileType,
+                ProfileName = pathParts[2],
             };
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "ParseProfileStorePath");

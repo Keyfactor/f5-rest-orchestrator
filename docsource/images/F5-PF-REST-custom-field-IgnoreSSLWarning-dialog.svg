@@ -44,7 +44,7 @@
   <text x="20" y="360" class="label">Depends On</text>
   <rect x="20" y="373" width="15" height="15" fill="#ffffff" stroke="#cccccc" rx="2" />
   <rect x="43" y="363" width="637" height="36" fill="#e8e8e8" stroke="#cccccc" rx="4" />
-  <text x="53" y="388" class="value">Use Token Authentication</text>
+  <text x="53" y="388" class="value">Primary Node</text>
   <text x="666" y="389" font-size="12" fill="#666666" font-family="'Segoe UI', Arial, sans-serif">∨</text>
   <line x1="0" y1="415" x2="700" y2="415" stroke="#e0e0e0" stroke-width="1" />
   <rect x="500" y="427" width="90" height="36" fill="#ffffff" stroke="#cccccc" rx="4" />

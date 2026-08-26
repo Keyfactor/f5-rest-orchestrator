@@ -202,6 +202,42 @@ curl -s -X POST "https://${KEYFACTOR_HOSTNAME}/${KEYFACTOR_API_PATH}/Certificate
   },
   "Properties": [
     {
+      "Name": "PrimaryNode",
+      "DisplayName": "Primary Node",
+      "Type": "String",
+      "DependsOn": "PrimaryNodeOnlineRequired",
+      "DefaultValue": "",
+      "Required": true,
+      "Description": "Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive."
+    },
+    {
+      "Name": "PrimaryNodeCheckRetryWaitSecs",
+      "DisplayName": "Primary Node Check Retry Wait Seconds",
+      "Type": "String",
+      "DependsOn": "PrimaryNodeOnlineRequired",
+      "DefaultValue": "120",
+      "Required": true,
+      "Description": "Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive."
+    },
+    {
+      "Name": "PrimaryNodeCheckRetryMax",
+      "DisplayName": "Primary Node Check Retry Maximum",
+      "Type": "String",
+      "DependsOn": "PrimaryNodeOnlineRequired",
+      "DefaultValue": "3",
+      "Required": true,
+      "Description": "Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing."
+    },
+    {
+      "Name": "PrimaryNodeOnlineRequired",
+      "DisplayName": "Primary Node Online Required",
+      "Type": "Bool",
+      "DependsOn": "",
+      "DefaultValue": "",
+      "Required": true,
+      "Description": "Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed."
+    },
+    {
       "Name": "IgnoreSSLWarning",
       "DisplayName": "Ignore SSL Warning",
       "Type": "Bool",
@@ -438,6 +474,15 @@ curl -s -X POST "https://${KEYFACTOR_HOSTNAME}/${KEYFACTOR_API_PATH}/Certificate
       "DefaultValue": "",
       "Required": true,
       "Description": "Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed."
+    },
+    {
+      "Name": "InheritedProfile",
+      "DisplayName": "Profile to Inherit",
+      "Type": "String",
+      "DependsOn": "",
+      "DefaultValue": "",
+      "Required": false,
+      "Description": "Optional value representing an existing SSL Profile to inherit settings from during a Management-Create job.  Value must be in Partition/SSLProfileName format.  Profile must be the same type as the one being added and exist in the same partition or the Common partition."
     },
     {
       "Name": "IgnoreSSLWarning",

@@ -7,26 +7,27 @@
 // OR CONDITIONS OF ANY KIND, either express or implied. See the License for  
 // thespecific language governing permissions and limitations under the       
 // License. 
-﻿using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.Orchestrators.Common.Enums;
-using Keyfactor.PKI.X509;
+﻿using Keyfactor.Orchestrators.Extensions;
 using Keyfactor.PKI.PEM;
+using Keyfactor.PKI.X509;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing.Printing;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
-
-using Newtonsoft.Json;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Drawing.Printing;
-using System.Diagnostics.CodeAnalysis;
+using static Keyfactor.Extensions.Orchestrator.F5Orchestrator.F5ProfileStorePath;
 using static Keyfactor.Orchestrators.Common.OrchestratorConstants;
 using static Org.BouncyCastle.Math.EC.ECCurve;
-using System.Reflection.Metadata;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
@@ -42,6 +43,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         private const string INVALID_KEY_END_DELIM = ")";
         private const int MIN_VERSION_SUPPORTED = 14;
         private const string VERSION_DELIMITER = "?ver=";
+        private const int DEFAULT_PROFILE_PAGE_SIZE = 50;
 
         public CertificateStore CertificateStore { get; set; }
         public string ServerUserName { get; set; }
@@ -206,13 +208,13 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             return exists;
         }
 
-        public void BindCertificate(string alias, string sslProfile)
+        public void BindCertificate(string alias, string sslProfile, string certificatePassword)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "BindCertificate");
 
             try
             {
-                F5Binding binding = new F5Binding { cert = $"{alias}", key = $"{alias}", chain = $"{alias}" };
+                F5Binding binding = new F5Binding { cert = $"{alias}", key = $"{alias}", chain = $"{alias}", passphrase = $"{certificatePassword}" };
                 REST.Patch<F5Binding>($"/mgmt/tm/ltm/profile/client-ssl/{sslProfile}", binding);
             }
 
@@ -334,6 +336,9 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 utilCmdArgs = $"-c 'cat {path} | base64'"
             });
 
+            if (crt.Length < 80 || crt.Contains("no such file", StringComparison.OrdinalIgnoreCase))
+                return new X509Certificate2Collection();
+
             byte[] crtBytes;
             switch (crt.Substring(0, 1))
             {
@@ -372,9 +377,19 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
         public List<F5SSLProfile> GetSSLProfiles(int pageSize)
         {
+            return GetSSLProfiles(pageSize, "client-ssl");
+        }
+
+        public List<F5SSLProfile> GetSSLProfiles(int pageSize, string profileEndpoint)
+        {
+            return GetSSLProfiles(pageSize, profileEndpoint, null);
+        }
+
+        public List<F5SSLProfile> GetSSLProfiles(int pageSize, string profileEndpoint, string partition)
+        {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetSSLProfiles");
-            string partition = CertificateStore.StorePath;
-            string query = $"/mgmt/tm/ltm/profile/client-ssl?$top={pageSize}&$skip=0";
+            string partitionFilter = string.IsNullOrEmpty(partition) ? string.Empty : $"&$filter=partition+eq+{partition}";
+            string query = $"/mgmt/tm/ltm/profile/{profileEndpoint}?$top={pageSize}&$skip=0{partitionFilter}";
             F5PagedSSLProfiles pagedProfiles = REST.Get<F5PagedSSLProfiles>(query);
             List<F5SSLProfile> profiles = new List<F5SSLProfile>();
 
@@ -539,6 +554,33 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             if (pathParts.Length < 1) { throw new Exception($"The store path '{CertificateStore.StorePath}' does not appear to contain a partition"); }
             LogHandlerCommon.MethodExit(logger, CertificateStore, "GetPartitionFromStorePath");
             return pathParts[0];
+        }
+
+        // Parses a Profile store path in the form 'Partition\ProfileName\ProfileType[\InheritedProfile]'
+        public F5ProfileStorePath ParseProfileStorePath()
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "ParseProfileStorePath");
+            string[] pathParts = CertificateStore.StorePath.Split('/');
+            if (pathParts.Length != 3)
+            {
+                throw new Exception($"The store path '{CertificateStore.StorePath}' is invalid. Expecting 'Partition\\ProfileType\\ProfileName'");
+            }
+
+            if (!Enum.TryParse<ProfileTypeEnum>(pathParts[1], ignoreCase: true, out var profileType) || 
+                !Enum.IsDefined(typeof(ProfileTypeEnum), profileType))
+            {
+                throw new Exception($"Invalid value for profile type: {pathParts[1]}");
+            }
+
+            F5ProfileStorePath profileStorePath = new F5ProfileStorePath
+            {
+                Partition = pathParts[0],
+                ProfileType = profileType,
+                ProfileName = pathParts[2],
+            };
+
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "ParseProfileStorePath");
+            return profileStorePath;
         }
 
         // Infrastructure
@@ -731,6 +773,142 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         }
 
         // SSL Certificates
+        #endregion
+
+        #region SSL Profiles (Client/Server)
+
+        private const string CLIENT_SSL_ENDPOINT = "client-ssl";
+        private const string SERVER_SSL_ENDPOINT = "server-ssl";
+
+        public static string GetProfileEndpoint(ProfileTypeEnum profileType)
+        {
+            return profileType == ProfileTypeEnum.Server ? SERVER_SSL_ENDPOINT : CLIENT_SSL_ENDPOINT;
+        }
+
+        public bool ProfileExists(string partition, string profileEndpoint, string profileName)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "ProfileExists");
+            bool exists = false;
+
+            try
+            {
+                string query = $"/mgmt/tm/ltm/profile/{profileEndpoint}/~{profileName.Replace($"/","~")}";
+                F5SSLProfile profile = REST.Get<F5SSLProfile>(query);
+                exists = (profile != null);
+            }
+            catch (F5RESTException rex)
+            {
+                // A 404 will be returned if the profile is not found
+                if (rex.code != 404)
+                {
+                    throw;
+                }
+            }
+
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "ProfileExists");
+            return exists;
+        }
+
+        public void CreateProfile(string partition, string profileEndpoint, string profileName, string inheritedProfile)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "CreateProfile");
+
+            string defaultsFrom = string.IsNullOrEmpty(inheritedProfile) ? null : $"/{inheritedProfile}";
+
+            F5ProfileCreate profile = new F5ProfileCreate
+            {
+                name = profileName,
+                partition = partition,
+                defaultsFrom = defaultsFrom
+            };
+
+            REST.Post<F5SSLProfile>($"/mgmt/tm/ltm/profile/{profileEndpoint}", JsonConvert.SerializeObject(profile));
+
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "CreateProfile");
+        }
+
+        // Returns the certificate name (alias) currently bound to the profile represented by this store, or null if none bound
+        public string GetBoundCertificateAlias(string partition, string profileEndpoint, string profileName)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetBoundCertificateAlias");
+
+            string query = $"/mgmt/tm/ltm/profile/{profileEndpoint}/~{partition}~{profileName}";
+            F5SSLProfile profile = REST.Get<F5SSLProfile>(query);
+            string alias = null;
+            if (!string.IsNullOrEmpty(profile?.cert))
+            {
+                string[] certParts = profile.cert.Split('/');
+                alias = certParts[certParts.Length - 1];
+            }
+
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "GetBoundCertificateAlias");
+            return alias;
+        }
+
+        // Returns the names (partition/profile) of every client-ssl and server-ssl profile bound to the given certificate alias,
+        //  excluding the profile represented by this store definition (partition/excludeProfileName)
+        public List<string> GetProfilesBoundToCertificate(string partition, string alias, string excludeProfileName)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetProfilesBoundToCertificate");
+
+            string certName = $"/{partition}/{alias}";
+            List<string> boundProfiles = new List<string>();
+
+            foreach (string profileEndpoint in new[] { CLIENT_SSL_ENDPOINT, SERVER_SSL_ENDPOINT })
+            {
+                List<F5SSLProfile> profiles = GetSSLProfiles(DEFAULT_PROFILE_PAGE_SIZE, profileEndpoint);
+                boundProfiles.AddRange(profiles
+                    .Where(p => p.cert == certName && !(p.name.Equals(excludeProfileName, StringComparison.OrdinalIgnoreCase)))
+                    .Select(p => p.name));
+            }
+
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "GetProfilesBoundToCertificate");
+            return boundProfiles;
+        }
+
+        // Reset the profile's cert/key/chain binding back to F5's built-in default, effectively unbinding any custom certificate
+        public void UnbindCertificate(string partition, string profileEndpoint, string profileName)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "UnbindCertificate");
+
+            F5Binding binding = new F5Binding { cert = "/Common/default.crt", key = "/Common/default.key", chain = "none" };
+            REST.Patch<F5Binding>($"/mgmt/tm/ltm/profile/{profileEndpoint}/~{partition}~{profileName}", binding);
+
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "UnbindCertificate");
+        }
+
+        // Bind a certificate/key (and matching chain) already installed in the given partition to the named profile
+        public void BindCertificateToProfile(string partition, string profileEndpoint, string profileName, string alias, string certificatePassword, bool certificateExists)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "BindCertificateToProfile");
+
+            F5Binding binding = new F5Binding { cert = alias, key = alias, chain = alias, passphrase = certificatePassword };
+            REST.Patch<F5Binding>($"/mgmt/tm/ltm/profile/{profileEndpoint}/~{partition}~{profileName}", binding);
+
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "BindCertificateToProfile");
+        }
+
+        // Returns the inventory (single certificate) bound to the profile represented by this store definition
+        public List<CurrentInventoryItem> GetProfileCertificateInventory(string partition, string profileEndpoint, string profileName)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "GetProfileCertificateInventory");
+            List<CurrentInventoryItem> inventory = new List<CurrentInventoryItem>();
+
+            string alias = GetBoundCertificateAlias(partition, profileEndpoint, profileName);
+            if (string.IsNullOrEmpty(alias) || alias.Equals("none", StringComparison.OrdinalIgnoreCase))
+            {
+                LogHandlerCommon.Trace(logger, CertificateStore, $"Profile '{profileName}' in partition '{partition}' has no certificate bound");
+                LogHandlerCommon.MethodExit(logger, CertificateStore, "GetProfileCertificateInventory");
+                return inventory;
+            }
+
+            CurrentInventoryItem inventoryItem = GetInventoryItem(partition, alias, true);
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "GetProfileCertificateInventory");
+            inventory.Add(inventoryItem);
+            return inventory;
+        }
+
+        // SSL Profiles (Client/Server)
         #endregion
 
         #region Auth & Version

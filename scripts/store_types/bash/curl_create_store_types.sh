@@ -189,7 +189,7 @@ curl -s -X POST "https://${KEYFACTOR_HOSTNAME}/${KEYFACTOR_API_PATH}/Certificate
     "Create": true,
     "Discovery": true,
     "Enrollment": false,
-    "Remove": true
+    "Remove": false
   },
   "PasswordOptions": {
     "Style": "Default",
@@ -201,6 +201,15 @@ curl -s -X POST "https://${KEYFACTOR_HOSTNAME}/${KEYFACTOR_API_PATH}/Certificate
     }
   },
   "Properties": [
+    {
+      "Name": "PrimaryNodeOnlineRequired",
+      "DisplayName": "Primary Node Online Required",
+      "Type": "Bool",
+      "DependsOn": "",
+      "DefaultValue": "",
+      "Required": true,
+      "Description": "Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed."
+    },
     {
       "Name": "PrimaryNode",
       "DisplayName": "Primary Node",
@@ -227,15 +236,6 @@ curl -s -X POST "https://${KEYFACTOR_HOSTNAME}/${KEYFACTOR_API_PATH}/Certificate
       "DefaultValue": "3",
       "Required": true,
       "Description": "Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing."
-    },
-    {
-      "Name": "PrimaryNodeOnlineRequired",
-      "DisplayName": "Primary Node Online Required",
-      "Type": "Bool",
-      "DependsOn": "",
-      "DefaultValue": "",
-      "Required": true,
-      "Description": "Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed."
     },
     {
       "Name": "IgnoreSSLWarning",

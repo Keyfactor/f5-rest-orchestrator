@@ -49,34 +49,34 @@
   <line x1="284" y1="172" x2="284" y2="210" stroke="#e8e8e8" stroke-width="1" />
   <line x1="444" y1="172" x2="444" y2="210" stroke="#e8e8e8" stroke-width="1" />
   <rect x="34" y="183" width="16" height="16" fill="#ffffff" stroke="#cccccc" rx="3" />
-  <text x="72" y="198" class="value">Primary Node</text>
-  <text x="292" y="198" class="value">String</text>
+  <text x="72" y="198" class="value">Primary Node Online Required</text>
+  <text x="292" y="198" class="value">Bool</text>
   <rect x="21" y="210" width="658" height="38" fill="#f7f7f7" />
   <line x1="20" y1="248" x2="680" y2="248" stroke="#e8e8e8" stroke-width="1" />
   <line x1="64" y1="210" x2="64" y2="248" stroke="#e8e8e8" stroke-width="1" />
   <line x1="284" y1="210" x2="284" y2="248" stroke="#e8e8e8" stroke-width="1" />
   <line x1="444" y1="210" x2="444" y2="248" stroke="#e8e8e8" stroke-width="1" />
   <rect x="34" y="221" width="16" height="16" fill="#ffffff" stroke="#cccccc" rx="3" />
-  <text x="72" y="236" class="value">Primary Node Check Retry Wait Seco...</text>
+  <text x="72" y="236" class="value">Primary Node</text>
   <text x="292" y="236" class="value">String</text>
-  <text x="452" y="236" class="value">120</text>
   <rect x="21" y="248" width="658" height="38" fill="#ffffff" />
   <line x1="20" y1="286" x2="680" y2="286" stroke="#e8e8e8" stroke-width="1" />
   <line x1="64" y1="248" x2="64" y2="286" stroke="#e8e8e8" stroke-width="1" />
   <line x1="284" y1="248" x2="284" y2="286" stroke="#e8e8e8" stroke-width="1" />
   <line x1="444" y1="248" x2="444" y2="286" stroke="#e8e8e8" stroke-width="1" />
   <rect x="34" y="259" width="16" height="16" fill="#ffffff" stroke="#cccccc" rx="3" />
-  <text x="72" y="274" class="value">Primary Node Check Retry Maximum</text>
+  <text x="72" y="274" class="value">Primary Node Check Retry Wait Seco...</text>
   <text x="292" y="274" class="value">String</text>
-  <text x="452" y="274" class="value">3</text>
+  <text x="452" y="274" class="value">120</text>
   <rect x="21" y="286" width="658" height="38" fill="#f7f7f7" />
   <line x1="20" y1="324" x2="680" y2="324" stroke="#e8e8e8" stroke-width="1" />
   <line x1="64" y1="286" x2="64" y2="324" stroke="#e8e8e8" stroke-width="1" />
   <line x1="284" y1="286" x2="284" y2="324" stroke="#e8e8e8" stroke-width="1" />
   <line x1="444" y1="286" x2="444" y2="324" stroke="#e8e8e8" stroke-width="1" />
   <rect x="34" y="297" width="16" height="16" fill="#ffffff" stroke="#cccccc" rx="3" />
-  <text x="72" y="312" class="value">Primary Node Online Required</text>
-  <text x="292" y="312" class="value">Bool</text>
+  <text x="72" y="312" class="value">Primary Node Check Retry Maximum</text>
+  <text x="292" y="312" class="value">String</text>
+  <text x="452" y="312" class="value">3</text>
   <rect x="21" y="324" width="658" height="38" fill="#ffffff" />
   <line x1="20" y1="362" x2="680" y2="362" stroke="#e8e8e8" stroke-width="1" />
   <line x1="64" y1="324" x2="64" y2="362" stroke="#e8e8e8" stroke-width="1" />

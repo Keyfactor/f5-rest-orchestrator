@@ -73,13 +73,13 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
                         LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, $"Add entry '{config.JobCertificate.Alias}' to '{config.CertificateStoreDetails.StorePath}'");
                         PerformAddJob(f5, partition, StorePassword);
                         break;
-                    case CertStoreOperationType.Remove:
-                        LogHandlerCommon.Trace(logger, config.CertificateStoreDetails, $"Remove entry '{config.JobCertificate.Alias}' from '{config.CertificateStoreDetails.StorePath}'");
-                        warningResult = PerformRemovalJob(f5, partition);
-                        break;
+                    //case CertStoreOperationType.Remove:
+                    //    LogHandlerCommon.Trace(logger, config.CertificateStoreDetails, $"Remove entry '{config.JobCertificate.Alias}' from '{config.CertificateStoreDetails.StorePath}'");
+                    //    warningResult = PerformRemovalJob(f5, partition);
+                    //    break;
                     default:
                         // Shouldn't get here, but just in case
-                        throw new Exception($"Management job expecting 'Add', 'Remove' or 'Create' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
+                        throw new Exception($"Management job expecting 'Add' or 'Create' job - received '{Enum.GetName(typeof(CertStoreOperationType), config.OperationType)}'");
                 }
 
                 if (UseTokenAuth)

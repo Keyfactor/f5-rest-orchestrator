@@ -284,7 +284,7 @@ SSLProfileType **must** be either "Client" or "Server".
 | Operation    | Is Supported |
 |--------------|--------------|
 | Add          | ✅ Checked |
-| Remove       | ✅ Checked |
+| Remove       | 🔲 Unchecked |
 | Discovery    | ✅ Checked |
 | Reenrollment | 🔲 Unchecked |
 | Create       | ✅ Checked |
@@ -328,7 +328,7 @@ the Keyfactor Command Portal
    | Short Name | F5-PF-REST | Short display name for the store type |
    | Capability | F5-PF-REST | Store type name orchestrator will register with. Check the box to allow entry of value |
    | Supports Add | ✅ Checked | Indicates that the Store Type supports Management Add |
-   | Supports Remove | ✅ Checked | Indicates that the Store Type supports Management Remove |
+   | Supports Remove | 🔲 Unchecked | Indicates that the Store Type supports Management Remove |
    | Supports Discovery | ✅ Checked | Indicates that the Store Type supports Discovery |
    | Supports Reenrollment | 🔲 Unchecked | Indicates that the Store Type supports Reenrollment |
    | Supports Create | ✅ Checked | Indicates that the Store Type supports store creation |
@@ -360,10 +360,10 @@ the Keyfactor Command Portal
 
    | Name | Display Name | Description | Type | Default Value/Options | Required |
    | ---- | ------------ | ---- | --------------------- | -------- | ----------- |
+   | PrimaryNodeOnlineRequired | Primary Node Online Required | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. | Bool |  | ✅ Checked |
    | PrimaryNode | Primary Node | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. | String |  | ✅ Checked |
    | PrimaryNodeCheckRetryWaitSecs | Primary Node Check Retry Wait Seconds | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. | String | 120 | ✅ Checked |
    | PrimaryNodeCheckRetryMax | Primary Node Check Retry Maximum | Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing. | String | 3 | ✅ Checked |
-   | PrimaryNodeOnlineRequired | Primary Node Online Required | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. | Bool |  | ✅ Checked |
    | IgnoreSSLWarning | Ignore SSL Warning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. | Bool | False | ✅ Checked |
    | UseTokenAuth | Use Token Authentication | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. | Bool | false | ✅ Checked |
    | InheritedProfile | Profile to Inherit | The optional fully qualified name of the profile you want this profile to inherit settings from in {Partition}/{ProfileName} format.  If left blank, the default profile for the profile type will be used. | String |  | 🔲 Unchecked |
@@ -374,6 +374,13 @@ the Keyfactor Command Portal
    The Custom Fields tab should look like this:
 
    ![F5-PF-REST Custom Fields Tab](docsource/images/F5-PF-REST-custom-fields-store-type-dialog.svg)
+
+   ###### Primary Node Online Required
+   Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed.
+
+   ![F5-PF-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-PF-REST-custom-field-PrimaryNodeOnlineRequired-dialog.svg)
+   ![F5-PF-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-PF-REST-custom-field-PrimaryNodeOnlineRequired-validation-options-dialog.svg)
+
 
    ###### Primary Node
    Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive.
@@ -394,13 +401,6 @@ the Keyfactor Command Portal
 
    ![F5-PF-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-PF-REST-custom-field-PrimaryNodeCheckRetryMax-dialog.svg)
    ![F5-PF-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-PF-REST-custom-field-PrimaryNodeCheckRetryMax-validation-options-dialog.svg)
-
-
-   ###### Primary Node Online Required
-   Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed.
-
-   ![F5-PF-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-PF-REST-custom-field-PrimaryNodeOnlineRequired-dialog.svg)
-   ![F5-PF-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-PF-REST-custom-field-PrimaryNodeOnlineRequired-validation-options-dialog.svg)
 
 
    ###### Ignore SSL Warning
@@ -966,10 +966,10 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | Store Path | Enter the store path in the form 'Partition/ProfileType/ProfileName'. Partition and Profile Name are case sensitive. ProfileType must be either "Client" or "Server". |
    | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
    | Orchestrator | Select an approved orchestrator capable of managing `F5-PF-REST` certificates. Specifically, one with the `F5-PF-REST` capability. |
+   | PrimaryNodeOnlineRequired | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. |
    | PrimaryNode | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. |
    | PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
    | PrimaryNodeCheckRetryMax | Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing. |
-   | PrimaryNodeOnlineRequired | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. |
    | IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
    | UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
    | InheritedProfile | The optional fully qualified name of the profile you want this profile to inherit settings from in {Partition}/{ProfileName} format.  If left blank, the default profile for the profile type will be used. |
@@ -1000,10 +1000,10 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | Store Path | Enter the store path in the form 'Partition/ProfileType/ProfileName'. Partition and Profile Name are case sensitive. ProfileType must be either "Client" or "Server". |
    | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
    | Orchestrator | Select an approved orchestrator capable of managing `F5-PF-REST` certificates. Specifically, one with the `F5-PF-REST` capability. |
+   | Properties.PrimaryNodeOnlineRequired | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. |
    | Properties.PrimaryNode | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. |
    | Properties.PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
    | Properties.PrimaryNodeCheckRetryMax | Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing. |
-   | Properties.PrimaryNodeOnlineRequired | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. |
    | Properties.IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
    | Properties.UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
    | Properties.InheritedProfile | The optional fully qualified name of the profile you want this profile to inherit settings from in {Partition}/{ProfileName} format.  If left blank, the default profile for the profile type will be used. |

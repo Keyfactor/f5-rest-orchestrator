@@ -25,6 +25,18 @@
         "assemblypath": "F5Orchestrator.dll",
         "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile.Discovery"
       },
+      "CertStores.F5-PF-REST.Inventory": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile.Inventory"
+      },
+      "CertStores.F5-PF-REST.Management": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile.Management"
+      },
+      "CertStores.F5-PF-REST.Discovery": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile.Discovery"
+      },
       "CertStores.F5-WS-REST.Inventory": {
         "assemblypath": "F5Orchestrator.dll",
         "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.WebServer.Inventory"

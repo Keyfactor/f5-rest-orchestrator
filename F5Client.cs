@@ -563,7 +563,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             string[] pathParts = CertificateStore.StorePath.Split('/');
             if (pathParts.Length != 3)
             {
-                throw new Exception($"The store path '{CertificateStore.StorePath}' is invalid. Expecting 'Partition\\ProfileType\\ProfileName'");
+                throw new Exception($"The store path '{CertificateStore.StorePath}' is invalid. Expecting 'Partition/ProfileType/ProfileName'");
             }
 
             if (!Enum.TryParse<ProfileTypeEnum>(pathParts[1], ignoreCase: true, out var profileType) || 

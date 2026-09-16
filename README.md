@@ -33,8 +33,9 @@
 
 The f5-rest-orchestrator orchestrator extension manages various types of certificates on a F5 Big IP device (version 14 or later).  TLS certificates, CA bundles, and the TLS certificate bound to the administrative website can all be managed with this integration within the scope described in the sections below.  One important note, this integration DOES NOT manage high availability (HA) failover between primary and secondary nodes.  If syncing between primary and secondary nodes is desired, this must either be handled within your F5 Big IP instance itself, or you can set up a Keyfactor Command certificate store for each node (primary and secondary) and manage each separately.
 
-The F5 Universal Orchestrator extension implements 3 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types. Descriptions of each are provided below.
+The F5 Universal Orchestrator extension implements 4 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types. Descriptions of each are provided below.
 - [F5 SSL Profiles REST](#F5-SL-REST)
+- [F5 Profiles REST](#F5-PF-REST)
 - [F5 WS Profiles REST](#F5-WS-REST)
 - [F5 CA Profiles REST](#F5-CA-REST)
 
@@ -58,7 +59,7 @@ An administrator account must be set up in F5 to be used with this orchestrator 
 
 To use the F5 Universal Orchestrator extension, you **must** create the Certificate Store Types required for your use-case. This only needs to happen _once_ per Keyfactor Command instance.
 
-The F5 Universal Orchestrator extension implements 3 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types.
+The F5 Universal Orchestrator extension implements 4 Certificate Store Types. Depending on your use case, you may elect to use one, or all of these Certificate Store Types.
 
 ### F5-SL-REST
 
@@ -264,6 +265,186 @@ the Keyfactor Command Portal
 
    ![F5-SL-REST Entry Parameter - SSLProfiles](docsource/images/F5-SL-REST-entry-parameters-store-type-dialog-SSLProfiles.svg)
    ![F5-SL-REST Entry Parameter - SSLProfiles](docsource/images/F5-SL-REST-entry-parameters-store-type-dialog-SSLProfiles-validation-options.svg)
+
+
+   </details>
+</details>
+
+### F5-PF-REST
+
+<details><summary>Click to expand details</summary>
+
+The F5-PF-REST certificate store type manages the certificate bound to a single F5 Big IP SSL Profile (client or server only).  Adding a certificate to this store will both add the certificate to the F5 Big IP device as well as bind it to
+the SSL Profile identified in the Keyfactor Command certificate store configuration.  Inventory, Create, and Add (both new certificates and replace/renew) capabilities are supported, but Removal is not, as that would leave an SSL Profile unbound.  
+The certificate store configuration maps to the SSL Profile being managed by way of the Client Machine (IP address or DNS of the F5 instance being managed) and the Store Path which needs to have the format of "Partition/SSLProfileType/SSLProfileName" where 
+SSLProfileType **must** be either "Client" or "Server".
+
+#### Supported Operations
+
+| Operation    | Is Supported |
+|--------------|--------------|
+| Add          | ✅ Checked |
+| Remove       | 🔲 Unchecked |
+| Discovery    | ✅ Checked |
+| Reenrollment | 🔲 Unchecked |
+| Create       | ✅ Checked |
+
+#### Store Type Creation
+
+##### Using kfutil:
+`kfutil` is a custom CLI for the Keyfactor Command API and can be used to create certificate store types.
+For more information on [kfutil](https://github.com/Keyfactor/kfutil) check out the [docs](https://github.com/Keyfactor/kfutil?tab=readme-ov-file#quickstart)
+
+   <details><summary>Click to expand F5-PF-REST kfutil details</summary>
+
+   ##### Using online definition from GitHub:
+   This will reach out to GitHub and pull the latest store-type definition
+   ```shell
+   # F5 Profiles REST
+   kfutil store-types create F5-PF-REST
+   ```
+
+   ##### Offline creation using integration-manifest file:
+   If required, it is possible to create store types from the [integration-manifest.json](./integration-manifest.json) included in this repo.
+   You would first download the [integration-manifest.json](./integration-manifest.json) and then run the following command
+   in your offline environment.
+   ```shell
+   kfutil store-types create --from-file integration-manifest.json
+   ```
+   </details>
+
+#### Manual Creation
+Below are instructions on how to create the F5-PF-REST store type manually in
+the Keyfactor Command Portal
+
+   <details><summary>Click to expand manual F5-PF-REST details</summary>
+
+   Create a store type called `F5-PF-REST` with the attributes in the tables below:
+
+   ##### Basic Tab
+   | Attribute | Value | Description |
+   | --------- | ----- | ----- |
+   | Name | F5 Profiles REST | Display name for the store type (may be customized) |
+   | Short Name | F5-PF-REST | Short display name for the store type |
+   | Capability | F5-PF-REST | Store type name orchestrator will register with. Check the box to allow entry of value |
+   | Supports Add | ✅ Checked | Indicates that the Store Type supports Management Add |
+   | Supports Remove | 🔲 Unchecked | Indicates that the Store Type supports Management Remove |
+   | Supports Discovery | ✅ Checked | Indicates that the Store Type supports Discovery |
+   | Supports Reenrollment | 🔲 Unchecked | Indicates that the Store Type supports Reenrollment |
+   | Supports Create | ✅ Checked | Indicates that the Store Type supports store creation |
+   | Needs Server | ✅ Checked | Determines if a target server name is required when creating store |
+   | Blueprint Allowed | ✅ Checked | Determines if store type may be included in an Orchestrator blueprint |
+   | Uses PowerShell | 🔲 Unchecked | Determines if underlying implementation is PowerShell |
+   | Requires Store Password | ✅ Checked | Enables users to optionally specify a store password when defining a Certificate Store. |
+   | Supports Entry Password | 🔲 Unchecked | Determines if an individual entry within a store can have a password. |
+
+   The Basic tab should look like this:
+
+   ![F5-PF-REST Basic Tab](docsource/images/F5-PF-REST-basic-store-type-dialog.svg)
+
+   ##### Advanced Tab
+   | Attribute | Value | Description |
+   | --------- | ----- | ----- |
+   | Supports Custom Alias | Required | Determines if an individual entry within a store can have a custom Alias. |
+   | Private Key Handling | Required | This determines if Keyfactor can send the private key associated with a certificate to the store. |
+   | PFX Password Style | Default | 'Default' - PFX password is randomly generated, 'Custom' - PFX password may be specified when the enrollment job is created (Requires the Allow Custom Password application setting to be enabled.) |
+
+   The Advanced tab should look like this:
+
+   ![F5-PF-REST Advanced Tab](docsource/images/F5-PF-REST-advanced-store-type-dialog.svg)
+
+   > For Keyfactor **Command versions 24.4 and later**, a Certificate Format dropdown is available with PFX and PEM options. Ensure that **PFX** is selected, as this determines the format of new and renewed certificates sent to the Orchestrator during a Management job. Currently, all Keyfactor-supported Orchestrator extensions support only PFX.
+
+   ##### Custom Fields Tab
+   Custom fields operate at the certificate store level and are used to control how the orchestrator connects to the remote target server containing the certificate store to be managed. The following custom fields should be added to the store type:
+
+   | Name | Display Name | Description | Type | Default Value/Options | Required |
+   | ---- | ------------ | ---- | --------------------- | -------- | ----------- |
+   | PrimaryNodeOnlineRequired | Primary Node Online Required | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. | Bool |  | ✅ Checked |
+   | PrimaryNode | Primary Node | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. | String |  | ✅ Checked |
+   | PrimaryNodeCheckRetryWaitSecs | Primary Node Check Retry Wait Seconds | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. | String | 120 | ✅ Checked |
+   | PrimaryNodeCheckRetryMax | Primary Node Check Retry Maximum | Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing. | String | 3 | ✅ Checked |
+   | IgnoreSSLWarning | Ignore SSL Warning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. | Bool | False | ✅ Checked |
+   | UseTokenAuth | Use Token Authentication | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. | Bool | false | ✅ Checked |
+   | InheritedProfile | Profile to Inherit | The optional fully qualified name of the profile you want this profile to inherit settings from in {Partition}/{ProfileName} format.  If left blank, the default profile for the profile type will be used. | String |  | 🔲 Unchecked |
+   | ServerUsername | Server Username | Login credential for the F5 device.  MUST be an Admin account. | Secret |  | 🔲 Unchecked |
+   | ServerPassword | Server Password | Login password for the F5 device. | Secret |  | 🔲 Unchecked |
+   | ServerUseSsl | Use SSL | True if using https to access the F5 device. False if using http. | Bool | true | ✅ Checked |
+
+   The Custom Fields tab should look like this:
+
+   ![F5-PF-REST Custom Fields Tab](docsource/images/F5-PF-REST-custom-fields-store-type-dialog.svg)
+
+   ###### Primary Node Online Required
+   Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed.
+
+   ![F5-PF-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-PF-REST-custom-field-PrimaryNodeOnlineRequired-dialog.svg)
+   ![F5-PF-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-PF-REST-custom-field-PrimaryNodeOnlineRequired-validation-options-dialog.svg)
+
+
+   ###### Primary Node
+   Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive.
+
+   ![F5-PF-REST Custom Field - PrimaryNode](docsource/images/F5-PF-REST-custom-field-PrimaryNode-dialog.svg)
+   ![F5-PF-REST Custom Field - PrimaryNode](docsource/images/F5-PF-REST-custom-field-PrimaryNode-validation-options-dialog.svg)
+
+
+   ###### Primary Node Check Retry Wait Seconds
+   Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive.
+
+   ![F5-PF-REST Custom Field - PrimaryNodeCheckRetryWaitSecs](docsource/images/F5-PF-REST-custom-field-PrimaryNodeCheckRetryWaitSecs-dialog.svg)
+   ![F5-PF-REST Custom Field - PrimaryNodeCheckRetryWaitSecs](docsource/images/F5-PF-REST-custom-field-PrimaryNodeCheckRetryWaitSecs-validation-options-dialog.svg)
+
+
+   ###### Primary Node Check Retry Maximum
+   Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing.
+
+   ![F5-PF-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-PF-REST-custom-field-PrimaryNodeCheckRetryMax-dialog.svg)
+   ![F5-PF-REST Custom Field - PrimaryNodeCheckRetryMax](docsource/images/F5-PF-REST-custom-field-PrimaryNodeCheckRetryMax-validation-options-dialog.svg)
+
+
+   ###### Ignore SSL Warning
+   Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs.
+
+   ![F5-PF-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-PF-REST-custom-field-IgnoreSSLWarning-dialog.svg)
+   ![F5-PF-REST Custom Field - IgnoreSSLWarning](docsource/images/F5-PF-REST-custom-field-IgnoreSSLWarning-validation-options-dialog.svg)
+
+
+   ###### Use Token Authentication
+   Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests.
+
+   ![F5-PF-REST Custom Field - UseTokenAuth](docsource/images/F5-PF-REST-custom-field-UseTokenAuth-dialog.svg)
+   ![F5-PF-REST Custom Field - UseTokenAuth](docsource/images/F5-PF-REST-custom-field-UseTokenAuth-validation-options-dialog.svg)
+
+
+   ###### Profile to Inherit
+   The optional fully qualified name of the profile you want this profile to inherit settings from in {Partition}/{ProfileName} format.  If left blank, the default profile for the profile type will be used.
+
+   ![F5-PF-REST Custom Field - InheritedProfile](docsource/images/F5-PF-REST-custom-field-InheritedProfile-dialog.svg)
+   ![F5-PF-REST Custom Field - InheritedProfile](docsource/images/F5-PF-REST-custom-field-InheritedProfile-validation-options-dialog.svg)
+
+
+   ###### Server Username
+   Login credential for the F5 device.  MUST be an Admin account.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+   ###### Server Password
+   Login password for the F5 device.
+
+
+   > [!IMPORTANT]
+   > This field is created by the `Needs Server` on the Basic tab, do not create this field manually.
+
+
+   ###### Use SSL
+   True if using https to access the F5 device. False if using http.
+
+   ![F5-PF-REST Custom Field - ServerUseSsl](docsource/images/F5-PF-REST-custom-field-ServerUseSsl-dialog.svg)
+   ![F5-PF-REST Custom Field - ServerUseSsl](docsource/images/F5-PF-REST-custom-field-ServerUseSsl-validation-options-dialog.svg)
 
 
    </details>
@@ -529,6 +710,7 @@ the Keyfactor Command Portal
    | PrimaryNodeCheckRetryWaitSecs | Primary Node Check Retry Wait Seconds | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. | String | 120 | ✅ Checked |
    | PrimaryNodeCheckRetryMax | Primary Node Check Retry Maximum | Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing. | String | 3 | ✅ Checked |
    | PrimaryNodeOnlineRequired | Primary Node Online Required | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. | Bool |  | ✅ Checked |
+   | InheritedProfile | Profile to Inherit | Optional value representing an existing SSL Profile to inherit settings from during a Management-Create job.  Value must be in Partition/SSLProfileName format.  Profile must be the same type as the one being added and exist in the same partition or the Common partition. | String |  | 🔲 Unchecked |
    | IgnoreSSLWarning | Ignore SSL Warning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. | Bool | False | ✅ Checked |
    | UseTokenAuth | Use Token Authentication | Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. | Bool | false | ✅ Checked |
    | ServerUsername | Server Username | Login credential for the F5 device.  MUST be an Admin account. | Secret |  | 🔲 Unchecked |
@@ -565,6 +747,13 @@ the Keyfactor Command Portal
 
    ![F5-CA-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-CA-REST-custom-field-PrimaryNodeOnlineRequired-dialog.svg)
    ![F5-CA-REST Custom Field - PrimaryNodeOnlineRequired](docsource/images/F5-CA-REST-custom-field-PrimaryNodeOnlineRequired-validation-options-dialog.svg)
+
+
+   ###### Profile to Inherit
+   Optional value representing an existing SSL Profile to inherit settings from during a Management-Create job.  Value must be in Partition/SSLProfileName format.  Profile must be the same type as the one being added and exist in the same partition or the Common partition.
+
+   ![F5-CA-REST Custom Field - InheritedProfile](docsource/images/F5-CA-REST-custom-field-InheritedProfile-dialog.svg)
+   ![F5-CA-REST Custom Field - InheritedProfile](docsource/images/F5-CA-REST-custom-field-InheritedProfile-validation-options-dialog.svg)
 
 
    ###### Ignore SSL Warning
@@ -617,8 +806,8 @@ the Keyfactor Command Portal
    | Universal Orchestrator Version | Latest .NET version installed on the Universal Orchestrator server | `rollForward` condition in `Orchestrator.runtimeconfig.json` | `f5-rest-orchestrator` .NET version to download |
    | --------- | ----------- | ----------- | ----------- |
    | Between `11.0.0` and `11.5.1` (inclusive) | `net8.0` | `LatestMajor` | `net8.0` |
-   | Between `11.6.0` and `24.x` | `net8.0` | | `net8.0` |
-   | `25.0` _and_ newer | `net10.0` | | `net10.0` |
+   | `11.6` _and_ newer | `net8.0` | | `net8.0` |
+   | `25.5` _and_ newer | `net10.0` | | `net10.0` |
 
     Unzip the archive containing extension assemblies to a known location.
 
@@ -650,7 +839,7 @@ the Keyfactor Command Portal
 
 ## Defining Certificate Stores
 
-The F5 Universal Orchestrator extension implements 3 Certificate Store Types, each of which implements different functionality. Refer to the individual instructions below for each Certificate Store Type that you deemed necessary for your use case from the installation section.
+The F5 Universal Orchestrator extension implements 4 Certificate Store Types, each of which implements different functionality. Refer to the individual instructions below for each Certificate Store Type that you deemed necessary for your use case from the installation section.
 
 <details><summary>F5 SSL Profiles REST (F5-SL-REST)</summary>
 
@@ -729,6 +918,103 @@ The F5 Universal Orchestrator extension implements 3 Certificate Store Types, ea
 
     ```shell
     kfutil stores import csv --store-type-name F5-SL-REST --file F5-SL-REST.csv
+    ```
+
+</details>
+
+#### PAM Provider Eligible Fields
+<details><summary>Attributes eligible for retrieval by a PAM Provider on the Universal Orchestrator</summary>
+
+If a PAM provider was installed _on the Universal Orchestrator_ in the [Installation](#Installation) section, the following parameters can be configured for retrieval _on the Universal Orchestrator_.
+
+   | Attribute | Description |
+   | --------- | ----------- |
+   | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
+   | ServerPassword | Login password for the F5 device. |
+   | StorePassword | Password to use when reading/writing to store |
+
+Please refer to the **Universal Orchestrator (remote)** usage section ([PAM providers on the Keyfactor Integration Catalog](https://keyfactor.github.io/integrations-catalog/content/pam)) for your selected PAM provider for instructions on how to load attributes orchestrator-side.
+> Any secret can be rendered by a PAM provider _installed on the Keyfactor Command server_. The above parameters are specific to attributes that can be fetched by an installed PAM provider running on the Universal Orchestrator server itself.
+
+</details>
+
+> The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
+
+</details>
+
+<details><summary>F5 Profiles REST (F5-PF-REST)</summary>
+
+### Store Creation
+
+#### Manually with the Command UI
+
+<details><summary>Click to expand details</summary>
+
+1. **Navigate to the _Certificate Stores_ page in Keyfactor Command.**
+
+    Log into Keyfactor Command, toggle the _Locations_ dropdown, and click _Certificate Stores_.
+
+2. **Add a Certificate Store.**
+
+    Click the Add button to add a new Certificate Store. Use the table below to populate the **Attributes** in the **Add** form.
+
+   | Attribute | Description |
+   | --------- | ----------- |
+   | Category | Select "F5 Profiles REST" or the customized certificate store name from the previous step. |
+   | Container | Optional container to associate certificate store with. |
+   | Client Machine | The server name or IP Address for the F5 device. |
+   | Store Path | Enter the store path in the form 'Partition/ProfileType/ProfileName'. Partition and Profile Name are case sensitive. ProfileType must be either "Client" or "Server". |
+   | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
+   | Orchestrator | Select an approved orchestrator capable of managing `F5-PF-REST` certificates. Specifically, one with the `F5-PF-REST` capability. |
+   | PrimaryNodeOnlineRequired | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. |
+   | PrimaryNode | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. |
+   | PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
+   | PrimaryNodeCheckRetryMax | Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing. |
+   | IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
+   | UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
+   | InheritedProfile | The optional fully qualified name of the profile you want this profile to inherit settings from in {Partition}/{ProfileName} format.  If left blank, the default profile for the profile type will be used. |
+   | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
+   | ServerPassword | Login password for the F5 device. |
+   | ServerUseSsl | True if using https to access the F5 device. False if using http. |
+
+</details>
+
+#### Using kfutil CLI
+
+<details><summary>Click to expand details</summary>
+
+1. **Generate a CSV template for the F5-PF-REST certificate store**
+
+    ```shell
+    kfutil stores import generate-template --store-type-name F5-PF-REST --outpath F5-PF-REST.csv
+    ```
+2. **Populate the generated CSV file**
+
+    Open the CSV file, and reference the table below to populate parameters for each **Attribute**.
+
+   | Attribute | Description |
+   | --------- | ----------- |
+   | Category | Select "F5 Profiles REST" or the customized certificate store name from the previous step. |
+   | Container | Optional container to associate certificate store with. |
+   | Client Machine | The server name or IP Address for the F5 device. |
+   | Store Path | Enter the store path in the form 'Partition/ProfileType/ProfileName'. Partition and Profile Name are case sensitive. ProfileType must be either "Client" or "Server". |
+   | Store Password | Check "No Password" if you wish the private key of any added certificate to be set to Key Security Type "Normal". Enter a value (either a password or pointer to an installed PAM provider key for the password) to be used to encrypt the private key of any added certificate for Key Security Type of "Password". |
+   | Orchestrator | Select an approved orchestrator capable of managing `F5-PF-REST` certificates. Specifically, one with the `F5-PF-REST` capability. |
+   | Properties.PrimaryNodeOnlineRequired | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. |
+   | Properties.PrimaryNode | Only required (and shown) if Primary Node Online Required is added and selected.  Enter the Host Name of the F5 device that acts as the primary node in a highly available F5 implementation. Please note that this value IS case sensitive. |
+   | Properties.PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
+   | Properties.PrimaryNodeCheckRetryMax | Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing. |
+   | Properties.IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
+   | Properties.UseTokenAuth | Select this if you wish to use F5's token authentication instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
+   | Properties.InheritedProfile | The optional fully qualified name of the profile you want this profile to inherit settings from in {Partition}/{ProfileName} format.  If left blank, the default profile for the profile type will be used. |
+   | Properties.ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
+   | Properties.ServerPassword | Login password for the F5 device. |
+   | Properties.ServerUseSsl | True if using https to access the F5 device. False if using http. |
+
+3. **Import the CSV file to create the certificate stores**
+
+    ```shell
+    kfutil stores import csv --store-type-name F5-PF-REST --file F5-PF-REST.csv
     ```
 
 </details>
@@ -872,6 +1158,7 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
    | PrimaryNodeCheckRetryMax | Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing. |
    | PrimaryNodeOnlineRequired | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. |
+   | InheritedProfile | Optional value representing an existing SSL Profile to inherit settings from during a Management-Create job.  Value must be in Partition/SSLProfileName format.  Profile must be the same type as the one being added and exist in the same partition or the Common partition. |
    | IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
    | UseTokenAuth | Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
    | ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |
@@ -904,6 +1191,7 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
    | Properties.PrimaryNodeCheckRetryWaitSecs | Enter the number of seconds to wait between attempts to add/replace/renew a certificate if the node is inactive. |
    | Properties.PrimaryNodeCheckRetryMax | Enter the number of times a Management-Add job will attempt to add/replace/renew a certificate if the node is inactive before failing. |
    | Properties.PrimaryNodeOnlineRequired | Select this if you wish to stop the orchestrator from adding, replacing or renewing certificates on nodes that are inactive. If this is not selected, adding, replacing and renewing certificates on inactive nodes will be allowed. If you choose not to add this custom field, the default value of False will be assumed. |
+   | Properties.InheritedProfile | Optional value representing an existing SSL Profile to inherit settings from during a Management-Create job.  Value must be in Partition/SSLProfileName format.  Profile must be the same type as the one being added and exist in the same partition or the Common partition. |
    | Properties.IgnoreSSLWarning | Select this if you wish to ignore SSL warnings from F5 that occur during API calls when the site does not have a trusted certificate with the proper SAN bound to it. If you choose not to add this custom field, the default value of False will be assumed and SSL warnings will cause errors during orchestrator extension jobs. |
    | Properties.UseTokenAuth | Select this if you wish to use F5's token authentiation instead of basic authentication for all API requests. If you choose not to add this custom field, the default value of False will be assumed and basic authentication will be used for all API requests for all jobs. Setting this value to True will enable an initial basic authenticated request to acquire an authentication token, which will then be used for all subsequent API requests. |
    | Properties.ServerUsername | Login credential for the F5 device.  MUST be an Admin account. |

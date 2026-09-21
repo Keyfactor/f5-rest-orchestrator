@@ -33,7 +33,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public F5Partition[] items { get; set; }
     }
 
-    internal class F5Partition
+    public class F5Partition
     {
         public string name { get; set; }
         public string fullPath { get; set; }
@@ -55,7 +55,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public F5CABundle[] items { get; set; }
     }
 
-    internal class F5CABundle
+    public class F5CABundle
     {
         public string name { get; set; }
         public string fullPath { get; set; }
@@ -79,7 +79,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public F5SSLProfile[] items { get; set; }
     }
 
-    internal class F5SSLProfile
+    public class F5SSLProfile
     {
         public string name { get; set; }
         public string partition { get; set; }

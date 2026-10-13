@@ -7,6 +7,9 @@ set -e
 echo "Creating store type: F5-SL-REST"
 kfutil store-types create F5-SL-REST
 
+echo "Creating store type: F5-PF-REST"
+kfutil store-types create F5-PF-REST
+
 echo "Creating store type: F5-WS-REST"
 kfutil store-types create F5-WS-REST
 

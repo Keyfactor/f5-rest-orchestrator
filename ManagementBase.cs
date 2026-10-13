@@ -17,6 +17,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
     public abstract class ManagementBase : F5JobBase, IManagementJobExtension
     {
+
         protected ILogger logger; 
         
         protected ManagementJobConfiguration JobConfig { get; set; }
@@ -31,6 +32,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         protected bool RemoveChain { get; set; }
         protected bool SyncDevice { get; set; }
         protected string SyncDeviceGroup { get; set; }
+        protected string InheritedProfile { get; set; }
+        protected string AliasFormat { get; set; }
 
         public string ExtensionName => "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Management";
 
@@ -86,6 +89,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             SyncDevice = properties.SyncDevice == null || string.IsNullOrEmpty(properties.SyncDevice.Value) ? false : bool.Parse(properties.SyncDevice.Value);
             if (SyncDevice)
                 SyncDeviceGroup = properties.SyncDeviceGroup == null || string.IsNullOrEmpty(properties.SyncDeviceGroup.Value) ? string.Empty : properties.SyncDeviceGroup.Value.ToString();
+            InheritedProfile = properties.InheritedProfile == null || string.IsNullOrEmpty(properties.InheritedProfile.Value) ? string.Empty : properties.InheritedProfile.Value.ToString();
+            AliasFormat = properties.AliasFormat == null || string.IsNullOrEmpty(properties.AliasFormat.Value) ? string.Empty : properties.AliasFormat.Value.ToString();
 
             LogHandlerCommon.Trace(logger, JobConfig.CertificateStoreDetails, $"Ignore SSL Warnings '{IgnoreSSLWarning.ToString()}'");
         }

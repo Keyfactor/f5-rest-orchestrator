@@ -1,3 +1,6 @@
+v2.1.0
+- Added new store type - F5-PF-REST - to manage the certificate bound to a single F5 Big IP SSL Profile (client or server only).  
+
 v2.0.0
 - Add option to sync node to device group pre-set up in F5 device for F5-SL-REST store type.
 

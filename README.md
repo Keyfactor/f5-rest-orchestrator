@@ -74,7 +74,7 @@ The F5-SL-REST certificate store type manages F5 Big IP TLS certificates.  Renew
 | Add          | ✅ Checked |
 | Remove       | ✅ Checked |
 | Discovery    | ✅ Checked |
-| Reenrollment | 🔲 Unchecked |
+| Reenrollment | ✅ Checked |
 | Create       | 🔲 Unchecked |
 
 #### Store Type Creation
@@ -118,7 +118,7 @@ the Keyfactor Command Portal
    | Supports Add | ✅ Checked | Indicates that the Store Type supports Management Add |
    | Supports Remove | ✅ Checked | Indicates that the Store Type supports Management Remove |
    | Supports Discovery | ✅ Checked | Indicates that the Store Type supports Discovery |
-   | Supports Reenrollment | 🔲 Unchecked | Indicates that the Store Type supports Reenrollment |
+   | Supports Reenrollment | ✅ Checked | Indicates that the Store Type supports Reenrollment |
    | Supports Create | 🔲 Unchecked | Indicates that the Store Type supports store creation |
    | Needs Server | ✅ Checked | Determines if a target server name is required when creating store |
    | Blueprint Allowed | ✅ Checked | Determines if store type may be included in an Orchestrator blueprint |
@@ -286,7 +286,7 @@ SSLProfileType **must** be either "Client" or "Server".
 | Add          | ✅ Checked |
 | Remove       | 🔲 Unchecked |
 | Discovery    | ✅ Checked |
-| Reenrollment | 🔲 Unchecked |
+| Reenrollment | ✅ Checked |
 | Create       | ✅ Checked |
 
 #### Store Type Creation
@@ -330,7 +330,7 @@ the Keyfactor Command Portal
    | Supports Add | ✅ Checked | Indicates that the Store Type supports Management Add |
    | Supports Remove | 🔲 Unchecked | Indicates that the Store Type supports Management Remove |
    | Supports Discovery | ✅ Checked | Indicates that the Store Type supports Discovery |
-   | Supports Reenrollment | 🔲 Unchecked | Indicates that the Store Type supports Reenrollment |
+   | Supports Reenrollment | ✅ Checked | Indicates that the Store Type supports Reenrollment |
    | Supports Create | ✅ Checked | Indicates that the Store Type supports store creation |
    | Needs Server | ✅ Checked | Determines if a target server name is required when creating store |
    | Blueprint Allowed | ✅ Checked | Determines if store type may be included in an Orchestrator blueprint |
@@ -948,6 +948,10 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
 > The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
 
+### Reenrollment (On Device Key Generation)
+
+Reenrollment (ODKG) is supported for this store type.  The private key and CSR are generated on the F5 device using a temporary name, the CSR is submitted to Keyfactor Command for signing, and the returned certificate is combined with the key and installed on the F5 under the alias supplied for the job.  The temporary key and CSR are then removed from the F5.  Key types of RSA and EC/ECC are supported.  If the alias already exists, "Overwrite" must be selected or the job will fail.  As with Management Add jobs, any SSL Profiles supplied in the SSLProfiles entry parameter are bound only when the alias is new, and the Sync to Device Group setting is honored.
+
 </details>
 
 <details><summary>F5 Profiles REST (F5-PF-REST)</summary>
@@ -1046,6 +1050,10 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 </details>
 
 > The content in this section can be supplemented by the [official Command documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Certificate%20Stores.htm?Highlight=certificate%20store).
+
+### Reenrollment (On Device Key Generation)
+
+Reenrollment (ODKG) is supported for this store type.  The private key and CSR are generated on the F5 device using a temporary name, the CSR is submitted to Keyfactor Command for signing, and the returned certificate is combined with the key, installed on the F5 under the alias supplied for the job and bound to the SSL Profile identified in the certificate store configuration.  The temporary key and CSR are then removed from the F5.  Key types of RSA and EC/ECC are supported.  If the alias already exists, "Overwrite" must be selected or the job will fail, and a certificate bound to any other SSL Profile cannot be replaced.
 
 </details>
 

@@ -1,3 +1,6 @@
+v2.2.0
+- Added Reenrollment (On Device Key Generation) support for the F5-SL-REST and F5-PF-REST store types.
+
 v2.1.0
 - Added new store type - F5-PF-REST - to manage the certificate bound to a single F5 Big IP SSL Profile (client or server only).  
 

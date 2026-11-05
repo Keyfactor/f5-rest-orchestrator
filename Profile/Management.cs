@@ -136,33 +136,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
         private void PerformAddJob(F5Client f5, string partition, string certificatePassword)
         {
             LogHandlerCommon.MethodEntry(logger, JobConfig.CertificateStoreDetails, "PerformAddJob");
-            string name = JobConfig.JobCertificate.Alias;
-            string newName = string.Empty;
-
-            string certContents = JobConfig.JobCertificate.Contents;
-            bool certificateExists = f5.CertificateExists(partition, name);
-
-            if (certificateExists)
-            {
-                if (!JobConfig.Overwrite) { throw new Exception($"An entry named '{name}' exists and 'overwrite' was not selected"); }
-
-                List<string> boundElsewhere = f5.GetProfilesBoundToCertificate(partition, name, ProfileName);
-                if (boundElsewhere.Any())
-                {
-                    throw new Exception($"The certificate '{name}' is bound to the following other profile(s) and cannot be replaced: {string.Join(", ", boundElsewhere)}");
-                }
-
-                LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Replace entry '{name}' in '{JobConfig.CertificateStoreDetails.StorePath}'");
-                newName = f5.ReplaceEntry(partition, name, certContents, certificatePassword, AliasFormat);
-            }
-            else
-            {
-                LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"The entry '{name}' does not exist in '{JobConfig.CertificateStoreDetails.StorePath}' and will be added");
-                newName = f5.AddEntry(partition, name, certContents, certificatePassword, AliasFormat);
-            }
-
-            LogHandlerCommon.Debug(logger, JobConfig.CertificateStoreDetails, $"Binding '{name}' to profile '{ProfileName}'");
-            f5.BindCertificateToProfile(partition, ProfileEndpoint, ProfileName, newName, certificatePassword);
+            f5.AddOrReplaceProfileCertificate(partition, ProfileEndpoint, ProfileName, JobConfig.JobCertificate.Alias, JobConfig.JobCertificate.Contents, certificatePassword, AliasFormat, JobConfig.Overwrite);
 
             LogHandlerCommon.MethodExit(logger, JobConfig.CertificateStoreDetails, "PerformAddJob");
         }

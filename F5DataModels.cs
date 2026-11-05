@@ -136,6 +136,34 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         public string commandResult { get; set; }
     }
 
+    internal class F5CryptoKeyRequest
+    {
+        public string name { get; set; }
+        public string keyType { get; set; }
+
+        // RSA keys use keySize; EC keys use curveName instead
+        [Newtonsoft.Json.JsonProperty("keySize", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? keySize { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("curveName", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string curveName { get; set; }
+
+        public string securityType { get; set; }
+    }
+
+    internal class F5CryptoCSRRequest
+    {
+        public string name { get; set; }
+        public string key { get; set; }
+        public string commonName { get; set; }
+        public string country { get; set; }
+        public string state { get; set; }
+        public string city { get; set; }
+        public string organization { get; set; }
+        public string ou { get; set; }
+        public string subjectAlternativeName { get; set; }
+    }
+
     internal class F5BundleInclude
     {
         public string[] includeBundle { get; set; }

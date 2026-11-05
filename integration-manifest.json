@@ -8,7 +8,7 @@
     "support_level": "kf-supported",
     "release_project": "F5Orchestrator.csproj",
     "release_dir": "bin/Release",
-    "description": "The F5 Orchestrator allows for the remote management of F5 Stores. Discovery, Inventory, and Management functions are supported.",
+    "description": "The F5 Orchestrator allows for the remote management of F5 Stores. Discovery, Inventory, Management, and Reenrollment (F5-SL-REST and F5-PF-REST only) functions are supported.",
     "about": {
         "orchestrator": {
             "UOFramework": "10.1",
@@ -30,7 +30,7 @@
                         "Add": true,
                         "Create": false,
                         "Discovery": true,
-                        "Enrollment": false,
+                        "Enrollment": true,
                         "Remove": true
                     },
                     "PasswordOptions": {
@@ -187,7 +187,7 @@
                   "Add": true,
                   "Create": true,
                   "Discovery": true,
-                  "Enrollment": false,
+                  "Enrollment": true,
                   "Remove": false
                 },
                 "PasswordOptions": {

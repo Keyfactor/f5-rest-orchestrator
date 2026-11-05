@@ -6,3 +6,7 @@ The certificate store configuration maps to the SSL Profile being managed by way
 SSLProfileType **must** be either "Client" or "Server".
 
 
+
+## Reenrollment (On Device Key Generation)
+
+Reenrollment (ODKG) is supported for this store type.  The private key and CSR are generated on the F5 device using a temporary name, the CSR is submitted to Keyfactor Command for signing, and the returned certificate is combined with the key, installed on the F5 under the alias supplied for the job and bound to the SSL Profile identified in the certificate store configuration.  The temporary key and CSR are then removed from the F5.  Key types of RSA and EC/ECC are supported.  If the alias already exists, "Overwrite" must be selected or the job will fail, and a certificate bound to any other SSL Profile cannot be replaced.

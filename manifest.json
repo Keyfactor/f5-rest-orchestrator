@@ -21,6 +21,10 @@
         "assemblypath": "F5Orchestrator.dll",
         "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile.Management"
       },
+      "CertStores.F5-SL-REST.Reenrollment": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile.Reenrollment"
+      },
       "CertStores.F5-SL-REST.Discovery": {
         "assemblypath": "F5Orchestrator.dll",
         "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile.Discovery"
@@ -32,6 +36,10 @@
       "CertStores.F5-PF-REST.Management": {
         "assemblypath": "F5Orchestrator.dll",
         "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile.Management"
+      },
+      "CertStores.F5-PF-REST.Reenrollment": {
+        "assemblypath": "F5Orchestrator.dll",
+        "TypeFullName": "Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile.Reenrollment"
       },
       "CertStores.F5-PF-REST.Discovery": {
         "assemblypath": "F5Orchestrator.dll",

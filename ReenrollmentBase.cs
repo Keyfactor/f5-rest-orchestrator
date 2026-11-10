@@ -52,7 +52,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         // Installs the PKCS12 (base64) as the real alias, performing any binding done by the store type's Management Add job
         protected abstract void InstallCertificate(F5Client f5, string partition, string alias, string b64Pfx, bool certificateExists);
 
-        public JobResult ProcessJob(ReenrollmentJobConfiguration config, SubmitReenrollmentCSR submitReenrollment)
+        public virtual JobResult ProcessJob(ReenrollmentJobConfiguration config, SubmitReenrollmentCSR submitReenrollment)
         {
             if (logger == null)
             {
@@ -88,7 +88,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 tempAlias = GenerateTempAlias();
                 LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, $"Generating key and CSR on the F5 using temporary alias '{tempAlias}'");
                 f5.CreateTempKey(tempAlias, keyType, keySize);
-                string csr = f5.CreateTempCSR(BuildCSRRequest(tempAlias));
+                string csr = f5.CreateTempCSR(BuildCSRRequest(tempAlias, config.CertificateStoreDetails.StorePath));
 
                 X509Certificate2 certificate = submitReenrollment.Invoke(csr);
                 if (certificate == null) { throw new Exception("Error retrieving certificate for CSR: certificate not returned."); }
@@ -207,7 +207,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             return alias.ToString();
         }
 
-        private F5CryptoCSRRequest BuildCSRRequest(string tempAlias)
+        private F5CryptoCSRRequest BuildCSRRequest(string tempAlias, string partition)
         {
             // Subject is supplied by Command as a comma delimited DN, e.g. "CN=host.domain.com,O=Org,OU=Unit,L=City,ST=State,C=US"
             Dictionary<string, string> subject = new Dictionary<string, string>();
@@ -232,12 +232,14 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             {
                 name = tempAlias,
                 key = tempAlias,
+                partition = partition,
                 commonName = GetSubjectValue("CN"),
                 country = GetSubjectValue("C"),
                 state = GetSubjectValue("ST"),
                 city = GetSubjectValue("L"),
                 organization = GetSubjectValue("O"),
                 ou = GetSubjectValue("OU"),
+                emailAddress = GetSubjectValue("E"),
                 subjectAlternativeName = sans.Count > 0 ? string.Join(",", sans) : null
             };
         }

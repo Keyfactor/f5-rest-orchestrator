@@ -27,7 +27,7 @@ $Body = @'
     "Add": true,
     "Create": false,
     "Discovery": true,
-    "Enrollment": false,
+    "Enrollment": true,
     "Remove": true
   },
   "PasswordOptions": {
@@ -188,7 +188,7 @@ $Body = @'
     "Add": true,
     "Create": true,
     "Discovery": true,
-    "Enrollment": false,
+    "Enrollment": true,
     "Remove": false
   },
   "PasswordOptions": {

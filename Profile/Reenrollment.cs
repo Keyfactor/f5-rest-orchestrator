@@ -25,20 +25,16 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.Profile
 
         protected override string GetPartition(F5Client f5)
         {
-            // Same requirement as Management - validated here so it fails before anything is created on the F5
-            if (string.IsNullOrEmpty(GetStoreString("AliasFormat")))
-            {
-                throw new System.Exception("Alias format is required.");
-            }
-
             _profilePath = f5.ParseProfileStorePath();
             return _profilePath.Partition;
         }
 
-        protected override void InstallCertificate(F5Client f5, string partition, string alias, string b64Pfx, bool certificateExists)
+        protected override void AfterCertificateInstalled(F5Client f5, string partition, string alias, bool certificateExisted)
         {
-            f5.AddOrReplaceProfileCertificate(partition, F5Client.GetProfileEndpoint(_profilePath.ProfileType), _profilePath.ProfileName,
-                alias, b64Pfx, StorePassword, GetStoreString("AliasFormat"), JobConfig.Overwrite);
+            // A renewal has already had its profiles (including this store's) moved to the new alias.  A new certificate
+            //  needs binding to the profile this store represents, as Management Add does.
+            if (!certificateExisted)
+                f5.BindCertificateToProfile(partition, F5Client.GetProfileEndpoint(_profilePath.ProfileType), _profilePath.ProfileName, alias, string.Empty);
         }
     }
 }

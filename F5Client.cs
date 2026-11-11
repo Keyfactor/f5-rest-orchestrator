@@ -287,7 +287,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             }
         }
 
-        private void AddCertificate(byte[] entryContents, string partition, string name)
+        public void AddCertificate(byte[] entryContents, string partition, string name)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "AddCertificate");
             LogHandlerCommon.Trace(logger, CertificateStore, $"Uploading file to {partition}-{name}");
@@ -1045,12 +1045,12 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         private const string SSL_KEY_DIR = "/config/ssl/ssl.key";
         private const string SSL_CSR_DIR = "/config/ssl/ssl.csr";
 
-        // Creates a temporary private key on the F5 (security type 'normal', i.e. unencrypted)
-        public void CreateTempKey(string tempName, string keyType, int keySize, string partition)
+        // Creates a private key on the F5 (security type 'normal', i.e. unencrypted)
+        public void CreateKey(string name, string keyType, int keySize, string partition)
         {
-            LogHandlerCommon.MethodEntry(logger, CertificateStore, "CreateTempKey");
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "CreateKey");
 
-            F5CryptoKeyRequest request = new F5CryptoKeyRequest { name = tempName, keyType = keyType, securityType = "normal", partition = partition };
+            F5CryptoKeyRequest request = new F5CryptoKeyRequest { name = name, keyType = keyType, securityType = "normal", partition = partition };
             if (keyType == "ec-private")
             {
                 switch (keySize)
@@ -1067,31 +1067,63 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             }
             REST.Post<object>("/mgmt/tm/sys/crypto/key", JsonConvert.SerializeObject(request));
 
-            LogHandlerCommon.MethodExit(logger, CertificateStore, "CreateTempKey");
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "CreateKey");
         }
 
-        // Creates a CSR on the F5 for the temporary key and returns its PEM contents
-        public string CreateTempCSR(F5CryptoCSRRequest request)
+        // Creates a CSR on the F5 for the key and returns its PEM contents
+        public string CreateCSR(F5CryptoCSRRequest request)
         {
-            LogHandlerCommon.MethodEntry(logger, CertificateStore, "CreateTempCSR");
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "CreateCSR");
 
             REST.Post<object>("/mgmt/tm/sys/crypto/csr", JsonConvert.SerializeObject(request, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
             string csr = ReadF5File(SSL_CSR_DIR, request.name, ".csr");
 
-            LogHandlerCommon.MethodExit(logger, CertificateStore, "CreateTempCSR");
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "CreateCSR");
             return csr;
         }
 
-        // Removes the temporary key and CSR.  Both deletions are always attempted, and failures are logged rather than thrown
-        //  so that clean up can never mask the outcome of the job.
-        public void DeleteTempKeyAndCSR(string tempName)
+        // Clean up failures are logged rather than thrown so that they can never mask the outcome of the job
+        public void DeleteKey(string name)
         {
-            LogHandlerCommon.MethodEntry(logger, CertificateStore, "DeleteTempKeyAndCSR");
+            DeleteCryptoObject("key", name, ".key");
+        }
 
-            DeleteCryptoObject("key", tempName, ".key");
-            DeleteCryptoObject("csr", tempName, ".csr");
+        public void DeleteCSR(string name)
+        {
+            DeleteCryptoObject("csr", name, ".csr");
+        }
 
-            LogHandlerCommon.MethodExit(logger, CertificateStore, "DeleteTempKeyAndCSR");
+        // Moves every client-ssl and server-ssl profile bound to the old certificate alias over to the new alias.
+        //  Every profile is attempted; failures are collected and thrown as a BindException.
+        public void RebindProfiles(string partition, string oldAlias, string newAlias)
+        {
+            LogHandlerCommon.MethodEntry(logger, CertificateStore, "RebindProfiles");
+
+            string oldCertName = $"/{partition}/{oldAlias}";
+            string newCertName = $"/{partition}/{newAlias}";
+            string errorMessages = string.Empty;
+
+            foreach (string profileEndpoint in new[] { CLIENT_SSL_ENDPOINT, SERVER_SSL_ENDPOINT })
+            {
+                foreach (F5SSLProfile profile in GetSSLProfiles(DEFAULT_PROFILE_PAGE_SIZE, profileEndpoint).Where(p => p.cert == oldCertName))
+                {
+                    try
+                    {
+                        LogHandlerCommon.Debug(logger, CertificateStore, $"Binding '{newAlias}' to {profileEndpoint} profile '{profile.name}'");
+                        BindCertificateToProfile(profile.partition ?? partition, profileEndpoint, profile.name, newCertName, string.Empty);
+                    }
+                    catch (Exception ex)
+                    {
+                        errorMessages += ExceptionHandler.FlattenExceptionMessages(ex, $"Error binding {profileEndpoint} profile {profile.name}: ");
+                    }
+                }
+            }
+
+            LogHandlerCommon.MethodExit(logger, CertificateStore, "RebindProfiles");
+            if (!string.IsNullOrEmpty(errorMessages))
+            {
+                throw new BindException(errorMessages);
+            }
         }
 
         private void DeleteCryptoObject(string objectType, string name, string extension)
@@ -1109,11 +1141,11 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 }
                 catch (Exception ex)
                 {
-                    LogHandlerCommon.Warn(logger, CertificateStore, ExceptionHandler.FlattenExceptionMessages(ex, $"Unable to remove temporary {objectType} '{candidate}'. "));
+                    LogHandlerCommon.Warn(logger, CertificateStore, ExceptionHandler.FlattenExceptionMessages(ex, $"Unable to remove {objectType} '{candidate}'. "));
                     return;
                 }
             }
-            LogHandlerCommon.Warn(logger, CertificateStore, $"Temporary {objectType} '{name}' was not found for removal");
+            LogHandlerCommon.Warn(logger, CertificateStore, $"{objectType} '{name}' was not found for removal");
         }
 
         // F5 may or may not append the standard extension to the file it creates, so try the exact name first and then name + extension

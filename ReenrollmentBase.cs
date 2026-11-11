@@ -12,30 +12,19 @@ using Keyfactor.Orchestrators.Common.Enums;
 using Keyfactor.Orchestrators.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.OpenSsl;
-using Org.BouncyCastle.Pkcs;
-using Org.BouncyCastle.Security;
-using Org.BouncyCastle.X509;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 {
-    // Reenrollment (On Device Key Generation).  The key and CSR are generated on the F5 under a temporary name, the CSR is
-    //  signed by Keyfactor Command, and the resulting certificate is combined with the key into a PKCS12 which is then
-    //  installed under the real alias using the same logic as the store type's Management Add job.
+    // Reenrollment (On Device Key Generation).  The key and CSR are generated on the F5, the CSR is signed by Keyfactor Command
+    //  and the returned certificate is installed to pair with the key.  When an existing alias is renewed (Overwrite), everything
+    //  is created under a new timestamped alias and the profiles bound to the old alias are moved to it.
     public abstract class ReenrollmentBase : F5JobBase, IReenrollmentJobExtension
     {
-        // Only used to transport the key/certificate between this orchestrator and the F5, it is never persisted
-        private const string TRANSIENT_PFX_PASSWORD = "12345";
-        private const int TEMP_ALIAS_LENGTH = 5;
 
         protected ILogger logger;
 
@@ -49,8 +38,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         // The partition the certificate is installed in
         protected abstract string GetPartition(F5Client f5);
 
-        // Installs the PKCS12 (base64) as the real alias, performing any binding done by the store type's Management Add job
-        protected abstract void InstallCertificate(F5Client f5, string partition, string alias, string b64Pfx, bool certificateExists);
+        // Store type specific work once the certificate is installed (e.g. binding a new certificate, device group sync)
+        protected abstract void AfterCertificateInstalled(F5Client f5, string partition, string alias, bool certificateExisted);
 
         public virtual JobResult ProcessJob(ReenrollmentJobConfiguration config, SubmitReenrollmentCSR submitReenrollment)
         {
@@ -62,7 +51,10 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             LogHandlerCommon.MethodEntry(logger, config.CertificateStoreDetails, "ProcessJob");
             JobConfig = config;
             F5Client f5 = null;
-            string tempAlias = null;
+            string newAlias = null;
+            bool csrCreated = false;
+            bool keyCreated = false;
+            bool certificateInstalled = false;
 
             try
             {
@@ -74,7 +66,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 string keyType = MapKeyType(GetJobProperty("keyType"));
                 if (!int.TryParse(GetJobProperty("keySize"), out int keySize)) { throw new Exception("A valid key size is required for reenrollment."); }
 
-                f5 = new F5Client(config.CertificateStoreDetails, ServerUserName, ServerPassword, config.UseSSL, TRANSIENT_PFX_PASSWORD, IgnoreSSLWarning, UseTokenAuth, null);
+                f5 = new F5Client(config.CertificateStoreDetails, ServerUserName, ServerPassword, config.UseSSL, null, IgnoreSSLWarning, UseTokenAuth, null);
                 WaitForPrimaryNode(f5);
                 ValidateF5Release(logger, config.CertificateStoreDetails, f5);
 
@@ -85,15 +77,26 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                     throw new Exception($"An entry named '{alias}' exists and 'overwrite' was not selected");
                 }
 
-                tempAlias = GenerateTempAlias();
-                LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, $"Generating key and CSR on the F5 using temporary alias '{tempAlias}'");
-                f5.CreateTempKey(tempAlias, keyType, keySize, config.CertificateStoreDetails.StorePath);
-                string csr = f5.CreateTempCSR(BuildCSRRequest(tempAlias, config.CertificateStoreDetails.StorePath));
+                // A renewal is installed under a new, timestamped alias so the existing certificate and key are left untouched
+                //  until the profiles bound to them have been moved over to the new certificate
+                newAlias = certificateExists ? $"{alias}_{DateTime.Now:yyyyMMddHHmmss}" : alias;
+
+                LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, $"Generating key and CSR on the F5 using alias '{newAlias}'");
+                f5.CreateKey(newAlias, keyType, keySize, partition);
+                keyCreated = true;
+                csrCreated = true;
+                string csr = f5.CreateCSR(BuildCSRRequest(newAlias, partition));
 
                 X509Certificate2 certificate = submitReenrollment.Invoke(csr);
                 if (certificate == null) { throw new Exception("Error retrieving certificate for CSR: certificate not returned."); }
 
-                //add certificate here
+                f5.AddCertificate(Encoding.ASCII.GetBytes(certificate.ExportCertificatePem()), partition, newAlias);
+                certificateInstalled = true;
+
+                if (certificateExists)
+                    f5.RebindProfiles(partition, alias, newAlias);
+
+                AfterCertificateInstalled(f5, partition, newAlias, certificateExists);
 
                 LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
@@ -117,8 +120,11 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             {
                 if (f5 != null)
                 {
-                    if (tempAlias != null)
-                        f5.DeleteTempKeyAndCSR(tempAlias);
+                    // The CSR is never needed again.  The key is only removed if no certificate was installed for it.
+                    if (csrCreated)
+                        f5.DeleteCSR(newAlias);
+                    if (keyCreated && !certificateInstalled)
+                        f5.DeleteKey(newAlias);
 
                     if (UseTokenAuth)
                         f5.RemoveToken();
@@ -191,21 +197,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
             }
         }
 
-        private static string GenerateTempAlias()
-        {
-            const string firstChars = "abcdefghijklmnopqrstuvwxyz";
-            const string chars = firstChars + "0123456789";
-
-            // Start with a letter so the name is always a valid F5 object name
-            StringBuilder alias = new StringBuilder(TEMP_ALIAS_LENGTH);
-            alias.Append(firstChars[RandomNumberGenerator.GetInt32(firstChars.Length)]);
-            for (int i = 1; i < TEMP_ALIAS_LENGTH; i++)
-                alias.Append(chars[RandomNumberGenerator.GetInt32(chars.Length)]);
-
-            return alias.ToString();
-        }
-
-        private F5CryptoCSRRequest BuildCSRRequest(string tempAlias, string partition)
+        private F5CryptoCSRRequest BuildCSRRequest(string alias, string partition)
         {
             // Subject is supplied by Command as a comma delimited DN, e.g. "CN=host.domain.com,O=Org,OU=Unit,L=City,ST=State,C=US"
             Dictionary<string, string> subject = new Dictionary<string, string>();
@@ -228,8 +220,8 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             return new F5CryptoCSRRequest
             {
-                name = tempAlias,
-                key = tempAlias,
+                name = alias,
+                key = alias,
                 partition = partition,
                 commonName = GetSubjectValue("CN"),
                 country = GetSubjectValue("C"),

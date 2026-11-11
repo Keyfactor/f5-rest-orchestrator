@@ -26,21 +26,12 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator.SSLProfile
             return f5.GetPartitionFromStorePath();
         }
 
-        protected override void InstallCertificate(F5Client f5, string partition, string alias, string b64Pfx, bool certificateExists)
+        protected override void AfterCertificateInstalled(F5Client f5, string partition, string alias, bool certificateExisted)
         {
-            if (certificateExists)
-            {
-                f5.ReplaceEntry(partition, alias, b64Pfx, StorePassword);
-            }
-            else
-            {
-                f5.AddEntry(partition, alias, b64Pfx, StorePassword);
-
-                // Same as Management Add: bindings are only applied to new certificates
-                string sslProfiles = GetJobProperty("SSLProfiles");
-                if (!string.IsNullOrEmpty(sslProfiles))
-                    f5.BindCertificateToSSLProfiles(alias, sslProfiles, StorePassword);
-            }
+            // Same as Management Add: SSLProfiles bindings are only applied to new certificates
+            string sslProfiles = GetJobProperty("SSLProfiles");
+            if (!certificateExisted && !string.IsNullOrEmpty(sslProfiles))
+                f5.BindCertificateToSSLProfiles(alias, sslProfiles, string.Empty);
 
             if (GetStoreBool("SyncDevice"))
                 f5.SyncDevice(GetStoreString("SyncDeviceGroup"));

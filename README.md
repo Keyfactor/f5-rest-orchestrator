@@ -950,7 +950,7 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
 ### Reenrollment (On Device Key Generation)
 
-Reenrollment (ODKG) is supported for this store type.  The private key and CSR are generated on the F5 device using a temporary name, the CSR is submitted to Keyfactor Command for signing, and the returned certificate is combined with the key and installed on the F5 under the alias supplied for the job.  The temporary key and CSR are then removed from the F5.  Key types of RSA and EC/ECC are supported.  If the alias already exists, "Overwrite" must be selected or the job will fail.  As with Management Add jobs, any SSL Profiles supplied in the SSLProfiles entry parameter are bound only when the alias is new, and the Sync to Device Group setting is honored.
+Reenrollment (ODKG) is supported for this store type.  The private key and CSR are generated on the F5 device, the CSR is submitted to Keyfactor Command for signing, and the returned certificate is installed on the F5 to pair with the key.  Key types of RSA and EC/ECC (curves P-256, P-384 and P-521) are supported.  If the alias already exists, "Overwrite" must be selected or the job will fail; when it is, the new key and certificate are created under the alias with an underscore and a timestamp (yyyyMMddHHmmss) appended, every client and server SSL profile bound to the existing alias is re-bound to the new certificate, and the existing certificate is left on the F5.  The CSR is removed once the certificate is installed.  As with Management Add jobs, any SSL Profiles supplied in the SSLProfiles entry parameter are bound only when the alias is new, and the Sync to Device Group setting is honored.
 
 </details>
 
@@ -1053,7 +1053,7 @@ Please refer to the **Universal Orchestrator (remote)** usage section ([PAM prov
 
 ### Reenrollment (On Device Key Generation)
 
-Reenrollment (ODKG) is supported for this store type.  The private key and CSR are generated on the F5 device using a temporary name, the CSR is submitted to Keyfactor Command for signing, and the returned certificate is combined with the key, installed on the F5 under the alias supplied for the job and bound to the SSL Profile identified in the certificate store configuration.  The temporary key and CSR are then removed from the F5.  Key types of RSA and EC/ECC are supported.  If the alias already exists, "Overwrite" must be selected or the job will fail, and a certificate bound to any other SSL Profile cannot be replaced.
+Reenrollment (ODKG) is supported for this store type.  The private key and CSR are generated on the F5 device, the CSR is submitted to Keyfactor Command for signing, and the returned certificate is installed on the F5 to pair with the key.  Key types of RSA and EC/ECC (curves P-256, P-384 and P-521) are supported.  If the alias already exists, "Overwrite" must be selected or the job will fail; when it is, the new key and certificate are created under the alias with an underscore and a timestamp (yyyyMMddHHmmss) appended, every client and server SSL profile bound to the existing alias (including the one this store manages) is re-bound to the new certificate, and the existing certificate is left on the F5.  A new alias is bound to the SSL Profile identified in the certificate store configuration.  The CSR is removed once the certificate is installed.
 
 </details>
 

@@ -140,6 +140,7 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
     {
         public string name { get; set; }
         public string keyType { get; set; }
+        public string partition { get; set; }
 
         // RSA keys use keySize; EC keys use curveName instead
         [Newtonsoft.Json.JsonProperty("keySize", NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

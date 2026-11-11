@@ -87,15 +87,13 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
                 tempAlias = GenerateTempAlias();
                 LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, $"Generating key and CSR on the F5 using temporary alias '{tempAlias}'");
-                f5.CreateTempKey(tempAlias, keyType, keySize);
+                f5.CreateTempKey(tempAlias, keyType, keySize, config.CertificateStoreDetails.StorePath);
                 string csr = f5.CreateTempCSR(BuildCSRRequest(tempAlias, config.CertificateStoreDetails.StorePath));
 
                 X509Certificate2 certificate = submitReenrollment.Invoke(csr);
                 if (certificate == null) { throw new Exception("Error retrieving certificate for CSR: certificate not returned."); }
 
-                string b64Pfx = BuildPkcs12(f5.GetTempKey(tempAlias), certificate, alias);
-
-                InstallCertificate(f5, partition, alias, b64Pfx, certificateExists);
+                //add certificate here
 
                 LogHandlerCommon.Debug(logger, config.CertificateStoreDetails, "Job complete");
                 return new JobResult { Result = OrchestratorJobStatusJobResult.Success, JobHistoryId = config.JobHistoryId };
@@ -242,32 +240,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
                 emailAddress = GetSubjectValue("E"),
                 subjectAlternativeName = sans.Count > 0 ? string.Join(",", sans) : null
             };
-        }
-
-        private static string BuildPkcs12(string keyPem, X509Certificate2 certificate, string alias)
-        {
-            // The F5 key file may be preceded by other PEM blocks (e.g. EC PARAMETERS), so isolate the private key block
-            Match keyBlock = Regex.Match(keyPem, @"-----BEGIN (?<type>[A-Z ]*PRIVATE KEY)-----.*?-----END \k<type>-----", RegexOptions.Singleline);
-            if (!keyBlock.Success) { throw new Exception("Unable to find the private key generated on the F5 device."); }
-
-            AsymmetricKeyParameter privateKey;
-            using (PemReader reader = new PemReader(new StringReader(keyBlock.Value)))
-            {
-                object keyObject = reader.ReadObject();
-                privateKey = keyObject is AsymmetricCipherKeyPair keyPair ? keyPair.Private : keyObject as AsymmetricKeyParameter;
-            }
-            if (privateKey == null || !privateKey.IsPrivate) { throw new Exception("Unable to parse the private key generated on the F5 device."); }
-
-            Org.BouncyCastle.X509.X509Certificate bcCertificate = new X509CertificateParser().ReadCertificate(certificate.RawData);
-
-            Pkcs12Store store = new Pkcs12StoreBuilder().Build();
-            store.SetKeyEntry(alias, new AsymmetricKeyEntry(privateKey), new[] { new X509CertificateEntry(bcCertificate) });
-
-            using (MemoryStream ms = new MemoryStream())
-            {
-                store.Save(ms, TRANSIENT_PFX_PASSWORD.ToCharArray(), new SecureRandom());
-                return Convert.ToBase64String(ms.ToArray());
-            }
         }
     }
 }

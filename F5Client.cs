@@ -1046,11 +1046,11 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
         private const string SSL_CSR_DIR = "/config/ssl/ssl.csr";
 
         // Creates a temporary private key on the F5 (security type 'normal', i.e. unencrypted)
-        public void CreateTempKey(string tempName, string keyType, int keySize)
+        public void CreateTempKey(string tempName, string keyType, int keySize, string partition)
         {
             LogHandlerCommon.MethodEntry(logger, CertificateStore, "CreateTempKey");
 
-            F5CryptoKeyRequest request = new F5CryptoKeyRequest { name = tempName, keyType = keyType, securityType = "normal" };
+            F5CryptoKeyRequest request = new F5CryptoKeyRequest { name = tempName, keyType = keyType, securityType = "normal", partition = partition };
             if (keyType == "ec-private")
             {
                 switch (keySize)
@@ -1080,11 +1080,6 @@ namespace Keyfactor.Extensions.Orchestrator.F5Orchestrator
 
             LogHandlerCommon.MethodExit(logger, CertificateStore, "CreateTempCSR");
             return csr;
-        }
-
-        public string GetTempKey(string tempName)
-        {
-            return ReadF5File(SSL_KEY_DIR, tempName, ".key");
         }
 
         // Removes the temporary key and CSR.  Both deletions are always attempted, and failures are logged rather than thrown

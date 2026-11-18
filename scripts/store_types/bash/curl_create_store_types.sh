@@ -205,7 +205,7 @@ curl -s -X POST "https://${KEYFACTOR_HOSTNAME}/${KEYFACTOR_API_PATH}/Certificate
       "Name": "AliasFormat",
       "DisplayName": "Alias Format",
       "Type": "Bool",
-      "DependsOn": "AutoGenerateAlias",
+      "DependsOn": "",
       "DefaultValue": "EnteredValue,Thumbprint,SerialNumber,CN-Thumbprint,CN-SerialNumber",
       "Required": true,
       "Description": "Select EnteredValue if you wish to use the alias entered when scheduling a ManagementAdd job.  Select one of the other values to ignore the entered alias value and format the alias based on attributes of the certificate itself."
@@ -215,7 +215,7 @@ curl -s -X POST "https://${KEYFACTOR_HOSTNAME}/${KEYFACTOR_API_PATH}/Certificate
       "DisplayName": "Primary Node Online Required",
       "Type": "MultipleChoice",
       "DefaultValue": "CN,Thumbprint,SerialNumber,CN-Thumbprint,CN-SerialNumber",
-      "DependsOn": "AutoGenerateAlias",
+      "DependsOn": "",
       "Required": true,
       "Description": "Select the format for auto generated aliases when adding new certificates."
     },

@@ -1,3 +1,6 @@
+v2.1.1
+- Bug Fix: For F5-PF-REST store type, remove incorrect DependsOn property values referencing incorrect field.  This was causing kfutil to fail when attempting to create a new F5-PF-REST store type certificate store.
+
 v2.1.0
 - Added new store type - F5-PF-REST - to manage the certificate bound to a single F5 Big IP SSL Profile (client or server only).  
 
